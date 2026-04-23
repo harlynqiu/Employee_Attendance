@@ -1,0 +1,52 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+    <h1>Attendance Summary</h1>
+
+    <form method="get" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 8px;">
+        {{ form.as_p }}
+        <button type="submit" class="button">Filter</button>
+    </form>
+
+    <div style="margin-bottom: 20px; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 8px;">
+        <h3 style="margin-top: 0;">Totals</h3>
+        <p><strong>Days Present:</strong> {{ summary.days_present }}</p>
+        <p><strong>Total Payable Hours:</strong> {{ summary.total_payable_hours }}</p>
+        <p><strong>Total Late Minutes:</strong> {{ summary.total_late_minutes }}</p>
+        <p><strong>Total Undertime Minutes:</strong> {{ summary.total_undertime_minutes }}</p>
+    </div>
+
+    <h2>Attendance Records</h2>
+    <table class="adminlist">
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Date</th>
+                <th>Time In</th>
+                <th>Time Out</th>
+                <th>Worked Hours</th>
+                <th>Payable Hours</th>
+                <th>Late Minutes</th>
+                <th>Undertime Minutes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in attendance %}
+                <tr>
+                    <td>{{ record.employee }}</td>
+                    <td>{{ record.date }}</td>
+                    <td>{{ record.time_in }}</td>
+                    <td>{{ record.time_out }}</td>
+                    <td>{{ record.worked_hours }}</td>
+                    <td>{{ record.payable_hours }}</td>
+                    <td>{{ record.late_minutes }}</td>
+                    <td>{{ record.undertime_minutes }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="8">No attendance records found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
