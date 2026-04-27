@@ -36,24 +36,13 @@ class Attendance(models.Model):
 
             work_date = local_in.date()
 
-            official_start = timezone.make_aware(
-                datetime.combine(work_date, time(8, 0))
-            )
-            grace_end = timezone.make_aware(
-                datetime.combine(work_date, time(8, 5))
-            )
-            official_end = timezone.make_aware(
-                datetime.combine(work_date, time(17, 0))
-            )
-            lunch_start = timezone.make_aware(
-                datetime.combine(work_date, time(12, 0))
-            )
-            lunch_end = timezone.make_aware(
-                datetime.combine(work_date, time(13, 0))
-            )
+            official_start = timezone.make_aware(datetime.combine(work_date, time(8, 0)))
+            grace_end = timezone.make_aware(datetime.combine(work_date, time(8, 5)))
+            official_end = timezone.make_aware(datetime.combine(work_date, time(17, 0)))
+            lunch_start = timezone.make_aware(datetime.combine(work_date, time(12, 0)))
+            lunch_end = timezone.make_aware(datetime.combine(work_date, time(13, 0)))
 
-            # No extra for early arrivals
-            # Grace period counts as if employee arrived exactly at 8:00 AM
+            # Grace period handling
             if local_in <= grace_end:
                 credited_in = official_start
                 self.late_minutes = 0
@@ -70,13 +59,13 @@ class Attendance(models.Model):
             else:
                 self.undertime_minutes = 0
 
-            # Compute worked duration
+            # Worked duration
             if credited_out > credited_in:
                 worked_seconds = (credited_out - credited_in).total_seconds()
             else:
                 worked_seconds = 0
 
-            # Deduct lunch only if the credited time overlaps 12:00 PM to 1:00 PM
+            # Lunch deduction (12–1 PM only if overlapping)
             lunch_overlap_start = max(credited_in, lunch_start)
             lunch_overlap_end = min(credited_out, lunch_end)
 
@@ -88,6 +77,7 @@ class Attendance(models.Model):
 
             self.worked_hours = Decimal(str(round(worked_seconds / 3600, 2)))
             self.payable_hours = Decimal(str(round(payable_seconds / 3600, 2)))
+
         else:
             self.worked_hours = None
             self.payable_hours = None
@@ -98,3 +88,43 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.employee.employee_id} - {self.employee.full_name} - {self.date}"
+
+
+# 🔥 NEW MODEL FOR PAYROLL ADJUSTMENTS
+class PayrollAdjustment(models.Model):
+    ADJUSTMENT_TYPE = (
+        ('benefit', 'Benefit'),
+        ('cash_advance', 'Cash Advance'),
+        ('charge', 'Charge'),
+        ('rent', 'Rent'),
+    )
+
+    employee = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        related_name='adjustments'
+    )
+
+    date = models.DateField(default=timezone.localdate)
+
+    adjustment_type = models.CharField(
+        max_length=20,
+        choices=ADJUSTMENT_TYPE
+    )
+
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    description = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True
+    )
+
+    def clean(self):
+        if self.amount <= 0:
+            raise ValidationError({
+                'amount': 'Amount must be greater than 0.'
+            })
+
+    def __str__(self):
+        return f"{self.employee.employee_id} - {self.adjustment_type} - {self.amount}"

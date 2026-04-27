@@ -32,7 +32,12 @@
         <p><strong>Total Payable Hours:</strong> {{ totals.total_payable_hours }}</p>
         <p><strong>Total Late Minutes:</strong> {{ totals.total_late_minutes }}</p>
         <p><strong>Total Undertime Minutes:</strong> {{ totals.total_undertime_minutes }}</p>
-        <p><strong>Grand Total Salary:</strong> {{ totals.grand_total_salary }}</p>
+        <p><strong>Total Base Salary:</strong> {{ totals.grand_base_salary }}</p>
+        <p><strong>Total Benefits:</strong> {{ totals.grand_benefits }}</p>
+        <p><strong>Total Cash Advance:</strong> {{ totals.grand_cash_advance }}</p>
+        <p><strong>Total Charges:</strong> {{ totals.grand_charges }}</p>
+        <p><strong>Total Rent:</strong> {{ totals.grand_rent }}</p>
+        <p><strong>Grand Final Salary:</strong> {{ totals.grand_total_salary }}</p>
     </div>
 
     <h2>Payroll Table</h2>
@@ -44,10 +49,16 @@
                 <th>Name</th>
                 <th>Days Present</th>
                 <th>Total Payable Hours</th>
-                <th>Total Late Minutes</th>
-                <th>Total Undertime Minutes</th>
-                <th>Salary Rate</th>
-                <th>Total Salary</th>
+                <th>Late Minutes</th>
+                <th>Undertime Minutes</th>
+                <th>Daily Rate</th>
+                <th>Hourly Rate</th>
+                <th>Base Salary</th>
+                <th>Benefits</th>
+                <th>Cash Advance</th>
+                <th>Charges</th>
+                <th>Rent</th>
+                <th>Final Salary</th>
             </tr>
         </thead>
         <tbody>
@@ -59,12 +70,18 @@
                     <td>{{ row.total_payable_hours|default:"0" }}</td>
                     <td>{{ row.total_late_minutes|default:"0" }}</td>
                     <td>{{ row.total_undertime_minutes|default:"0" }}</td>
-                    <td>{{ row.employee__rate|default:"0" }}</td>
+                    <td>{{ row.daily_rate|default:"0" }}</td>
+                    <td>{{ row.hourly_rate|floatformat:2 }}</td>
+                    <td>{{ row.base_salary|default:"0" }}</td>
+                    <td>{{ row.benefits|default:"0" }}</td>
+                    <td>{{ row.cash_advance|default:"0" }}</td>
+                    <td>{{ row.charges|default:"0" }}</td>
+                    <td>{{ row.rent|default:"0" }}</td>
                     <td><strong>{{ row.total_salary|default:"0" }}</strong></td>
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="8">No payroll data found.</td>
+                    <td colspan="14">No payroll data found.</td>
                 </tr>
             {% endfor %}
         </tbody>

@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 
+
 class Employee(models.Model):
     SALARY_TYPE_CHOICES = (
         ('daily', 'Daily'),
@@ -11,8 +12,14 @@ class Employee(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     position = models.CharField(max_length=100)
-    salary_type = models.CharField(max_length=10, choices=SALARY_TYPE_CHOICES)
+
+    salary_type = models.CharField(max_length=10, choices=SALARY_TYPE_CHOICES, default='daily')
+
+    # 🔥 DAILY RATE (main salary basis)
     rate = models.DecimalField(max_digits=10, decimal_places=2)
+
+    # 🔥 FIXED BENEFITS (per payroll cycle)
+    benefits = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     # ✅ FULL NAME PROPERTY
     @property
@@ -22,20 +29,34 @@ class Employee(models.Model):
     # 🔍 VALIDATION
     def clean(self):
         if self.rate <= 0:
-            raise ValidationError({'rate': 'Salary rate must be greater than 0.'})
+            raise ValidationError({
+                'rate': 'Salary rate must be greater than 0.'
+            })
+
+        if self.benefits < 0:
+            raise ValidationError({
+                'benefits': 'Benefits cannot be negative.'
+            })
 
         if not self.first_name.strip():
-            raise ValidationError({'first_name': 'First name cannot be empty.'})
+            raise ValidationError({
+                'first_name': 'First name cannot be empty.'
+            })
 
         if not self.last_name.strip():
-            raise ValidationError({'last_name': 'Last name cannot be empty.'})
+            raise ValidationError({
+                'last_name': 'Last name cannot be empty.'
+            })
 
         if not self.position.strip():
-            raise ValidationError({'position': 'Position cannot be empty.'})
+            raise ValidationError({
+                'position': 'Position cannot be empty.'
+            })
 
     def save(self, *args, **kwargs):
         self.full_clean()
 
+        # 🔥 AUTO-GENERATE EMPLOYEE ID
         if not self.employee_id:
             last_employee = Employee.objects.order_by('id').last()
 
