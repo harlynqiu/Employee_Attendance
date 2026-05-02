@@ -1,0 +1,94 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+    <h1>Payroll Summary</h1>
+
+    <form method="get" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 8px;">
+        <label for="start_date"><strong>Start Date:</strong></label>
+        <input type="date" id="start_date" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+
+        <label for="end_date" style="margin-left: 15px;"><strong>End Date:</strong></label>
+        <input type="date" id="end_date" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+
+        <button type="submit" class="button">Filter</button>
+    </form>
+
+    <div style="margin-bottom: 15px;">
+        <a href="{% url 'admin:payroll-weekly-summary-export' %}?{{ request.GET.urlencode }}"
+           class="button"
+           style="padding:8px 12px; background:#28a745; color:white; border-radius:4px; text-decoration:none;">
+            Export to Excel (CSV)
+        </a>
+    </div>
+
+    <div style="margin-bottom: 20px; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 8px;">
+        <h3 style="margin-top: 0;">Selected Payroll Period</h3>
+        <p><strong>Start Date:</strong> {{ start_date }}</p>
+        <p><strong>End Date:</strong> {{ end_date }}</p>
+    </div>
+
+    <div style="margin-bottom: 20px; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 8px;">
+        <h3 style="margin-top: 0;">Grand Totals</h3>
+        <p><strong>Total Days Present:</strong> {{ totals.days_present }}</p>
+        <p><strong>Total Payable Hours:</strong> {{ totals.total_payable_hours }}</p>
+        <p><strong>Total Late Minutes:</strong> {{ totals.total_late_minutes }}</p>
+        <p><strong>Total Undertime Minutes:</strong> {{ totals.total_undertime_minutes }}</p>
+        <p><strong>Total Base Salary:</strong> {{ totals.grand_base_salary }}</p>
+        <p><strong>Total Benefits/Deductions:</strong> {{ totals.grand_benefits }}</p>
+        <p><strong>Total Allowance:</strong> {{ totals.grand_allowance }}</p>
+        <p><strong>Total Cash Advance:</strong> {{ totals.grand_cash_advance }}</p>
+        <p><strong>Total Charges:</strong> {{ totals.grand_charges }}</p>
+        <p><strong>Total Rent:</strong> {{ totals.grand_rent }}</p>
+        <p><strong>Grand Final Salary:</strong> {{ totals.grand_total_salary }}</p>
+    </div>
+
+    <h2>Payroll Table</h2>
+
+    <table class="adminlist">
+        <thead>
+            <tr>
+                <th>Employee ID</th>
+                <th>Name</th>
+                <th>Days Present</th>
+                <th>Total Payable Hours</th>
+                <th>Late Minutes</th>
+                <th>Undertime Minutes</th>
+                <th>Daily Rate</th>
+                <th>Hourly Rate</th>
+                <th>Base Salary</th>
+                <th>Benefits/Deductions</th>
+                <th>Allowance</th>
+                <th>Cash Advance</th>
+                <th>Charges</th>
+                <th>Rent</th>
+                <th>Final Salary</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for row in payroll_data %}
+                <tr>
+                    <td>{{ row.employee__employee_id }}</td>
+                    <td>{{ row.employee__first_name }} {{ row.employee__last_name }}</td>
+                    <td>{{ row.days_present|default:"0" }}</td>
+                    <td>{{ row.total_payable_hours|default:"0" }}</td>
+                    <td>{{ row.total_late_minutes|default:"0" }}</td>
+                    <td>{{ row.total_undertime_minutes|default:"0" }}</td>
+                    <td>{{ row.daily_rate|default:"0" }}</td>
+                    <td>{{ row.hourly_rate|floatformat:2 }}</td>
+                    <td>{{ row.base_salary|default:"0" }}</td>
+                    <td>{{ row.benefits|default:"0" }}</td>
+                    <td>{{ row.allowance|default:"0" }}</td>
+                    <td>{{ row.cash_advance|default:"0" }}</td>
+                    <td>{{ row.charges|default:"0" }}</td>
+                    <td>{{ row.rent|default:"0" }}</td>
+                    <td><strong>{{ row.total_salary|default:"0" }}</strong></td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="15">No payroll data found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
