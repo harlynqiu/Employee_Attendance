@@ -36,6 +36,7 @@
         <p><strong>Total Base Salary:</strong> {{ totals.grand_base_salary }}</p>
         <p><strong>Total Benefits/Deductions:</strong> {{ totals.grand_benefits }}</p>
         <p><strong>Total Allowance:</strong> {{ totals.grand_allowance }}</p>
+        <p><strong>Total Transportation Fee:</strong> {{ totals.grand_transportation_fee }}</p>
         <p><strong>Total Cash Advance:</strong> {{ totals.grand_cash_advance }}</p>
         <p><strong>Total Charges:</strong> {{ totals.grand_charges }}</p>
         <p><strong>Total Rent:</strong> {{ totals.grand_rent }}</p>
@@ -58,6 +59,8 @@
                 <th>Base Salary</th>
                 <th>Benefits/Deductions</th>
                 <th>Allowance</th>
+                <th>Transportation Days</th>
+                <th>Transportation Fee</th>
                 <th>Cash Advance</th>
                 <th>Charges</th>
                 <th>Rent</th>
@@ -79,6 +82,8 @@
                     <td>{{ row.base_salary|default:"0" }}</td>
                     <td>{{ row.benefits|default:"0" }}</td>
                     <td>{{ row.allowance|default:"0" }}</td>
+                    <td>{{ row.transportation_days|default:"0" }}</td>
+                    <td>{{ row.transportation_fee|default:"0" }}</td>
                     <td>{{ row.cash_advance|default:"0" }}</td>
                     <td>{{ row.charges|default:"0" }}</td>
                     <td>{{ row.rent|default:"0" }}</td>
@@ -86,7 +91,7 @@
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="15">No payroll data found.</td>
+                    <td colspan="17">No payroll data found.</td>
                 </tr>
             {% endfor %}
         </tbody>

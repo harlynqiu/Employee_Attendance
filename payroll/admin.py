@@ -14,6 +14,9 @@ from attendance.models import Attendance
 from .models import Payroll, PayrollAdjustment
 
 
+TRANSPORTATION_FEE_PER_DAY = Decimal('15.00')
+
+
 @admin.register(PayrollAdjustment)
 class PayrollAdjustmentAdmin(admin.ModelAdmin):
     list_display = (
@@ -152,6 +155,7 @@ class PayrollAdmin(admin.ModelAdmin):
             'grand_base_salary': Decimal('0.00'),
             'grand_benefits': Decimal('0.00'),
             'grand_allowance': Decimal('0.00'),
+            'grand_transportation_fee': Decimal('0.00'),
             'grand_cash_advance': Decimal('0.00'),
             'grand_charges': Decimal('0.00'),
             'grand_rent': Decimal('0.00'),
@@ -165,9 +169,17 @@ class PayrollAdmin(admin.ModelAdmin):
             daily_rate = row['employee__rate'] or Decimal('0.00')
             benefits = row['employee__benefits'] or Decimal('0.00')
 
-            # Daily-rate based computation using attendance hours
             hourly_rate = daily_rate / Decimal('8.00')
             base_salary = hours * hourly_rate
+
+            transportation_days = Attendance.objects.filter(
+                employee_id=employee_id,
+                date__range=[start_date, end_date],
+                time_in__isnull=False,
+                transportation_fee_applicable=True,
+            ).count()
+
+            transportation_fee = Decimal(transportation_days) * TRANSPORTATION_FEE_PER_DAY
 
             adjustments = PayrollAdjustment.objects.filter(
                 employee_id=employee_id,
@@ -193,6 +205,7 @@ class PayrollAdmin(admin.ModelAdmin):
             final_salary = (
                 base_salary
                 + allowance
+                + transportation_fee
                 - benefits
                 - cash_advance
                 - charges
@@ -205,6 +218,8 @@ class PayrollAdmin(admin.ModelAdmin):
                 'base_salary': base_salary,
                 'benefits': benefits,
                 'allowance': allowance,
+                'transportation_days': transportation_days,
+                'transportation_fee': transportation_fee,
                 'cash_advance': cash_advance,
                 'charges': charges,
                 'rent': rent,
@@ -218,6 +233,7 @@ class PayrollAdmin(admin.ModelAdmin):
             totals['grand_base_salary'] += base_salary
             totals['grand_benefits'] += benefits
             totals['grand_allowance'] += allowance
+            totals['grand_transportation_fee'] += transportation_fee
             totals['grand_cash_advance'] += cash_advance
             totals['grand_charges'] += charges
             totals['grand_rent'] += rent
@@ -266,8 +282,10 @@ class PayrollAdmin(admin.ModelAdmin):
             'Daily Rate',
             'Hourly Rate',
             'Base Salary',
-            'Benefits',
+            'Benefits/Deductions',
             'Allowance',
+            'Transportation Days',
+            'Transportation Fee',
             'Cash Advance',
             'Charges',
             'Rent',
@@ -287,6 +305,8 @@ class PayrollAdmin(admin.ModelAdmin):
                 row['base_salary'],
                 row['benefits'],
                 row['allowance'],
+                row['transportation_days'],
+                row['transportation_fee'],
                 row['cash_advance'],
                 row['charges'],
                 row['rent'],
@@ -306,6 +326,8 @@ class PayrollAdmin(admin.ModelAdmin):
             totals['grand_base_salary'],
             totals['grand_benefits'],
             totals['grand_allowance'],
+            '',
+            totals['grand_transportation_fee'],
             totals['grand_cash_advance'],
             totals['grand_charges'],
             totals['grand_rent'],

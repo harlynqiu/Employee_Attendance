@@ -1,13 +1,20 @@
 from decimal import Decimal
+from datetime import time, datetime
+
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+
 from employees.models import Employee
-from datetime import time, datetime
 
 
 class Attendance(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='attendances')
+    employee = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        related_name='attendances'
+    )
+
     date = models.DateField(default=timezone.localdate)
     time_in = models.DateTimeField(null=True, blank=True)
     time_out = models.DateTimeField(null=True, blank=True)
@@ -16,6 +23,10 @@ class Attendance(models.Model):
     payable_hours = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     late_minutes = models.PositiveIntegerField(default=0)
     undertime_minutes = models.PositiveIntegerField(default=0)
+
+    # ₱15 transportation fee is counted only when this is checked.
+    # Uncheck this for days when employee is on delivery/out of office.
+    transportation_fee_applicable = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ('employee', 'date')
@@ -42,7 +53,6 @@ class Attendance(models.Model):
             lunch_start = timezone.make_aware(datetime.combine(work_date, time(12, 0)))
             lunch_end = timezone.make_aware(datetime.combine(work_date, time(13, 0)))
 
-            # Grace period handling
             if local_in <= grace_end:
                 credited_in = official_start
                 self.late_minutes = 0
@@ -50,22 +60,18 @@ class Attendance(models.Model):
                 credited_in = local_in
                 self.late_minutes = int((local_in - grace_end).total_seconds() // 60)
 
-            # No overtime yet
             credited_out = min(local_out, official_end)
 
-            # Undertime
             if local_out < official_end:
                 self.undertime_minutes = int((official_end - local_out).total_seconds() // 60)
             else:
                 self.undertime_minutes = 0
 
-            # Worked duration
             if credited_out > credited_in:
                 worked_seconds = (credited_out - credited_in).total_seconds()
             else:
                 worked_seconds = 0
 
-            # Lunch deduction (12–1 PM only if overlapping)
             lunch_overlap_start = max(credited_in, lunch_start)
             lunch_overlap_end = min(credited_out, lunch_end)
 
@@ -88,43 +94,3 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.employee.employee_id} - {self.employee.full_name} - {self.date}"
-
-
-# 🔥 NEW MODEL FOR PAYROLL ADJUSTMENTS
-class PayrollAdjustment(models.Model):
-    ADJUSTMENT_TYPE = (
-        ('benefit', 'Benefit'),
-        ('cash_advance', 'Cash Advance'),
-        ('charge', 'Charge'),
-        ('rent', 'Rent'),
-    )
-
-    employee = models.ForeignKey(
-        Employee,
-        on_delete=models.CASCADE,
-        related_name='adjustments'
-    )
-
-    date = models.DateField(default=timezone.localdate)
-
-    adjustment_type = models.CharField(
-        max_length=20,
-        choices=ADJUSTMENT_TYPE
-    )
-
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-
-    description = models.CharField(
-        max_length=255,
-        blank=True,
-        null=True
-    )
-
-    def clean(self):
-        if self.amount <= 0:
-            raise ValidationError({
-                'amount': 'Amount must be greater than 0.'
-            })
-
-    def __str__(self):
-        return f"{self.employee.employee_id} - {self.adjustment_type} - {self.amount}"
