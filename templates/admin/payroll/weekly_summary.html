@@ -29,18 +29,56 @@
 
     <div style="margin-bottom: 20px; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 8px;">
         <h3 style="margin-top: 0;">Grand Totals</h3>
+
         <p><strong>Total Days Present:</strong> {{ totals.days_present }}</p>
-        <p><strong>Total Payable Hours:</strong> {{ totals.total_payable_hours }}</p>
-        <p><strong>Total Late Minutes:</strong> {{ totals.total_late_minutes }}</p>
-        <p><strong>Total Undertime Minutes:</strong> {{ totals.total_undertime_minutes }}</p>
-        <p><strong>Total Base Salary:</strong> {{ totals.grand_base_salary }}</p>
-        <p><strong>Total Benefits/Deductions:</strong> {{ totals.grand_benefits }}</p>
-        <p><strong>Total Allowance:</strong> {{ totals.grand_allowance }}</p>
-        <p><strong>Total Transportation Fee:</strong> {{ totals.grand_transportation_fee }}</p>
-        <p><strong>Total Cash Advance:</strong> {{ totals.grand_cash_advance }}</p>
-        <p><strong>Total Charges:</strong> {{ totals.grand_charges }}</p>
-        <p><strong>Total Rent:</strong> {{ totals.grand_rent }}</p>
-        <p><strong>Grand Final Salary:</strong> {{ totals.grand_total_salary }}</p>
+
+        <p><strong>Total Payable Hours:</strong>
+            {{ totals.total_payable_hours|floatformat:2 }}
+        </p>
+
+        <p><strong>Total Late Minutes:</strong>
+            {{ totals.total_late_minutes }}
+        </p>
+
+        <p><strong>Total Undertime Minutes:</strong>
+            {{ totals.total_undertime_minutes }}
+        </p>
+
+        <p><strong>Total Base Salary:</strong>
+            {{ totals.grand_base_salary|floatformat:2 }}
+        </p>
+
+        <p><strong>Total Benefits/Deductions:</strong>
+            {{ totals.grand_benefits|floatformat:2 }}
+        </p>
+
+        <p><strong>Total Manual Allowance:</strong>
+            {{ totals.grand_manual_allowance|floatformat:2 }}
+        </p>
+
+        <p><strong>Total Deliver Allowance:</strong>
+            {{ totals.grand_deliver_allowance|floatformat:2 }}
+        </p>
+
+        <p><strong>Total Transportation Fee:</strong>
+            {{ totals.grand_transportation_fee|floatformat:2 }}
+        </p>
+
+        <p><strong>Total Cash Advance:</strong>
+            {{ totals.grand_cash_advance|floatformat:2 }}
+        </p>
+
+        <p><strong>Total Charges:</strong>
+            {{ totals.grand_charges|floatformat:2 }}
+        </p>
+
+        <p><strong>Total Rent:</strong>
+            {{ totals.grand_rent|floatformat:2 }}
+        </p>
+
+        <p><strong>Grand Final Salary:</strong>
+            {{ totals.grand_total_salary|floatformat:2 }}
+        </p>
     </div>
 
     <h2>Payroll Table</h2>
@@ -50,6 +88,7 @@
             <tr>
                 <th>Employee ID</th>
                 <th>Name</th>
+                <th>Position</th>
                 <th>Days Present</th>
                 <th>Total Payable Hours</th>
                 <th>Late Minutes</th>
@@ -58,7 +97,10 @@
                 <th>Hourly Rate</th>
                 <th>Base Salary</th>
                 <th>Benefits/Deductions</th>
-                <th>Allowance</th>
+                <th>Manual Allowance</th>
+                <th>Deliver Days</th>
+                <th>Deliver Allowance</th>
+                <th>Total Allowance</th>
                 <th>Transportation Days</th>
                 <th>Transportation Fee</th>
                 <th>Cash Advance</th>
@@ -72,26 +114,82 @@
             {% for row in payroll_data %}
                 <tr>
                     <td>{{ row.employee__employee_id }}</td>
-                    <td>{{ row.employee__first_name }} {{ row.employee__last_name }}</td>
+
+                    <td>
+                        {{ row.employee__first_name }}
+                        {{ row.employee__last_name }}
+                    </td>
+
+                    <td>{{ row.employee__position }}</td>
+
                     <td>{{ row.days_present|default:"0" }}</td>
-                    <td>{{ row.total_payable_hours|default:"0" }}</td>
+
+                    <td>
+                        {{ row.total_payable_hours|default:"0"|floatformat:2 }}
+                    </td>
+
                     <td>{{ row.total_late_minutes|default:"0" }}</td>
+
                     <td>{{ row.total_undertime_minutes|default:"0" }}</td>
-                    <td>{{ row.daily_rate|default:"0" }}</td>
-                    <td>{{ row.hourly_rate|floatformat:2 }}</td>
-                    <td>{{ row.base_salary|default:"0" }}</td>
-                    <td>{{ row.benefits|default:"0" }}</td>
-                    <td>{{ row.allowance|default:"0" }}</td>
+
+                    <td>
+                        {{ row.daily_rate|default:"0"|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ row.hourly_rate|default:"0"|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ row.base_salary|default:"0"|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ row.benefits|default:"0"|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ row.manual_allowance|default:"0"|floatformat:2 }}
+                    </td>
+
+                    <td>{{ row.deliver_days|default:"0" }}</td>
+
+                    <td>
+                        {{ row.deliver_allowance|default:"0"|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ row.total_allowance|default:"0"|floatformat:2 }}
+                    </td>
+
                     <td>{{ row.transportation_days|default:"0" }}</td>
-                    <td>{{ row.transportation_fee|default:"0" }}</td>
-                    <td>{{ row.cash_advance|default:"0" }}</td>
-                    <td>{{ row.charges|default:"0" }}</td>
-                    <td>{{ row.rent|default:"0" }}</td>
-                    <td><strong>{{ row.total_salary|default:"0" }}</strong></td>
+
+                    <td>
+                        {{ row.transportation_fee|default:"0"|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ row.cash_advance|default:"0"|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ row.charges|default:"0"|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ row.rent|default:"0"|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        <strong>
+                            {{ row.total_salary|default:"0"|floatformat:2 }}
+                        </strong>
+                    </td>
                 </tr>
+
             {% empty %}
                 <tr>
-                    <td colspan="17">No payroll data found.</td>
+                    <td colspan="21">No payroll data found.</td>
                 </tr>
             {% endfor %}
         </tbody>

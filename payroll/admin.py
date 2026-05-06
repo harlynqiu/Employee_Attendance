@@ -15,6 +15,8 @@ from .models import Payroll, PayrollAdjustment
 
 
 TRANSPORTATION_FEE_PER_DAY = Decimal('15.00')
+DRIVER_DELIVER_ALLOWANCE = Decimal('200.00')
+HELPER_DELIVER_ALLOWANCE = Decimal('150.00')
 
 
 @admin.register(PayrollAdjustment)
@@ -123,6 +125,23 @@ class PayrollAdmin(admin.ModelAdmin):
 
         return start_date, end_date
 
+    def get_deliver_allowance(self, attendance_records):
+        total = Decimal('0.00')
+        deliver_days = 0
+
+        for record in attendance_records:
+            position = record.employee.position.lower().strip()
+
+            if record.work_type == 'deliver':
+                deliver_days += 1
+
+                if position == 'driver':
+                    total += DRIVER_DELIVER_ALLOWANCE
+                elif position == 'helper':
+                    total += HELPER_DELIVER_ALLOWANCE
+
+        return deliver_days, total
+
     def build_weekly_payroll_data(self, start_date, end_date):
         attendance = Attendance.objects.select_related('employee').filter(
             date__range=[start_date, end_date]
@@ -135,6 +154,7 @@ class PayrollAdmin(admin.ModelAdmin):
                 'employee__employee_id',
                 'employee__first_name',
                 'employee__last_name',
+                'employee__position',
                 'employee__rate',
                 'employee__benefits',
             )
@@ -144,7 +164,7 @@ class PayrollAdmin(admin.ModelAdmin):
                 total_late_minutes=Sum('late_minutes'),
                 total_undertime_minutes=Sum('undertime_minutes'),
             )
-            .order_by('employee__last_name', 'employee__first_name')
+            .order_by('employee__employee_id')
         )
 
         totals = {
@@ -154,7 +174,8 @@ class PayrollAdmin(admin.ModelAdmin):
             'total_undertime_minutes': 0,
             'grand_base_salary': Decimal('0.00'),
             'grand_benefits': Decimal('0.00'),
-            'grand_allowance': Decimal('0.00'),
+            'grand_manual_allowance': Decimal('0.00'),
+            'grand_deliver_allowance': Decimal('0.00'),
             'grand_transportation_fee': Decimal('0.00'),
             'grand_cash_advance': Decimal('0.00'),
             'grand_charges': Decimal('0.00'),
@@ -172,10 +193,17 @@ class PayrollAdmin(admin.ModelAdmin):
             hourly_rate = daily_rate / Decimal('8.00')
             base_salary = hours * hourly_rate
 
-            transportation_days = Attendance.objects.filter(
+            employee_attendance_records = Attendance.objects.select_related('employee').filter(
                 employee_id=employee_id,
                 date__range=[start_date, end_date],
                 time_in__isnull=False,
+            )
+
+            deliver_days, deliver_allowance = self.get_deliver_allowance(
+                employee_attendance_records
+            )
+
+            transportation_days = employee_attendance_records.filter(
                 transportation_fee_applicable=True,
             ).count()
 
@@ -186,7 +214,7 @@ class PayrollAdmin(admin.ModelAdmin):
                 date__range=[start_date, end_date]
             )
 
-            allowance = adjustments.filter(
+            manual_allowance = adjustments.filter(
                 adjustment_type='allowance'
             ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
 
@@ -202,9 +230,11 @@ class PayrollAdmin(admin.ModelAdmin):
                 adjustment_type='rent'
             ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
 
+            total_allowance = manual_allowance + deliver_allowance
+
             final_salary = (
                 base_salary
-                + allowance
+                + total_allowance
                 + transportation_fee
                 - benefits
                 - cash_advance
@@ -217,7 +247,10 @@ class PayrollAdmin(admin.ModelAdmin):
                 'hourly_rate': hourly_rate,
                 'base_salary': base_salary,
                 'benefits': benefits,
-                'allowance': allowance,
+                'manual_allowance': manual_allowance,
+                'deliver_days': deliver_days,
+                'deliver_allowance': deliver_allowance,
+                'total_allowance': total_allowance,
                 'transportation_days': transportation_days,
                 'transportation_fee': transportation_fee,
                 'cash_advance': cash_advance,
@@ -232,7 +265,8 @@ class PayrollAdmin(admin.ModelAdmin):
             totals['total_undertime_minutes'] += row['total_undertime_minutes'] or 0
             totals['grand_base_salary'] += base_salary
             totals['grand_benefits'] += benefits
-            totals['grand_allowance'] += allowance
+            totals['grand_manual_allowance'] += manual_allowance
+            totals['grand_deliver_allowance'] += deliver_allowance
             totals['grand_transportation_fee'] += transportation_fee
             totals['grand_cash_advance'] += cash_advance
             totals['grand_charges'] += charges
@@ -247,7 +281,7 @@ class PayrollAdmin(admin.ModelAdmin):
 
         context = dict(
             self.admin_site.each_context(request),
-            title='Weekly Payroll Summary',
+            title='Payroll Summary',
             start_date=start_date,
             end_date=end_date,
             payroll_data=payroll_data,
@@ -265,7 +299,7 @@ class PayrollAdmin(admin.ModelAdmin):
         payroll_data, totals = self.build_weekly_payroll_data(start_date, end_date)
 
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="weekly_payroll.csv"'
+        response['Content-Disposition'] = 'attachment; filename="payroll_summary.csv"'
 
         writer = csv.writer(response)
 
@@ -275,6 +309,7 @@ class PayrollAdmin(admin.ModelAdmin):
         writer.writerow([
             'Employee ID',
             'Name',
+            'Position',
             'Days Present',
             'Total Payable Hours',
             'Late Minutes',
@@ -283,7 +318,10 @@ class PayrollAdmin(admin.ModelAdmin):
             'Hourly Rate',
             'Base Salary',
             'Benefits/Deductions',
-            'Allowance',
+            'Manual Allowance',
+            'Deliver Days',
+            'Deliver Allowance',
+            'Total Allowance',
             'Transportation Days',
             'Transportation Fee',
             'Cash Advance',
@@ -296,6 +334,7 @@ class PayrollAdmin(admin.ModelAdmin):
             writer.writerow([
                 row['employee__employee_id'],
                 f"{row['employee__first_name']} {row['employee__last_name']}",
+                row['employee__position'],
                 row['days_present'] or 0,
                 row['total_payable_hours'] or 0,
                 row['total_late_minutes'] or 0,
@@ -304,7 +343,10 @@ class PayrollAdmin(admin.ModelAdmin):
                 row['hourly_rate'],
                 row['base_salary'],
                 row['benefits'],
-                row['allowance'],
+                row['manual_allowance'],
+                row['deliver_days'],
+                row['deliver_allowance'],
+                row['total_allowance'],
                 row['transportation_days'],
                 row['transportation_fee'],
                 row['cash_advance'],
@@ -312,26 +354,5 @@ class PayrollAdmin(admin.ModelAdmin):
                 row['rent'],
                 row['total_salary'],
             ])
-
-        writer.writerow([])
-        writer.writerow([
-            '',
-            'GRAND TOTALS',
-            totals['days_present'],
-            totals['total_payable_hours'],
-            totals['total_late_minutes'],
-            totals['total_undertime_minutes'],
-            '',
-            '',
-            totals['grand_base_salary'],
-            totals['grand_benefits'],
-            totals['grand_allowance'],
-            '',
-            totals['grand_transportation_fee'],
-            totals['grand_cash_advance'],
-            totals['grand_charges'],
-            totals['grand_rent'],
-            totals['grand_total_salary'],
-        ])
 
         return response

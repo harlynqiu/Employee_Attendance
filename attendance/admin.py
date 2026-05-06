@@ -17,8 +17,10 @@ class AttendanceAdmin(admin.ModelAdmin):
     form = AttendanceAdminForm
 
     list_display = (
-        'employee',
+        'employee_id',
+        'employee_name',
         'date',
+        'status',
         'time_in',
         'time_out',
         'worked_hours',
@@ -26,19 +28,33 @@ class AttendanceAdmin(admin.ModelAdmin):
         'late_minutes',
         'undertime_minutes',
         'transportation_fee_applicable',
+        'work_type',
+        'work_location',
         'remarks',
     )
 
     list_filter = (
         'date',
+        'status',
         'employee',
         'transportation_fee_applicable',
+        'work_type',
     )
+
+    date_hierarchy = 'date'
+
+    ordering = (
+        '-date',
+        'employee__employee_id',
+    )
+
+    list_per_page = 50
 
     search_fields = (
         'employee__employee_id',
         'employee__first_name',
         'employee__last_name',
+        'work_location',
         'remarks',
     )
 
@@ -48,6 +64,16 @@ class AttendanceAdmin(admin.ModelAdmin):
         'late_minutes',
         'undertime_minutes',
     )
+
+    def employee_id(self, obj):
+        return obj.employee.employee_id
+    employee_id.short_description = 'Employee ID'
+    employee_id.admin_order_field = 'employee__employee_id'
+
+    def employee_name(self, obj):
+        return obj.employee.full_name
+    employee_name.short_description = 'Employee Name'
+    employee_name.admin_order_field = 'employee__last_name'
 
     def bulk_entry_link(self, request):
         url = reverse('admin:attendance-bulk-entry')
@@ -78,30 +104,46 @@ class AttendanceAdmin(admin.ModelAdmin):
 
             if form.is_valid():
                 date = form.cleaned_data['date']
+                status = form.cleaned_data['status']
                 time_in = form.cleaned_data['time_in']
                 time_out = form.cleaned_data['time_out']
                 employees = form.cleaned_data['employees']
                 transportation_fee_applicable = form.cleaned_data['transportation_fee_applicable']
+                work_type = form.cleaned_data['work_type']
+                work_location = form.cleaned_data['work_location']
+                remarks = form.cleaned_data['remarks']
 
                 created_count = 0
                 updated_count = 0
 
                 for employee in employees:
-                    time_in_datetime = timezone.make_aware(
-                        datetime.combine(date, time_in)
-                    )
-                    time_out_datetime = timezone.make_aware(
-                        datetime.combine(date, time_out)
-                    )
+                    defaults = {
+                        'status': status,
+                        'transportation_fee_applicable': transportation_fee_applicable,
+                        'work_type': work_type,
+                        'work_location': work_location,
+                        'remarks': remarks,
+                    }
+
+                    if status in ['absent', 'leave', 'rest_day', 'holiday']:
+                        defaults['time_in'] = None
+                        defaults['time_out'] = None
+                        defaults['transportation_fee_applicable'] = False
+                    else:
+                        time_in_datetime = timezone.make_aware(
+                            datetime.combine(date, time_in)
+                        )
+                        time_out_datetime = timezone.make_aware(
+                            datetime.combine(date, time_out)
+                        )
+
+                        defaults['time_in'] = time_in_datetime
+                        defaults['time_out'] = time_out_datetime
 
                     attendance, created = Attendance.objects.update_or_create(
                         employee=employee,
                         date=date,
-                        defaults={
-                            'time_in': time_in_datetime,
-                            'time_out': time_out_datetime,
-                            'transportation_fee_applicable': transportation_fee_applicable,
-                        }
+                        defaults=defaults
                     )
 
                     if created:
