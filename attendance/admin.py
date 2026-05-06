@@ -26,6 +26,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         'late_minutes',
         'undertime_minutes',
         'transportation_fee_applicable',
+        'remarks',
     )
 
     list_filter = (
@@ -38,6 +39,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         'employee__employee_id',
         'employee__first_name',
         'employee__last_name',
+        'remarks',
     )
 
     readonly_fields = (

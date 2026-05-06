@@ -27,6 +27,7 @@ class Attendance(models.Model):
     # ₱15 transportation fee is counted only when this is checked.
     # Uncheck this for days when employee is on delivery/out of office.
     transportation_fee_applicable = models.BooleanField(default=True)
+    remarks = models.TextField(blank=True, null=True)
 
     class Meta:
         unique_together = ('employee', 'date')
