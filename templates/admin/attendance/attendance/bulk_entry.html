@@ -6,7 +6,77 @@
     <form method="post" style="padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 8px;">
         {% csrf_token %}
 
-        {{ form.as_p }}
+        {{ form.non_field_errors }}
+
+        <p>
+            {{ form.date.label_tag }}
+            {{ form.date }}
+            {{ form.date.errors }}
+        </p>
+
+        <p>
+            {{ form.status.label_tag }}
+            {{ form.status }}
+            {{ form.status.errors }}
+        </p>
+
+        <p>
+            {{ form.time_in.label_tag }}
+            {{ form.time_in }}
+            {{ form.time_in.errors }}
+        </p>
+
+        <p>
+            {{ form.time_out.label_tag }}
+            {{ form.time_out }}
+            {{ form.time_out.errors }}
+        </p>
+
+        <p>
+            {{ form.overtime_applicable.label_tag }}
+            {{ form.overtime_applicable }}
+            {{ form.overtime_applicable.errors }}
+        </p>
+
+        <p>
+            {{ form.transportation_fee_applicable.label_tag }}
+            {{ form.transportation_fee_applicable }}
+            {{ form.transportation_fee_applicable.errors }}
+        </p>
+
+        <p>
+            {{ form.work_type.label_tag }}
+            {{ form.work_type }}
+            {{ form.work_type.errors }}
+        </p>
+
+        <p>
+            {{ form.work_location.label_tag }}
+            {{ form.work_location }}
+            {{ form.work_location.errors }}
+        </p>
+
+        <p>
+            {{ form.remarks.label_tag }}
+            {{ form.remarks }}
+            {{ form.remarks.errors }}
+        </p>
+
+        <hr>
+
+        <h3>Employees</h3>
+
+        <div style="margin-bottom: 10px;">
+            <button type="button" class="button" onclick="selectAllEmployees()">Select All Employees</button>
+            <button type="button" class="button" onclick="unselectAllEmployees()">Unselect All Employees</button>
+        </div>
+
+        <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 6px;">
+            {{ form.employees }}
+            {{ form.employees.errors }}
+        </div>
+
+        <br>
 
         <button type="submit" class="button" style="padding:8px 12px;">
             Save Attendance
@@ -16,4 +86,20 @@
             Back to Attendance
         </a>
     </form>
+
+    <script>
+        function selectAllEmployees() {
+            const checkboxes = document.querySelectorAll('input[name="employees"]');
+            checkboxes.forEach(function(checkbox) {
+                checkbox.checked = true;
+            });
+        }
+
+        function unselectAllEmployees() {
+            const checkboxes = document.querySelectorAll('input[name="employees"]');
+            checkboxes.forEach(function(checkbox) {
+                checkbox.checked = false;
+            });
+        }
+    </script>
 {% endblock %}
