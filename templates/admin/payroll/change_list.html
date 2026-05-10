@@ -1,13 +1,43 @@
 {% extends "admin/change_list.html" %}
 
 {% block content %}
-    <div style="margin-bottom: 15px;">
+
+    <div style="
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        align-items: center;
+    ">
+
         <a href="{% url 'admin:payroll-weekly-summary' %}"
            class="button"
-           style="padding:8px 12px; background:#417690; color:white; border-radius:4px; text-decoration:none;">
+           style="
+                padding: 9px 14px;
+                background: #417690;
+                color: white;
+                border-radius: 5px;
+                text-decoration: none;
+                font-weight: 600;
+           ">
             View Weekly Payroll Summary
         </a>
+
+        <a href="{% url 'admin:payroll-payroll-print-all' %}"
+           target="_blank"
+           class="button"
+           style="
+                padding: 9px 14px;
+                background: #28a745;
+                color: white;
+                border-radius: 5px;
+                text-decoration: none;
+                font-weight: 600;
+           ">
+            Print Payroll
+        </a>
+
     </div>
 
     {{ block.super }}
+
 {% endblock %}

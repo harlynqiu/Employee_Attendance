@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'employees',
     'attendance',
     'payroll',
+    'django.contrib.humanize',
 
 ]
 

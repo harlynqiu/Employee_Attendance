@@ -1,74 +1,241 @@
 {% extends "admin/base_site.html" %}
+{% load humanize %}
 
 {% block content %}
-    <h1>Payroll Summary Preview</h1>
 
-    <form method="get"
-          style="margin-bottom: 20px;
-                 padding: 15px;
-                 background: #f8f9fa;
-                 border: 1px solid #ddd;
-                 border-radius: 8px;">
+<style>
+    .payroll-page {
+        padding: 10px 0;
+    }
 
-        <label for="start_date">
-            <strong>Start Date:</strong>
-        </label>
+    .payroll-title {
+        margin-bottom: 20px;
+        font-size: 26px;
+        font-weight: 600;
+    }
 
-        <input type="date"
-               id="start_date"
-               name="start_date"
-               value="{{ start_date|date:'Y-m-d' }}">
+    .payroll-card {
+        background: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 18px;
+    }
 
-        <label for="end_date" style="margin-left: 15px;">
-            <strong>End Date:</strong>
-        </label>
+    .filter-form {
+        display: flex;
+        align-items: end;
+        gap: 15px;
+        flex-wrap: wrap;
+        background: #f8f9fa;
+    }
 
-        <input type="date"
-               id="end_date"
-               name="end_date"
-               value="{{ end_date|date:'Y-m-d' }}">
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
 
-        <button type="submit" class="button">
+    .filter-group label {
+        font-weight: bold;
+    }
+
+    .filter-group input {
+        padding: 7px 9px;
+        border: 1px solid #bbb;
+        border-radius: 5px;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+
+    .payroll-btn {
+        display: inline-block;
+        padding: 10px 14px;
+        border-radius: 6px;
+        color: white !important;
+        text-decoration: none;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-blue {
+        background: #417690;
+    }
+
+    .btn-green {
+        background: #28a745;
+    }
+
+    .btn-primary {
+        background: #007bff;
+    }
+
+    .btn-gray {
+        background: #6c757d;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(180px, 1fr));
+        gap: 12px;
+    }
+
+    .summary-box {
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 14px;
+    }
+
+    .summary-label {
+        color: #555;
+        font-size: 12px;
+        margin-bottom: 6px;
+    }
+
+    .summary-value {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .note-box {
+        padding: 14px;
+        background: #fff3cd;
+        border: 1px solid #ffeeba;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+
+    .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+
+    table.payroll-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        min-width: 1500px;
+    }
+
+    .payroll-table th {
+        background: #417690;
+        color: white;
+        padding: 10px 8px;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .payroll-table td {
+        border-bottom: 1px solid #e5e5e5;
+        padding: 9px 8px;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .payroll-table tr:nth-child(even) {
+        background: #f8f9fa;
+    }
+
+    .payroll-table .name-cell {
+        text-align: left;
+        font-weight: bold;
+    }
+
+    .salary-cell {
+        font-weight: bold;
+        color: #155724;
+    }
+
+    @media print {
+        .filter-form,
+        .button-row,
+        .note-box {
+            display: none;
+        }
+
+        .payroll-card {
+            border: none;
+            padding: 0;
+        }
+
+        .table-wrap {
+            overflow: visible;
+            border: none;
+        }
+
+        table.payroll-table {
+            font-size: 10px;
+            min-width: unset;
+        }
+    }
+</style>
+
+<div class="payroll-page">
+
+    <h1 class="payroll-title">
+        Payroll Summary Preview
+    </h1>
+
+    <form method="get" class="payroll-card filter-form">
+
+        <div class="filter-group">
+            <label for="start_date">Start Date</label>
+            <input type="date"
+                   id="start_date"
+                   name="start_date"
+                   value="{{ start_date|date:'Y-m-d' }}">
+        </div>
+
+        <div class="filter-group">
+            <label for="end_date">End Date</label>
+            <input type="date"
+                   id="end_date"
+                   name="end_date"
+                   value="{{ end_date|date:'Y-m-d' }}">
+        </div>
+
+        <button type="submit" class="payroll-btn btn-blue">
             Filter
         </button>
+
     </form>
 
-    <div style="margin-bottom: 15px; display:flex; gap:10px;">
+    <div class="button-row">
 
         <a href="{% url 'admin:payroll-weekly-summary-export' %}?{{ request.GET.urlencode }}"
-           class="button"
-           style="padding:8px 12px;
-                  background:#28a745;
-                  color:white;
-                  border-radius:4px;
-                  text-decoration:none;">
-
-            Export to Excel (CSV)
+           class="payroll-btn btn-green">
+            Export CSV
         </a>
 
         <a href="{% url 'admin:payroll-weekly-summary-save' %}?{{ request.GET.urlencode }}"
-           class="button"
-           style="padding:8px 12px;
-                  background:#007bff;
-                  color:white;
-                  border-radius:4px;
-                  text-decoration:none;
-                  font-weight:bold;">
-
+           class="payroll-btn btn-primary">
             Save Payroll for This Period
+        </a>
+
+        <a href="{% url 'admin:payroll-payroll-print-all' %}"
+           target="_blank"
+           class="payroll-btn btn-gray">
+            Print Payroll
         </a>
 
     </div>
 
-    <div style="margin-bottom: 20px;
-                padding: 15px;
-                background: #fff;
-                border: 1px solid #ddd;
-                border-radius: 8px;">
+    <div class="payroll-card">
 
-        <h3 style="margin-top: 0;">
+        <h2 style="margin-top:0;">
             Selected Payroll Period
-        </h3>
+        </h2>
 
         <p>
             <strong>Start Date:</strong>
@@ -82,205 +249,176 @@
 
     </div>
 
-    <div style="margin-bottom: 20px;
-                padding: 15px;
-                background: #fff;
-                border: 1px solid #ddd;
-                border-radius: 8px;">
+    <div class="payroll-card">
 
-        <h3 style="margin-top: 0;">
+        <h2 style="margin-top:0;">
             Grand Totals Preview
-        </h3>
+        </h2>
 
-        <p>
-            <strong>Total Days Present:</strong>
-            {{ totals.days_present }}
-        </p>
+        <div class="summary-grid">
 
-        <p>
-            <strong>Total Payable Hours:</strong>
-            {{ totals.total_payable_hours|floatformat:2 }}
-        </p>
+            <div class="summary-box">
+                <div class="summary-label">Total Days Present</div>
+                <div class="summary-value">{{ totals.days_present|default:"0" }}</div>
+            </div>
 
-        <p>
-            <strong>Total Late Minutes:</strong>
-            {{ totals.total_late_minutes }}
-        </p>
+            <div class="summary-box">
+                <div class="summary-label">Total Payable Hours</div>
+                <div class="summary-value">{{ totals.total_payable_hours|default:"0"|floatformat:2 }}</div>
+            </div>
 
-        <p>
-            <strong>Total Undertime Minutes:</strong>
-            {{ totals.total_undertime_minutes }}
-        </p>
+            <div class="summary-box">
+                <div class="summary-label">Late Minutes</div>
+                <div class="summary-value">{{ totals.total_late_minutes|default:"0" }}</div>
+            </div>
 
-        <p>
-            <strong>Total Overtime Minutes:</strong>
-            {{ totals.total_overtime_minutes }}
-        </p>
+            <div class="summary-box">
+                <div class="summary-label">Undertime Minutes</div>
+                <div class="summary-value">{{ totals.total_undertime_minutes|default:"0" }}</div>
+            </div>
 
-        <p>
-            <strong>Total Base Salary:</strong>
-            {{ totals.grand_base_salary|floatformat:2 }}
-        </p>
+            <div class="summary-box">
+                <div class="summary-label">Overtime Minutes</div>
+                <div class="summary-value">{{ totals.total_overtime_minutes|default:"0" }}</div>
+            </div>
 
-        <p>
-            <strong>Total Overtime Pay:</strong>
-            {{ totals.grand_overtime_pay|floatformat:2 }}
-        </p>
+            <div class="summary-box">
+                <div class="summary-label">Base Salary</div>
+                <div class="summary-value">₱{{ totals.grand_base_salary|default:"0"|floatformat:2|intcomma }}</div>
+            </div>
 
-        <p>
-            <strong>Total Benefits/Deductions:</strong>
-            {{ totals.grand_benefits|floatformat:2 }}
-        </p>
+            <div class="summary-box">
+                <div class="summary-label">Overtime Pay</div>
+                <div class="summary-value">₱{{ totals.grand_overtime_pay|default:"0"|floatformat:2|intcomma }}</div>
+            </div>
 
-        <p>
-            <strong>Total Deliver Allowance:</strong>
-            {{ totals.grand_deliver_allowance|floatformat:2 }}
-        </p>
+            <div class="summary-box">
+                <div class="summary-label">Benefits/Deductions</div>
+                <div class="summary-value">₱{{ totals.grand_benefits|default:"0"|floatformat:2|intcomma }}</div>
+            </div>
 
-        <p>
-            <strong>Total Transportation Fee:</strong>
-            {{ totals.grand_transportation_fee|floatformat:2 }}
-        </p>
+            <div class="summary-box">
+                <div class="summary-label">Deliver Allowance</div>
+                <div class="summary-value">₱{{ totals.grand_deliver_allowance|default:"0"|floatformat:2|intcomma }}</div>
+            </div>
 
-        <p>
-            <strong>Estimated Grand Salary:</strong>
-            {{ totals.grand_total_salary|floatformat:2 }}
-        </p>
+            <div class="summary-box">
+                <div class="summary-label">Transportation Fee</div>
+                <div class="summary-value">₱{{ totals.grand_transportation_fee|default:"0"|floatformat:2|intcomma }}</div>
+            </div>
+
+            <div class="summary-box">
+                <div class="summary-label">Estimated Grand Salary</div>
+                <div class="summary-value">₱{{ totals.grand_total_salary|default:"0"|floatformat:2|intcomma }}</div>
+            </div>
+
+        </div>
 
     </div>
 
-    <p style="padding: 12px;
-              background: #fff3cd;
-              border: 1px solid #ffeeba;
-              border-radius: 6px;">
-
+    <div class="note-box">
         <strong>Note:</strong>
-
         This page is only a payroll preview based on attendance.
-
-        After clicking
-        <strong>Save Payroll for This Period</strong>,
+        After clicking <strong>Save Payroll for This Period</strong>,
         payroll records will automatically be created for all employees shown below.
+        You may then edit Cash Advance, Charges, Rent, Manual Allowance,
+        and Remarks inside each Payroll record.
+    </div>
 
-        You may then edit:
-        Cash Advance,
-        Charges,
-        Rent,
-        Manual Allowance,
-        and Remarks
-        inside each Payroll record.
-    </p>
+    <h2>
+        Payroll Preview Table
+    </h2>
 
-    <h2>Payroll Preview Table</h2>
+    <div class="table-wrap">
 
-    <table class="adminlist">
-        <thead>
-            <tr>
-                <th>Employee ID</th>
-                <th>Name</th>
-                <th>Position</th>
-                <th>Days Present</th>
-                <th>Total Payable Hours</th>
-                <th>Late Minutes</th>
-                <th>Undertime Minutes</th>
-                <th>Overtime Minutes</th>
-                <th>Overtime Pay</th>
-                <th>Daily Rate</th>
-                <th>Hourly Rate</th>
-                <th>Base Salary</th>
-                <th>Benefits/Deductions</th>
-                <th>Deliver Days</th>
-                <th>Deliver Allowance</th>
-                <th>Transportation Days</th>
-                <th>Transportation Fee</th>
-                <th>Estimated Salary</th>
-            </tr>
-        </thead>
+        <table class="payroll-table">
 
-        <tbody>
-            {% for row in payroll_data %}
+            <thead>
                 <tr>
-                    <td>{{ row.employee__employee_id }}</td>
-
-                    <td>
-                        {{ row.employee__first_name }}
-                        {{ row.employee__last_name }}
-                    </td>
-
-                    <td>
-                        {{ row.employee__position }}
-                    </td>
-
-                    <td>
-                        {{ row.days_present|default:"0" }}
-                    </td>
-
-                    <td>
-                        {{ row.total_payable_hours|default:"0"|floatformat:2 }}
-                    </td>
-
-                    <td>
-                        {{ row.total_late_minutes|default:"0" }}
-                    </td>
-
-                    <td>
-                        {{ row.total_undertime_minutes|default:"0" }}
-                    </td>
-
-                    <td>
-                        {{ row.overtime_minutes|default:"0" }}
-                    </td>
-
-                    <td>
-                        {{ row.overtime_pay|default:"0"|floatformat:2 }}
-                    </td>
-
-                    <td>
-                        {{ row.daily_rate|default:"0"|floatformat:2 }}
-                    </td>
-
-                    <td>
-                        {{ row.hourly_rate|default:"0"|floatformat:2 }}
-                    </td>
-
-                    <td>
-                        {{ row.base_salary|default:"0"|floatformat:2 }}
-                    </td>
-
-                    <td>
-                        {{ row.benefits|default:"0"|floatformat:2 }}
-                    </td>
-
-                    <td>
-                        {{ row.deliver_days|default:"0" }}
-                    </td>
-
-                    <td>
-                        {{ row.deliver_allowance|default:"0"|floatformat:2 }}
-                    </td>
-
-                    <td>
-                        {{ row.transportation_days|default:"0" }}
-                    </td>
-
-                    <td>
-                        {{ row.transportation_fee|default:"0"|floatformat:2 }}
-                    </td>
-
-                    <td>
-                        <strong>
-                            {{ row.total_salary|default:"0"|floatformat:2 }}
-                        </strong>
-                    </td>
+                    <th>Employee ID</th>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Days Present</th>
+                    <th>Payable Hours</th>
+                    <th>Late</th>
+                    <th>Undertime</th>
+                    <th>OT Minutes</th>
+                    <th>OT Pay</th>
+                    <th>Daily Rate</th>
+                    <th>Hourly Rate</th>
+                    <th>Base Salary</th>
+                    <th>Benefits</th>
+                    <th>Deliver Days</th>
+                    <th>Deliver Allowance</th>
+                    <th>Transportation Days</th>
+                    <th>Transportation Fee</th>
+                    <th>Estimated Salary</th>
                 </tr>
+            </thead>
 
-            {% empty %}
-                <tr>
-                    <td colspan="18">
-                        No payroll data found.
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            <tbody>
+
+                {% for row in payroll_data %}
+
+                    <tr>
+                        <td>{{ row.employee__employee_id }}</td>
+
+                        <td class="name-cell">
+                            {{ row.employee__last_name }},
+                            {{ row.employee__first_name }}
+                        </td>
+
+                        <td>{{ row.employee__position }}</td>
+
+                        <td>{{ row.days_present|default:"0" }}</td>
+
+                        <td>{{ row.total_payable_hours|default:"0"|floatformat:2 }}</td>
+
+                        <td>{{ row.total_late_minutes|default:"0" }}</td>
+
+                        <td>{{ row.total_undertime_minutes|default:"0" }}</td>
+
+                        <td>{{ row.overtime_minutes|default:"0" }}</td>
+
+                        <td>₱{{ row.overtime_pay|default:"0"|floatformat:2|intcomma }}</td>
+
+                        <td>₱{{ row.daily_rate|default:"0"|floatformat:2|intcomma }}</td>
+
+                        <td>₱{{ row.hourly_rate|default:"0"|floatformat:2|intcomma }}</td>
+
+                        <td>₱{{ row.base_salary|default:"0"|floatformat:2|intcomma }}</td>
+
+                        <td>₱{{ row.benefits|default:"0"|floatformat:2|intcomma }}</td>
+
+                        <td>{{ row.deliver_days|default:"0" }}</td>
+
+                        <td>₱{{ row.deliver_allowance|default:"0"|floatformat:2|intcomma }}</td>
+
+                        <td>{{ row.transportation_days|default:"0" }}</td>
+
+                        <td>₱{{ row.transportation_fee|default:"0"|floatformat:2|intcomma }}</td>
+
+                        <td class="salary-cell">
+                            ₱{{ row.total_salary|default:"0"|floatformat:2|intcomma }}
+                        </td>
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+                        <td colspan="18">
+                            No payroll data found.
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
 {% endblock %}

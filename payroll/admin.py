@@ -1,5 +1,5 @@
 from datetime import timedelta, datetime
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 import csv
 
 from django.contrib import admin, messages
@@ -19,6 +19,20 @@ from .models import Payroll, PayrollAdjustment
 TRANSPORTATION_FEE_PER_DAY = Decimal('15.00')
 DRIVER_DELIVER_ALLOWANCE = Decimal('200.00')
 HELPER_DELIVER_ALLOWANCE = Decimal('150.00')
+
+
+def money(value):
+    return Decimal(value or 0).quantize(
+        Decimal('0.01'),
+        rounding=ROUND_HALF_UP
+    )
+
+
+def whole_number(value):
+    return Decimal(value or 0).quantize(
+        Decimal('1'),
+        rounding=ROUND_HALF_UP
+    )
 
 
 @admin.register(PayrollAdjustment)
@@ -55,12 +69,16 @@ class PayrollAdjustmentAdmin(admin.ModelAdmin):
 @admin.register(Payroll)
 class PayrollAdmin(admin.ModelAdmin):
 
+    change_list_template = 'admin/payroll/change_list.html'
+
     list_display = (
         'employee_id_display',
         'employee_link',
         'start_date',
         'end_date',
         'total_payable_hours',
+        'total_late_minutes',
+        'total_undertime_minutes',
         'base_salary',
         'overtime_pay',
         'transportation_fee',
@@ -88,11 +106,12 @@ class PayrollAdmin(admin.ModelAdmin):
 
     ordering = (
         'employee__employee_id',
-        '-start_date',
     )
 
     readonly_fields = (
         'total_payable_hours',
+        'total_late_minutes',
+        'total_undertime_minutes',
         'base_salary',
         'overtime_pay',
         'transportation_fee',
@@ -106,20 +125,19 @@ class PayrollAdmin(admin.ModelAdmin):
         'employee',
         'start_date',
         'end_date',
-
         'total_payable_hours',
+        'total_late_minutes',
+        'total_undertime_minutes',
         'base_salary',
         'overtime_pay',
         'transportation_fee',
         'delivery_allowance',
         'benefits',
-
         'allowance',
         'cash_advance',
         'charges',
         'rent',
         'remarks',
-
         'total_salary',
         'created_at',
     )
@@ -137,35 +155,63 @@ class PayrollAdmin(admin.ModelAdmin):
         )
 
         return format_html(
-            '<a href="{}">{}</a>',
+            '<a href="{}">{}, {}</a>',
             url,
-            obj.employee.full_name
+            obj.employee.last_name,
+            obj.employee.first_name
         )
 
     employee_link.short_description = 'Employee Name'
     employee_link.admin_order_field = 'employee__last_name'
 
-    def weekly_summary_link(self, request):
-        url = reverse('admin:payroll-weekly-summary')
-
-        return format_html(
-            '<a class="button" href="{}" '
-            'style="padding:8px 12px; background:#417690; '
-            'color:white; border-radius:4px;">'
-            'View Weekly Payroll Summary</a>',
-            url
-        )
-
     def changelist_view(self, request, extra_context=None):
+        weekly_url = reverse('admin:payroll-weekly-summary')
+        print_url = reverse('admin:payroll-payroll-print-all')
+
         extra_context = extra_context or {}
 
-        extra_context['weekly_summary_link'] = (
-            self.weekly_summary_link(request)
+        extra_context['custom_buttons'] = format_html(
+            '''
+            <div style="
+                display:flex;
+                gap:10px;
+                margin-bottom:15px;
+            ">
+                <a class="button"
+                   href="{}"
+                   style="
+                        background:#417690;
+                        color:white;
+                        padding:10px 16px;
+                        border-radius:6px;
+                        text-decoration:none;
+                        font-weight:600;
+                   ">
+                   View Weekly Payroll Summary
+                </a>
+
+                <a class="button"
+                   href="{}"
+                   target="_blank"
+                   style="
+                        background:#28a745;
+                        color:white;
+                        padding:10px 16px;
+                        border-radius:6px;
+                        text-decoration:none;
+                        font-weight:600;
+                   ">
+                   Print Payroll
+                </a>
+            </div>
+            ''',
+            weekly_url,
+            print_url
         )
 
         return super().changelist_view(
             request,
-            extra_context
+            extra_context=extra_context
         )
 
     def get_urls(self):
@@ -174,26 +220,28 @@ class PayrollAdmin(admin.ModelAdmin):
         custom_urls = [
             path(
                 'weekly-summary/',
-                self.admin_site.admin_view(
-                    self.weekly_summary_view
-                ),
+                self.admin_site.admin_view(self.weekly_summary_view),
                 name='payroll-weekly-summary',
             ),
-
             path(
                 'weekly-summary/export/',
-                self.admin_site.admin_view(
-                    self.export_weekly_payroll_csv
-                ),
+                self.admin_site.admin_view(self.export_weekly_payroll_csv),
                 name='payroll-weekly-summary-export',
             ),
-
             path(
                 'weekly-summary/save/',
-                self.admin_site.admin_view(
-                    self.save_payroll_period
-                ),
+                self.admin_site.admin_view(self.save_payroll_period),
                 name='payroll-weekly-summary-save',
+            ),
+            path(
+                'print/',
+                self.admin_site.admin_view(self.print_all_payroll_view),
+                name='payroll-payroll-print-all',
+            ),
+            path(
+                '<int:payroll_id>/print/',
+                self.admin_site.admin_view(self.print_payroll_view),
+                name='payroll-payroll-print',
             ),
         ]
 
@@ -213,14 +261,9 @@ class PayrollAdmin(admin.ModelAdmin):
                 end_date,
                 '%Y-%m-%d'
             ).date()
-
         else:
             today = timezone.localdate()
-
-            start_date = (
-                today - timedelta(days=today.weekday())
-            )
-
+            start_date = today - timedelta(days=today.weekday())
             end_date = start_date + timedelta(days=5)
 
         return start_date, end_date
@@ -233,19 +276,15 @@ class PayrollAdmin(admin.ModelAdmin):
             if not record.delivery_allowance_applicable:
                 continue
 
-            position = (
-                record.employee.position.lower().strip()
-            )
-
+            position = record.employee.position.lower().strip()
             deliver_days += 1
 
             if position == 'driver':
                 total += DRIVER_DELIVER_ALLOWANCE
-
             elif position == 'helper':
                 total += HELPER_DELIVER_ALLOWANCE
 
-        return deliver_days, total
+        return deliver_days, money(total)
 
     def get_overtime_pay(self, attendance_records, daily_rate):
         overtime_minutes = 0
@@ -259,15 +298,10 @@ class PayrollAdmin(admin.ModelAdmin):
 
         for record in attendance_records:
             minutes = record.overtime_minutes or 0
-
             overtime_minutes += minutes
+            overtime_pay += overtime_rate_per_minute * Decimal(minutes)
 
-            overtime_pay += (
-                overtime_rate_per_minute
-                * Decimal(minutes)
-            )
-
-        return overtime_minutes, overtime_pay
+        return overtime_minutes, whole_number(overtime_pay)
 
     def build_weekly_payroll_data(self, start_date, end_date):
         attendance = Attendance.objects.select_related(
@@ -291,14 +325,12 @@ class PayrollAdmin(admin.ModelAdmin):
                 days_present=Count('id'),
                 total_payable_hours=Sum('payable_hours'),
                 total_late_minutes=Sum('late_minutes'),
-                total_undertime_minutes=Sum(
-                    'undertime_minutes'
-                ),
-                total_overtime_minutes=Sum(
-                    'overtime_minutes'
-                ),
+                total_undertime_minutes=Sum('undertime_minutes'),
+                total_overtime_minutes=Sum('overtime_minutes'),
             )
-            .order_by('employee__employee_id')
+            .order_by(
+                'employee__employee_id'
+            )
         )
 
         totals = {
@@ -316,26 +348,12 @@ class PayrollAdmin(admin.ModelAdmin):
         }
 
         for row in payroll_data:
-            hours = (
-                row['total_payable_hours']
-                or Decimal('0.00')
-            )
+            hours = row['total_payable_hours'] or Decimal('0.00')
+            daily_rate = row['employee__rate'] or Decimal('0.00')
+            benefits = row['employee__benefits'] or Decimal('0.00')
 
-            daily_rate = (
-                row['employee__rate']
-                or Decimal('0.00')
-            )
-
-            benefits = (
-                row['employee__benefits']
-                or Decimal('0.00')
-            )
-
-            hourly_rate = (
-                daily_rate / Decimal('8.00')
-            )
-
-            base_salary = hours * hourly_rate
+            hourly_rate = daily_rate / Decimal('8.00')
+            base_salary = money(hours * hourly_rate)
 
             employee_attendance_records = (
                 Attendance.objects
@@ -347,17 +365,13 @@ class PayrollAdmin(admin.ModelAdmin):
                 )
             )
 
-            overtime_minutes, overtime_pay = (
-                self.get_overtime_pay(
-                    employee_attendance_records,
-                    daily_rate
-                )
+            overtime_minutes, overtime_pay = self.get_overtime_pay(
+                employee_attendance_records,
+                daily_rate
             )
 
-            deliver_days, deliver_allowance = (
-                self.get_deliver_allowance(
-                    employee_attendance_records
-                )
+            deliver_days, deliver_allowance = self.get_deliver_allowance(
+                employee_attendance_records
             )
 
             transportation_days = (
@@ -368,12 +382,12 @@ class PayrollAdmin(admin.ModelAdmin):
                 .count()
             )
 
-            transportation_fee = (
+            transportation_fee = money(
                 Decimal(transportation_days)
                 * TRANSPORTATION_FEE_PER_DAY
             )
 
-            final_salary = (
+            final_salary = money(
                 base_salary
                 + overtime_pay
                 + deliver_allowance
@@ -382,12 +396,12 @@ class PayrollAdmin(admin.ModelAdmin):
             )
 
             row.update({
-                'daily_rate': daily_rate,
-                'hourly_rate': hourly_rate,
+                'daily_rate': money(daily_rate),
+                'hourly_rate': money(hourly_rate),
                 'base_salary': base_salary,
                 'overtime_minutes': overtime_minutes,
                 'overtime_pay': overtime_pay,
-                'benefits': benefits,
+                'benefits': money(benefits),
                 'deliver_days': deliver_days,
                 'deliver_allowance': deliver_allowance,
                 'transportation_days': transportation_days,
@@ -395,65 +409,26 @@ class PayrollAdmin(admin.ModelAdmin):
                 'total_salary': final_salary,
             })
 
+            totals['days_present'] += row['days_present'] or 0
+            totals['total_payable_hours'] += hours
+            totals['total_late_minutes'] += row['total_late_minutes'] or 0
+            totals['total_undertime_minutes'] += row['total_undertime_minutes'] or 0
+            totals['total_overtime_minutes'] += overtime_minutes
+            totals['grand_base_salary'] += base_salary
+            totals['grand_overtime_pay'] += overtime_pay
+            totals['grand_benefits'] += money(benefits)
+            totals['grand_deliver_allowance'] += deliver_allowance
+            totals['grand_transportation_fee'] += transportation_fee
+            totals['grand_total_salary'] += final_salary
+
         return payroll_data, totals
 
-    def save_payroll_period(self, request):
-        start_date, end_date = (
-            self.get_payroll_range(request)
-        )
-
-        payroll_data, totals = (
-            self.build_weekly_payroll_data(
-                start_date,
-                end_date
-            )
-        )
-
-        created_count = 0
-        updated_count = 0
-
-        for row in payroll_data:
-            employee = Employee.objects.get(
-                id=row['employee__id']
-            )
-
-            payroll, created = (
-                Payroll.objects.get_or_create(
-                    employee=employee,
-                    start_date=start_date,
-                    end_date=end_date,
-                )
-            )
-
-            payroll.save()
-
-            if created:
-                created_count += 1
-            else:
-                updated_count += 1
-
-        messages.success(
-            request,
-            f'Payroll saved for '
-            f'{start_date} to {end_date}. '
-            f'Created: {created_count}, '
-            f'Updated: {updated_count}.'
-        )
-
-        return redirect(
-            f"{reverse('admin:payroll_payroll_changelist')}"
-        )
-
     def weekly_summary_view(self, request):
-        start_date, end_date = (
-            self.get_payroll_range(request)
-        )
+        start_date, end_date = self.get_payroll_range(request)
 
-        payroll_data, totals = (
-            self.build_weekly_payroll_data(
-                start_date,
-                end_date
-            )
+        payroll_data, totals = self.build_weekly_payroll_data(
+            start_date,
+            end_date
         )
 
         context = dict(
@@ -471,25 +446,99 @@ class PayrollAdmin(admin.ModelAdmin):
             context
         )
 
-    def export_weekly_payroll_csv(self, request):
-        start_date, end_date = (
-            self.get_payroll_range(request)
+    def save_payroll_period(self, request):
+        start_date, end_date = self.get_payroll_range(request)
+
+        payroll_data, totals = self.build_weekly_payroll_data(
+            start_date,
+            end_date
         )
 
-        payroll_data, totals = (
-            self.build_weekly_payroll_data(
-                start_date,
-                end_date
+        created_count = 0
+        updated_count = 0
+
+        for row in payroll_data:
+            employee = Employee.objects.get(
+                id=row['employee__id']
             )
+
+            payroll, created = Payroll.objects.get_or_create(
+                employee=employee,
+                start_date=start_date,
+                end_date=end_date,
+            )
+
+            payroll.save()
+
+            if created:
+                created_count += 1
+            else:
+                updated_count += 1
+
+        messages.success(
+            request,
+            f'Payroll saved for {start_date} to {end_date}. '
+            f'Created: {created_count}, Updated: {updated_count}.'
+        )
+
+        return redirect(
+            reverse('admin:payroll_payroll_changelist')
+        )
+
+    def print_all_payroll_view(self, request):
+        payrolls = Payroll.objects.select_related(
+            'employee'
+        ).order_by(
+            'employee__employee_id'
+        )
+
+        context = dict(
+            self.admin_site.each_context(request),
+            payrolls=payrolls,
+            title='Print Payroll',
+        )
+
+        return TemplateResponse(
+            request,
+            'admin/payroll/payroll_print.html',
+            context
+        )
+
+    def print_payroll_view(self, request, payroll_id):
+        payroll = Payroll.objects.select_related(
+            'employee'
+        ).get(
+            id=payroll_id
+        )
+
+        context = dict(
+            self.admin_site.each_context(request),
+            payroll=payroll,
+            payrolls=[payroll],
+            title='Print Payroll',
+        )
+
+        return TemplateResponse(
+            request,
+            'admin/payroll/payroll_print.html',
+            context
+        )
+
+    def export_weekly_payroll_csv(self, request):
+        start_date, end_date = self.get_payroll_range(request)
+
+        payroll_data, totals = self.build_weekly_payroll_data(
+            start_date,
+            end_date
         )
 
         response = HttpResponse(
             content_type='text/csv'
         )
 
-        response[
-            'Content-Disposition'
-        ] = 'attachment; filename="payroll_summary.csv"'
+        response['Content-Disposition'] = (
+            'attachment; filename="payroll_summary.csv"'
+        )
 
         writer = csv.writer(response)
 
@@ -498,3 +547,49 @@ class PayrollAdmin(admin.ModelAdmin):
         ])
 
         writer.writerow([])
+
+        writer.writerow([
+            'Employee ID',
+            'Name',
+            'Position',
+            'Days Present',
+            'Total Payable Hours',
+            'Late Minutes',
+            'Undertime Minutes',
+            'Overtime Minutes',
+            'Overtime Pay',
+            'Daily Rate',
+            'Hourly Rate',
+            'Base Salary',
+            'Benefits',
+            'Deliver Days',
+            'Deliver Allowance',
+            'Transportation Days',
+            'Transportation Fee',
+            'Final Salary',
+        ])
+
+        for row in payroll_data:
+            writer.writerow([
+                row['employee__employee_id'],
+                f"{row['employee__last_name']}, "
+                f"{row['employee__first_name']}",
+                row['employee__position'],
+                row['days_present'] or 0,
+                row['total_payable_hours'] or 0,
+                row['total_late_minutes'] or 0,
+                row['total_undertime_minutes'] or 0,
+                row['overtime_minutes'] or 0,
+                row['overtime_pay'],
+                row['daily_rate'],
+                row['hourly_rate'],
+                row['base_salary'],
+                row['benefits'],
+                row['deliver_days'],
+                row['deliver_allowance'],
+                row['transportation_days'],
+                row['transportation_fee'],
+                row['total_salary'],
+            ])
+
+        return response

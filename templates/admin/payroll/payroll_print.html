@@ -1,0 +1,247 @@
+{% load humanize %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Payroll Print</title>
+
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 8mm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            color: #000;
+            margin: 0;
+        }
+
+        .print-btn {
+            margin: 10px 0;
+        }
+
+        .print-btn button {
+            padding: 8px 14px;
+            border: none;
+            background: #28a745;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .header p {
+            margin: 3px 0;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 5px 4px;
+            text-align: center;
+            vertical-align: middle;
+            word-wrap: break-word;
+        }
+
+        th {
+            background: #e9ecef;
+            font-weight: bold;
+            font-size: 9px;
+        }
+
+        td {
+            height: 32px;
+            font-size: 10px;
+        }
+
+        .col-no {
+            width: 30px;
+        }
+
+        .col-id {
+            width: 70px;
+        }
+
+        .col-name {
+            width: 170px;
+        }
+
+        .name {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .total {
+            font-weight: bold;
+        }
+
+        .signature {
+            width: 100px;
+            height: 38px;
+        }
+
+        @media print {
+
+            .print-btn {
+                display: none;
+            }
+
+            body {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="print-btn">
+        <button onclick="window.print()">
+            Print Payroll
+        </button>
+    </div>
+
+    <div class="header">
+        <h2>HCQ MARKETING</h2>
+        <p>Payroll Summary</p>
+
+        {% if start_date and end_date %}
+            <p>
+                Payroll Period:
+                {{ start_date }} to {{ end_date }}
+            </p>
+        {% endif %}
+    </div>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th class="col-no">No.</th>
+                <th class="col-id">Employee ID</th>
+                <th class="col-name">Employee Name</th>
+                <th>Daily Rate</th>
+                <th>Payable Hours</th>
+                <th>Base Salary</th>
+                <th>OT Pay</th>
+                <th>Transportation</th>
+                <th>Delivery Allowance</th>
+                <th>Benefits</th>
+                <th>Allowance</th>
+                <th>Cash Advance</th>
+                <th>Charges</th>
+                <th>Rent</th>
+                <th>Total Salary</th>
+                <th>Signature</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for payroll in payrolls %}
+
+            <tr>
+
+                <td>
+                    {{ forloop.counter }}
+                </td>
+
+                <td>
+                    {{ payroll.employee.employee_id }}
+                </td>
+
+                <td class="name">
+                    {{ payroll.employee.last_name }},
+                    {{ payroll.employee.first_name }}
+                </td>
+
+                <td>
+                    ₱{{ payroll.employee.rate|floatformat:2|intcomma }}
+                </td>
+
+                <td>
+                    {{ payroll.total_payable_hours|floatformat:2 }}
+                </td>
+
+                <td>
+                    ₱{{ payroll.base_salary|floatformat:2|intcomma }}
+                </td>
+
+                <td>
+                    ₱{{ payroll.overtime_pay|floatformat:2|intcomma }}
+                </td>
+
+                <td>
+                    ₱{{ payroll.transportation_fee|floatformat:2|intcomma }}
+                </td>
+
+                <td>
+                    ₱{{ payroll.delivery_allowance|floatformat:2|intcomma }}
+                </td>
+
+                <td>
+                    ₱{{ payroll.benefits|floatformat:2|intcomma }}
+                </td>
+
+                <td>
+                    ₱{{ payroll.allowance|floatformat:2|intcomma }}
+                </td>
+
+                <td>
+                    ₱{{ payroll.cash_advance|floatformat:2|intcomma }}
+                </td>
+
+                <td>
+                    ₱{{ payroll.charges|floatformat:2|intcomma }}
+                </td>
+
+                <td>
+                    ₱{{ payroll.rent|floatformat:2|intcomma }}
+                </td>
+
+                <td class="total">
+                    ₱{{ payroll.total_salary|floatformat:2|intcomma }}
+                </td>
+
+                <td class="signature"></td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+                <td colspan="16">
+                    No payroll records found.
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</body>
+</html>
