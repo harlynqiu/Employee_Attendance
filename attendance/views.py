@@ -1,6 +1,10 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
+from decimal import Decimal
+
+from django.shortcuts import render
 from django.utils import timezone
 from django.db.models import Sum
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -9,6 +13,115 @@ from employees.models import Employee
 from .models import Attendance
 from .serializers import AttendanceSerializer
 
+
+# =========================================================
+# SCANNER PAGE
+# =========================================================
+
+def scanner_page(request):
+    return render(request, 'scanner.html')
+
+
+# =========================================================
+# QR SCANNER ATTENDANCE API
+# =========================================================
+
+@api_view(['POST'])
+def scan_attendance(request):
+    employee_id = request.data.get('employee_id')
+
+    if not employee_id:
+        return Response(
+            {'error': 'employee_id is required.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        employee = Employee.objects.get(employee_id=employee_id)
+    except Employee.DoesNotExist:
+        return Response(
+            {'error': 'Employee not found.'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    today = timezone.localdate()
+    now = timezone.localtime()
+
+    attendance = Attendance.objects.filter(
+        employee=employee,
+        date=today
+    ).first()
+
+    if not attendance:
+        Attendance.objects.create(
+            employee=employee,
+            date=today,
+            time_in=now.time()
+        )
+
+        return Response(
+            {
+                'success': True,
+                'type': 'TIME IN',
+                'message': 'Time in recorded successfully.',
+                'employee_id': employee.employee_id,
+                'employee_name': employee.full_name,
+                'time': now.strftime('%I:%M %p'),
+            },
+            status=status.HTTP_201_CREATED
+        )
+
+    if attendance and not attendance.time_out:
+        attendance.time_out = now.time()
+
+        if attendance.time_in:
+            datetime_in = datetime.combine(
+                today,
+                attendance.time_in
+            )
+
+            datetime_out = datetime.combine(
+                today,
+                attendance.time_out
+            )
+
+            total_hours = (
+                datetime_out - datetime_in
+            ).total_seconds() / 3600
+
+            attendance.payable_hours = Decimal(
+                str(round(max(total_hours, 0), 2))
+            )
+
+        attendance.save()
+
+        return Response(
+            {
+                'success': True,
+                'type': 'TIME OUT',
+                'message': 'Time out recorded successfully.',
+                'employee_id': employee.employee_id,
+                'employee_name': employee.full_name,
+                'time': now.strftime('%I:%M %p'),
+                'payable_hours': attendance.payable_hours,
+            },
+            status=status.HTTP_200_OK
+        )
+
+    return Response(
+        {
+            'success': False,
+            'message': 'Employee already timed out today.',
+            'employee_id': employee.employee_id,
+            'employee_name': employee.full_name,
+        },
+        status=status.HTTP_400_BAD_REQUEST
+    )
+
+
+# =========================================================
+# MANUAL TIME IN
+# =========================================================
 
 @api_view(['POST'])
 def time_in_view(request):
@@ -29,12 +142,12 @@ def time_in_view(request):
         )
 
     today = timezone.localdate()
-    now = timezone.now()
+    now = timezone.localtime()
 
     attendance, created = Attendance.objects.get_or_create(
         employee=employee,
         date=today,
-        defaults={'time_in': now}
+        defaults={'time_in': now.time()}
     )
 
     if not created:
@@ -43,10 +156,12 @@ def time_in_view(request):
                 {'error': 'Employee has already timed in for today.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        attendance.time_in = now
+
+        attendance.time_in = now.time()
         attendance.save()
 
     serializer = AttendanceSerializer(attendance)
+
     return Response(
         {
             'message': 'Time in recorded successfully.',
@@ -55,6 +170,10 @@ def time_in_view(request):
         status=status.HTTP_201_CREATED
     )
 
+
+# =========================================================
+# MANUAL TIME OUT
+# =========================================================
 
 @api_view(['POST'])
 def time_out_view(request):
@@ -75,10 +194,13 @@ def time_out_view(request):
         )
 
     today = timezone.localdate()
-    now = timezone.now()
+    now = timezone.localtime()
 
     try:
-        attendance = Attendance.objects.get(employee=employee, date=today)
+        attendance = Attendance.objects.get(
+            employee=employee,
+            date=today
+        )
     except Attendance.DoesNotExist:
         return Response(
             {'error': 'No time-in record found for today.'},
@@ -97,10 +219,30 @@ def time_out_view(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    attendance.time_out = now
+    attendance.time_out = now.time()
+
+    datetime_in = datetime.combine(
+        today,
+        attendance.time_in
+    )
+
+    datetime_out = datetime.combine(
+        today,
+        attendance.time_out
+    )
+
+    total_hours = (
+        datetime_out - datetime_in
+    ).total_seconds() / 3600
+
+    attendance.payable_hours = Decimal(
+        str(round(max(total_hours, 0), 2))
+    )
+
     attendance.save()
 
     serializer = AttendanceSerializer(attendance)
+
     return Response(
         {
             'message': 'Time out recorded successfully.',
@@ -110,25 +252,54 @@ def time_out_view(request):
     )
 
 
+# =========================================================
+# ATTENDANCE LIST
+# =========================================================
+
 @api_view(['GET'])
 def attendance_list_view(request):
-    attendance = Attendance.objects.select_related('employee').all().order_by('-date', '-time_in')
-    serializer = AttendanceSerializer(attendance, many=True)
+    attendance = Attendance.objects.select_related(
+        'employee'
+    ).all().order_by(
+        '-date',
+        '-time_in'
+    )
+
+    serializer = AttendanceSerializer(
+        attendance,
+        many=True
+    )
+
     return Response(serializer.data)
 
+
+# =========================================================
+# EMPLOYEE ATTENDANCE
+# =========================================================
 
 @api_view(['GET'])
 def employee_attendance_view(request, employee_id):
     try:
-        employee = Employee.objects.get(employee_id=employee_id)
+        employee = Employee.objects.get(
+            employee_id=employee_id
+        )
     except Employee.DoesNotExist:
         return Response(
             {'error': 'Employee not found.'},
             status=status.HTTP_404_NOT_FOUND
         )
 
-    attendance = Attendance.objects.filter(employee=employee).order_by('-date', '-time_in')
-    serializer = AttendanceSerializer(attendance, many=True)
+    attendance = Attendance.objects.filter(
+        employee=employee
+    ).order_by(
+        '-date',
+        '-time_in'
+    )
+
+    serializer = AttendanceSerializer(
+        attendance,
+        many=True
+    )
 
     return Response({
         'employee_id': employee.employee_id,
@@ -140,7 +311,9 @@ def employee_attendance_view(request, employee_id):
 @api_view(['GET'])
 def employee_weekly_attendance_view(request, employee_id):
     try:
-        employee = Employee.objects.get(employee_id=employee_id)
+        employee = Employee.objects.get(
+            employee_id=employee_id
+        )
     except Employee.DoesNotExist:
         return Response(
             {'error': 'Employee not found.'},
@@ -154,9 +327,15 @@ def employee_weekly_attendance_view(request, employee_id):
     attendance = Attendance.objects.filter(
         employee=employee,
         date__range=[start_of_week, end_of_week]
-    ).order_by('date', 'time_in')
+    ).order_by(
+        'date',
+        'time_in'
+    )
 
-    serializer = AttendanceSerializer(attendance, many=True)
+    serializer = AttendanceSerializer(
+        attendance,
+        many=True
+    )
 
     return Response({
         'employee_id': employee.employee_id,
@@ -170,7 +349,9 @@ def employee_weekly_attendance_view(request, employee_id):
 @api_view(['GET'])
 def employee_monthly_attendance_view(request, employee_id):
     try:
-        employee = Employee.objects.get(employee_id=employee_id)
+        employee = Employee.objects.get(
+            employee_id=employee_id
+        )
     except Employee.DoesNotExist:
         return Response(
             {'error': 'Employee not found.'},
@@ -183,9 +364,15 @@ def employee_monthly_attendance_view(request, employee_id):
         employee=employee,
         date__year=today.year,
         date__month=today.month
-    ).order_by('date', 'time_in')
+    ).order_by(
+        'date',
+        'time_in'
+    )
 
-    serializer = AttendanceSerializer(attendance, many=True)
+    serializer = AttendanceSerializer(
+        attendance,
+        many=True
+    )
 
     return Response({
         'employee_id': employee.employee_id,
@@ -217,7 +404,9 @@ def employee_attendance_by_month_view(request, employee_id):
         )
 
     try:
-        employee = Employee.objects.get(employee_id=employee_id)
+        employee = Employee.objects.get(
+            employee_id=employee_id
+        )
     except Employee.DoesNotExist:
         return Response(
             {'error': 'Employee not found.'},
@@ -230,7 +419,10 @@ def employee_attendance_by_month_view(request, employee_id):
         date__month=month
     ).order_by('date')
 
-    serializer = AttendanceSerializer(attendance, many=True)
+    serializer = AttendanceSerializer(
+        attendance,
+        many=True
+    )
 
     return Response({
         'employee_id': employee.employee_id,
@@ -253,7 +445,9 @@ def employee_attendance_by_range_view(request, employee_id):
         )
 
     try:
-        employee = Employee.objects.get(employee_id=employee_id)
+        employee = Employee.objects.get(
+            employee_id=employee_id
+        )
     except Employee.DoesNotExist:
         return Response(
             {'error': 'Employee not found.'},
@@ -265,7 +459,10 @@ def employee_attendance_by_range_view(request, employee_id):
         date__range=[start_date, end_date]
     ).order_by('date')
 
-    serializer = AttendanceSerializer(attendance, many=True)
+    serializer = AttendanceSerializer(
+        attendance,
+        many=True
+    )
 
     return Response({
         'employee_id': employee.employee_id,
@@ -276,11 +473,26 @@ def employee_attendance_by_range_view(request, employee_id):
     })
 
 
+# =========================================================
+# SUMMARY
+# =========================================================
+
 def build_summary(attendance_qs):
-    days_present = attendance_qs.filter(time_in__isnull=False).count()
-    total_late_minutes = attendance_qs.aggregate(total=Sum('late_minutes'))['total'] or 0
-    total_undertime_minutes = attendance_qs.aggregate(total=Sum('undertime_minutes'))['total'] or 0
-    total_payable_hours = attendance_qs.aggregate(total=Sum('payable_hours'))['total'] or 0
+    days_present = attendance_qs.filter(
+        time_in__isnull=False
+    ).count()
+
+    total_late_minutes = attendance_qs.aggregate(
+        total=Sum('late_minutes')
+    )['total'] or 0
+
+    total_undertime_minutes = attendance_qs.aggregate(
+        total=Sum('undertime_minutes')
+    )['total'] or 0
+
+    total_payable_hours = attendance_qs.aggregate(
+        total=Sum('payable_hours')
+    )['total'] or 0
 
     return {
         'days_present': days_present,
@@ -311,7 +523,9 @@ def employee_summary_by_month_view(request, employee_id):
         )
 
     try:
-        employee = Employee.objects.get(employee_id=employee_id)
+        employee = Employee.objects.get(
+            employee_id=employee_id
+        )
     except Employee.DoesNotExist:
         return Response(
             {'error': 'Employee not found.'},
@@ -347,7 +561,9 @@ def employee_summary_by_range_view(request, employee_id):
         )
 
     try:
-        employee = Employee.objects.get(employee_id=employee_id)
+        employee = Employee.objects.get(
+            employee_id=employee_id
+        )
     except Employee.DoesNotExist:
         return Response(
             {'error': 'Employee not found.'},
