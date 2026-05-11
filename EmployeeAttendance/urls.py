@@ -13,7 +13,10 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
 
-    path('api/', include('employees.urls')),
+    path(
+        'api/',
+        include('employees.urls')
+    ),
 
     path(
         'api/attendance/',
@@ -23,9 +26,17 @@ urlpatterns = [
 ]
 
 
-# 🔥 MEDIA FILES (QR CODES, IMAGES, ETC.)
-if settings.DEBUG:
-    urlpatterns += static(
-        settings.MEDIA_URL,
-        document_root=settings.MEDIA_ROOT
-    )
+# ==============================
+# MEDIA FILES (QR CODES, IMAGES)
+# ==============================
+
+urlpatterns += static(
+    settings.MEDIA_URL,
+    document_root=settings.MEDIA_ROOT
+)
+
+
+print("DEBUG:", settings.DEBUG)
+print("MEDIA_URL:", settings.MEDIA_URL)
+print("MEDIA_ROOT:", settings.MEDIA_ROOT)
+print("URLPATTERNS:", urlpatterns)
