@@ -29,8 +29,43 @@
 
         .date-time {
             font-size: 18px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             color: #555;
+        }
+
+        .button-group {
+            margin-bottom: 25px;
+        }
+
+        button {
+            font-size: 22px;
+            font-weight: bold;
+            padding: 15px 35px;
+            margin: 8px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .time-in-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .time-out-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .active {
+            outline: 4px solid #222;
+        }
+
+        #selectedMode {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
         }
 
         #reader {
@@ -81,6 +116,20 @@
 
     <div class="date-time" id="dateTime"></div>
 
+    <div class="button-group">
+        <button id="timeInBtn" class="time-in-btn" onclick="setScanType('time_in')">
+            TIME IN
+        </button>
+
+        <button id="timeOutBtn" class="time-out-btn" onclick="setScanType('time_out')">
+            TIME OUT
+        </button>
+    </div>
+
+    <div id="selectedMode">
+        Please select TIME IN or TIME OUT first.
+    </div>
+
     <div id="reader"></div>
 
     <div id="resultBox">
@@ -91,6 +140,7 @@
 
 <script>
     let canScan = true;
+    let scanType = null;
 
     function updateClock() {
         const now = new Date();
@@ -101,19 +151,47 @@
     setInterval(updateClock, 1000);
     updateClock();
 
+    function setScanType(type) {
+        scanType = type;
+
+        document.getElementById("timeInBtn").classList.remove("active");
+        document.getElementById("timeOutBtn").classList.remove("active");
+
+        if (type === "time_in") {
+            document.getElementById("timeInBtn").classList.add("active");
+            document.getElementById("selectedMode").innerHTML = "Selected: TIME IN";
+        } else {
+            document.getElementById("timeOutBtn").classList.add("active");
+            document.getElementById("selectedMode").innerHTML = "Selected: TIME OUT";
+        }
+
+        const resultBox = document.getElementById("resultBox");
+        resultBox.className = "";
+        resultBox.innerHTML = "Waiting for scan...";
+    }
+
     function playBeep() {
         const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
         audio.play();
     }
 
     function sendScan(employeeId) {
+        if (!scanType) {
+            const resultBox = document.getElementById("resultBox");
+            resultBox.className = "error";
+            resultBox.innerHTML = "Please select TIME IN or TIME OUT first.";
+            canScan = true;
+            return;
+        }
+
         fetch("/api/attendance/scan/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                employee_id: employeeId
+                employee_id: employeeId,
+                scan_type: scanType
             })
         })
         .then(response => response.json())
