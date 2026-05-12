@@ -10,16 +10,16 @@
 
     .payroll-title {
         margin-bottom: 20px;
-        font-size: 26px;
-        font-weight: 600;
+        font-size: 28px;
+        font-weight: 700;
     }
 
     .payroll-card {
         background: #ffffff;
         border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 18px;
+        border-radius: 10px;
+        padding: 18px;
+        margin-bottom: 20px;
     }
 
     .filter-form {
@@ -41,7 +41,7 @@
     }
 
     .filter-group input {
-        padding: 7px 9px;
+        padding: 8px 10px;
         border: 1px solid #bbb;
         border-radius: 5px;
     }
@@ -55,7 +55,7 @@
 
     .payroll-btn {
         display: inline-block;
-        padding: 10px 14px;
+        padding: 10px 15px;
         border-radius: 6px;
         color: white !important;
         text-decoration: none;
@@ -125,7 +125,7 @@
         width: 100%;
         border-collapse: collapse;
         font-size: 12px;
-        min-width: 1500px;
+        min-width: 2100px;
     }
 
     .payroll-table th {
@@ -155,6 +155,43 @@
     .salary-cell {
         font-weight: bold;
         color: #155724;
+        background: #eaf8ed;
+    }
+
+    .cash-header {
+        background: #7b4f00 !important;
+        color: white;
+    }
+
+    .cash-cell {
+        font-weight: bold;
+    }
+
+    .summary-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    .summary-table th {
+        background: #7b4f00;
+        color: white;
+        padding: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .summary-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .summary-table tr:nth-child(even) {
+        background: #f8f9fa;
+    }
+
+    .summary-table .pieces {
+        font-weight: bold;
+        text-align: center;
     }
 
     @media print {
@@ -190,17 +227,15 @@
     <form method="get" class="payroll-card filter-form">
 
         <div class="filter-group">
-            <label for="start_date">Start Date</label>
+            <label>Start Date</label>
             <input type="date"
-                   id="start_date"
                    name="start_date"
                    value="{{ start_date|date:'Y-m-d' }}">
         </div>
 
         <div class="filter-group">
-            <label for="end_date">End Date</label>
+            <label>End Date</label>
             <input type="date"
-                   id="end_date"
                    name="end_date"
                    value="{{ end_date|date:'Y-m-d' }}">
         </div>
@@ -220,7 +255,7 @@
 
         <a href="{% url 'admin:payroll-weekly-summary-save' %}?{{ request.GET.urlencode }}"
            class="payroll-btn btn-primary">
-            Save Payroll for This Period
+            Save Payroll
         </a>
 
         <a href="{% url 'admin:payroll-payroll-print-all' %}"
@@ -233,96 +268,113 @@
 
     <div class="payroll-card">
 
-        <h2 style="margin-top:0;">
-            Selected Payroll Period
-        </h2>
+        <h2>Payroll Period</h2>
 
-        <p>
-            <strong>Start Date:</strong>
-            {{ start_date }}
-        </p>
-
-        <p>
-            <strong>End Date:</strong>
-            {{ end_date }}
-        </p>
+        <p><strong>Start Date:</strong> {{ start_date }}</p>
+        <p><strong>End Date:</strong> {{ end_date }}</p>
 
     </div>
 
     <div class="payroll-card">
 
-        <h2 style="margin-top:0;">
-            Grand Totals Preview
-        </h2>
+        <h2>Grand Totals Preview</h2>
 
         <div class="summary-grid">
 
             <div class="summary-box">
                 <div class="summary-label">Total Days Present</div>
-                <div class="summary-value">{{ totals.days_present|default:"0" }}</div>
+                <div class="summary-value">{{ totals.days_present }}</div>
             </div>
 
             <div class="summary-box">
-                <div class="summary-label">Total Payable Hours</div>
-                <div class="summary-value">{{ totals.total_payable_hours|default:"0"|floatformat:2 }}</div>
+                <div class="summary-label">Payable Hours</div>
+                <div class="summary-value">{{ totals.total_payable_hours|floatformat:2 }}</div>
             </div>
 
             <div class="summary-box">
                 <div class="summary-label">Late Minutes</div>
-                <div class="summary-value">{{ totals.total_late_minutes|default:"0" }}</div>
+                <div class="summary-value">{{ totals.total_late_minutes }}</div>
             </div>
 
             <div class="summary-box">
                 <div class="summary-label">Undertime Minutes</div>
-                <div class="summary-value">{{ totals.total_undertime_minutes|default:"0" }}</div>
+                <div class="summary-value">{{ totals.total_undertime_minutes }}</div>
             </div>
 
             <div class="summary-box">
-                <div class="summary-label">Overtime Minutes</div>
-                <div class="summary-value">{{ totals.total_overtime_minutes|default:"0" }}</div>
-            </div>
-
-            <div class="summary-box">
-                <div class="summary-label">Base Salary</div>
-                <div class="summary-value">₱{{ totals.grand_base_salary|default:"0"|floatformat:2|intcomma }}</div>
-            </div>
-
-            <div class="summary-box">
-                <div class="summary-label">Overtime Pay</div>
-                <div class="summary-value">₱{{ totals.grand_overtime_pay|default:"0"|floatformat:2|intcomma }}</div>
-            </div>
-
-            <div class="summary-box">
-                <div class="summary-label">Benefits/Deductions</div>
-                <div class="summary-value">₱{{ totals.grand_benefits|default:"0"|floatformat:2|intcomma }}</div>
-            </div>
-
-            <div class="summary-box">
-                <div class="summary-label">Deliver Allowance</div>
-                <div class="summary-value">₱{{ totals.grand_deliver_allowance|default:"0"|floatformat:2|intcomma }}</div>
-            </div>
-
-            <div class="summary-box">
-                <div class="summary-label">Transportation Fee</div>
-                <div class="summary-value">₱{{ totals.grand_transportation_fee|default:"0"|floatformat:2|intcomma }}</div>
-            </div>
-
-            <div class="summary-box">
-                <div class="summary-label">Estimated Grand Salary</div>
-                <div class="summary-value">₱{{ totals.grand_total_salary|default:"0"|floatformat:2|intcomma }}</div>
+                <div class="summary-label">Grand Salary</div>
+                <div class="summary-value">
+                    ₱{{ totals.grand_total_salary|floatformat:2|intcomma }}
+                </div>
             </div>
 
         </div>
 
     </div>
 
+    <div class="payroll-card">
+
+        <h2 style="margin-top:0;">
+            Cash Breakdown Summary
+        </h2>
+
+        <table class="summary-table">
+
+            <thead>
+                <tr>
+                    <th>Denomination</th>
+                    <th>Total Pieces Needed</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>P100</td>
+                    <td class="pieces">{{ totals.grand_cash_100 }}</td>
+                </tr>
+
+                <tr>
+                    <td>P50</td>
+                    <td class="pieces">{{ totals.grand_cash_50 }}</td>
+                </tr>
+
+                <tr>
+                    <td>P20</td>
+                    <td class="pieces">{{ totals.grand_cash_20 }}</td>
+                </tr>
+
+                <tr>
+                    <td>P10</td>
+                    <td class="pieces">{{ totals.grand_cash_10 }}</td>
+                </tr>
+
+                <tr>
+                    <td>P5</td>
+                    <td class="pieces">{{ totals.grand_cash_5 }}</td>
+                </tr>
+
+                <tr>
+                    <td>P1</td>
+                    <td class="pieces">{{ totals.grand_cash_1 }}</td>
+                </tr>
+
+                <tr>
+                    <td>P0.25</td>
+                    <td class="pieces">{{ totals.grand_cash_025 }}</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
     <div class="note-box">
         <strong>Note:</strong>
         This page is only a payroll preview based on attendance.
-        After clicking <strong>Save Payroll for This Period</strong>,
-        payroll records will automatically be created for all employees shown below.
-        You may then edit Cash Advance, Charges, Rent, Manual Allowance,
-        and Remarks inside each Payroll record.
+        After clicking <strong>Save Payroll</strong>,
+        payroll records will automatically be created.
     </div>
 
     <h2>
@@ -334,15 +386,16 @@
         <table class="payroll-table">
 
             <thead>
+
                 <tr>
                     <th>Employee ID</th>
                     <th>Name</th>
                     <th>Position</th>
-                    <th>Days Present</th>
-                    <th>Payable Hours</th>
+                    <th>Days</th>
+                    <th>Hours</th>
                     <th>Late</th>
                     <th>Undertime</th>
-                    <th>OT Minutes</th>
+                    <th>OT Min</th>
                     <th>OT Pay</th>
                     <th>Daily Rate</th>
                     <th>Hourly Rate</th>
@@ -352,64 +405,98 @@
                     <th>Deliver Allowance</th>
                     <th>Transportation Days</th>
                     <th>Transportation Fee</th>
-                    <th>Estimated Salary</th>
+                    <th>Salary</th>
+
+                    <th class="cash-header">100</th>
+                    <th class="cash-header">50</th>
+                    <th class="cash-header">20</th>
+                    <th class="cash-header">10</th>
+                    <th class="cash-header">5</th>
+                    <th class="cash-header">1</th>
+                    <th class="cash-header">0.25</th>
+
                 </tr>
+
             </thead>
 
             <tbody>
 
                 {% for row in payroll_data %}
 
-                    <tr>
-                        <td>{{ row.employee__employee_id }}</td>
+                <tr>
 
-                        <td class="name-cell">
-                            {{ row.employee__last_name }},
-                            {{ row.employee__first_name }}
-                        </td>
+                    <td>{{ row.employee__employee_id }}</td>
 
-                        <td>{{ row.employee__position }}</td>
+                    <td class="name-cell">
+                        {{ row.employee__last_name }},
+                        {{ row.employee__first_name }}
+                    </td>
 
-                        <td>{{ row.days_present|default:"0" }}</td>
+                    <td>{{ row.employee__position }}</td>
 
-                        <td>{{ row.total_payable_hours|default:"0"|floatformat:2 }}</td>
+                    <td>{{ row.days_present }}</td>
 
-                        <td>{{ row.total_late_minutes|default:"0" }}</td>
+                    <td>{{ row.total_payable_hours|floatformat:2 }}</td>
 
-                        <td>{{ row.total_undertime_minutes|default:"0" }}</td>
+                    <td>{{ row.total_late_minutes }}</td>
 
-                        <td>{{ row.overtime_minutes|default:"0" }}</td>
+                    <td>{{ row.total_undertime_minutes }}</td>
 
-                        <td>₱{{ row.overtime_pay|default:"0"|floatformat:2|intcomma }}</td>
+                    <td>{{ row.overtime_minutes }}</td>
 
-                        <td>₱{{ row.daily_rate|default:"0"|floatformat:2|intcomma }}</td>
+                    <td>
+                        ₱{{ row.overtime_pay|floatformat:2|intcomma }}
+                    </td>
 
-                        <td>₱{{ row.hourly_rate|default:"0"|floatformat:2|intcomma }}</td>
+                    <td>
+                        ₱{{ row.daily_rate|floatformat:2|intcomma }}
+                    </td>
 
-                        <td>₱{{ row.base_salary|default:"0"|floatformat:2|intcomma }}</td>
+                    <td>
+                        ₱{{ row.hourly_rate|floatformat:2|intcomma }}
+                    </td>
 
-                        <td>₱{{ row.benefits|default:"0"|floatformat:2|intcomma }}</td>
+                    <td>
+                        ₱{{ row.base_salary|floatformat:2|intcomma }}
+                    </td>
 
-                        <td>{{ row.deliver_days|default:"0" }}</td>
+                    <td>
+                        ₱{{ row.benefits|floatformat:2|intcomma }}
+                    </td>
 
-                        <td>₱{{ row.deliver_allowance|default:"0"|floatformat:2|intcomma }}</td>
+                    <td>{{ row.deliver_days }}</td>
 
-                        <td>{{ row.transportation_days|default:"0" }}</td>
+                    <td>
+                        ₱{{ row.deliver_allowance|floatformat:2|intcomma }}
+                    </td>
 
-                        <td>₱{{ row.transportation_fee|default:"0"|floatformat:2|intcomma }}</td>
+                    <td>{{ row.transportation_days }}</td>
 
-                        <td class="salary-cell">
-                            ₱{{ row.total_salary|default:"0"|floatformat:2|intcomma }}
-                        </td>
-                    </tr>
+                    <td>
+                        ₱{{ row.transportation_fee|floatformat:2|intcomma }}
+                    </td>
+
+                    <td class="salary-cell">
+                        ₱{{ row.total_salary|floatformat:2|intcomma }}
+                    </td>
+
+                    <td class="cash-cell">{{ row.cash_100 }}</td>
+                    <td class="cash-cell">{{ row.cash_50 }}</td>
+                    <td class="cash-cell">{{ row.cash_20 }}</td>
+                    <td class="cash-cell">{{ row.cash_10 }}</td>
+                    <td class="cash-cell">{{ row.cash_5 }}</td>
+                    <td class="cash-cell">{{ row.cash_1 }}</td>
+                    <td class="cash-cell">{{ row.cash_025 }}</td>
+
+                </tr>
 
                 {% empty %}
 
-                    <tr>
-                        <td colspan="18">
-                            No payroll data found.
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan="25">
+                        No payroll data found.
+                    </td>
+                </tr>
 
                 {% endfor %}
 
