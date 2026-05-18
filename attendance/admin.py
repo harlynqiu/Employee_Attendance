@@ -50,7 +50,8 @@ class AttendanceAdmin(admin.ModelAdmin):
 
     ordering = (
         '-date',
-        'employee__employee_id',
+        'employee__last_name',
+        'employee__first_name',
     )
 
     list_per_page = 50
@@ -98,6 +99,7 @@ class AttendanceAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
+
         custom_urls = [
             path(
                 'bulk-entry/',
@@ -105,17 +107,18 @@ class AttendanceAdmin(admin.ModelAdmin):
                 name='attendance-bulk-entry',
             ),
         ]
+
         return custom_urls + urls
 
     def bulk_entry_view(self, request):
-        if request.method == 'POST':
+        if request.method == 'POST':    
             form = AttendanceBulkEntryForm(request.POST)
 
             if form.is_valid():
                 date = form.cleaned_data.get('date')
                 employees = form.cleaned_data.get('employees')
 
-                status = form.cleaned_data.get('status') or 'present'
+                status = form.cleaned_data.get('status')
                 time_in = form.cleaned_data.get('time_in')
                 time_out = form.cleaned_data.get('time_out')
 
@@ -129,41 +132,21 @@ class AttendanceAdmin(admin.ModelAdmin):
                     False
                 )
 
-                work_type = form.cleaned_data.get('work_type', 'office')
-
-                delivery_allowance_applicable = form.cleaned_data.get(
-                    'delivery_allowance_applicable',
-                    False
-                )
-
-                work_location = form.cleaned_data.get('work_location', '')
-                remarks = form.cleaned_data.get('remarks', '')
-
-                if not date:
-                    messages.error(request, 'Please select a date.')
-                    return redirect('admin:attendance-bulk-entry')
-
-                if not employees:
-                    messages.error(request, 'Please select at least one employee.')
-                    return redirect('admin:attendance-bulk-entry')
-
-                if work_type != 'deliver':
-                    delivery_allowance_applicable = False
-
                 created_count = 0
                 updated_count = 0
 
-                no_time_statuses = ['absent', 'leave', 'rest_day', 'holiday']
+                no_time_statuses = [
+                    'absent',
+                    'leave',
+                    'rest_day',
+                    'holiday',
+                ]
 
                 for employee in employees:
                     defaults = {
                         'status': status,
                         'overtime_applicable': overtime_applicable,
                         'transportation_fee_applicable': transportation_fee_applicable,
-                        'work_type': work_type,
-                        'delivery_allowance_applicable': delivery_allowance_applicable,
-                        'work_location': work_location,
-                        'remarks': remarks,
                     }
 
                     if status in no_time_statuses:
@@ -171,7 +154,7 @@ class AttendanceAdmin(admin.ModelAdmin):
                         defaults['time_out'] = None
                         defaults['overtime_applicable'] = False
                         defaults['transportation_fee_applicable'] = False
-                        defaults['delivery_allowance_applicable'] = False
+
                     else:
                         defaults['time_in'] = (
                             timezone.make_aware(datetime.combine(date, time_in))
@@ -196,7 +179,7 @@ class AttendanceAdmin(admin.ModelAdmin):
 
                 messages.success(
                     request,
-                    f'Bulk attendance saved. Created: {created_count}, Updated: {updated_count}.'
+                    f'Bulk attendance saved successfully. Created: {created_count}, Updated: {updated_count}.'
                 )
 
                 return redirect('admin:attendance_attendance_changelist')

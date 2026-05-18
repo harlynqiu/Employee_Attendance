@@ -2,63 +2,78 @@ from django import forms
 from django.utils import timezone
 
 from employees.models import Employee
-from .models import Attendance
 
 
 class AttendanceBulkEntryForm(forms.Form):
+    STATUS_CHOICES = [
+        ('present', 'Present'),
+        ('absent', 'Absent'),
+        ('half_day', 'Half Day'),
+        ('leave', 'Leave'),
+        ('rest_day', 'Rest Day'),
+        ('holiday', 'Holiday'),
+    ]
+
     date = forms.DateField(
+        label='Date',
         initial=timezone.localdate,
+        required=True,
         widget=forms.DateInput(attrs={'type': 'date'})
     )
 
+    status = forms.ChoiceField(
+        label='Status',
+        choices=STATUS_CHOICES,
+        initial='present',
+        required=True
+    )
+
     time_in = forms.TimeField(
+        label='Time in',
+        required=False,
         input_formats=['%I:%M %p', '%I:%M%p', '%H:%M', '%H:%M:%S'],
         initial='8:00 AM',
-        widget=forms.TextInput(attrs={
-            'placeholder': '8:00 AM'
-        })
+        widget=forms.TextInput(attrs={'placeholder': '8:00 AM'})
     )
 
     time_out = forms.TimeField(
+        label='Time out',
+        required=False,
         input_formats=['%I:%M %p', '%I:%M%p', '%H:%M', '%H:%M:%S'],
         initial='5:00 PM',
-        widget=forms.TextInput(attrs={
-            'placeholder': '5:00 PM'
-        })
+        widget=forms.TextInput(attrs={'placeholder': '5:00 PM'})
+    )
+
+    overtime_applicable = forms.BooleanField(
+        label='Overtime applicable',
+        required=False,
+        initial=False
+    )
+
+    transportation_fee_applicable = forms.BooleanField(
+        label='Transportation fee applicable',
+        required=False,
+        initial=True
     )
 
     employees = forms.ModelMultipleChoiceField(
-        queryset=Employee.objects.all().order_by('employee_id'),
+        label='Employees',
+        queryset=Employee.objects.all().order_by('last_name', 'first_name'),
         widget=forms.CheckboxSelectMultiple,
         required=True
     )
 
-    transportation_fee_applicable = forms.BooleanField(
-        required=False,
-        initial=True,
-        label='Transportation fee applicable for selected employees'
-    )
+    def clean(self):
+        cleaned_data = super().clean()
 
-    work_type = forms.ChoiceField(
-        choices=Attendance.WORK_TYPE_CHOICES,
-        initial='office',
-        required=True
-    )
+        status = cleaned_data.get('status')
+        time_in = cleaned_data.get('time_in')
+        time_out = cleaned_data.get('time_out')
 
-    work_location = forms.CharField(
-        required=False,
-        max_length=100,
-        label='Location / Area',
-        widget=forms.TextInput(attrs={
-            'placeholder': 'Example: Digos, Kidapawan, Tagum'
-        })
-    )
+        if status in ['present', 'half_day']:
+            if not time_in:
+                self.add_error('time_in', 'Time in is required.')
+            if not time_out:
+                self.add_error('time_out', 'Time out is required.')
 
-    remarks = forms.CharField(
-        required=False,
-        label='Remarks',
-        widget=forms.Textarea(attrs={
-            'rows': 3,
-            'placeholder': 'Example: Digos Booking, Kidapawan Deliver'
-        })
-    )
+        return cleaned_data

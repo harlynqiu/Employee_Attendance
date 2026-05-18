@@ -1,7 +1,7 @@
 {% extends "admin/base_site.html" %}
 
 {% block content %}
-    <h1>Bulk Attendance Entry</h1>
+    
 
     <form method="post" style="padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 8px;">
         {% csrf_token %}
@@ -42,24 +42,6 @@
             {{ form.transportation_fee_applicable.label_tag }}
             {{ form.transportation_fee_applicable }}
             {{ form.transportation_fee_applicable.errors }}
-        </p>
-
-        <p>
-            {{ form.work_type.label_tag }}
-            {{ form.work_type }}
-            {{ form.work_type.errors }}
-        </p>
-
-        <p>
-            {{ form.work_location.label_tag }}
-            {{ form.work_location }}
-            {{ form.work_location.errors }}
-        </p>
-
-        <p>
-            {{ form.remarks.label_tag }}
-            {{ form.remarks }}
-            {{ form.remarks.errors }}
         </p>
 
         <hr>

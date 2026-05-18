@@ -2,242 +2,755 @@
 <html>
 <head>
     <title>HCQ Attendance Scanner</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <script src="https://unpkg.com/html5-qrcode"></script>
 
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
     <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
             margin: 0;
-            padding: 0;
+            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(circle at top,
+                #12244d,
+                #081225 70%);
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+        .scanner-wrapper {
+
+            width: 100%;
+            max-width: 460px;
+
+            background: white;
+
+            border-radius: 34px;
+
+            padding: 28px;
+
+            box-shadow:
+                0 25px 60px rgba(0,0,0,0.45);
+        }
+
+        .header {
             text-align: center;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 30px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        .company {
+
+            margin: 0;
+
+            font-size: 34px;
+
+            font-weight: 900;
+
+            color: #0f172a;
+
+            letter-spacing: 1px;
         }
 
-        h1 {
-            margin-bottom: 5px;
-            color: #222;
+        .subtitle {
+
+            margin-top: 8px;
+
+            color: #475569;
+
+            font-size: 18px;
         }
 
         .date-time {
-            font-size: 18px;
-            margin-bottom: 20px;
-            color: #555;
+
+            margin-top: 14px;
+
+            color: #64748b;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+        .mode-card {
+
+            margin-top: 24px;
+
+            background: #f8fafc;
+
+            border-radius: 24px;
+
+            border: 1px solid #e2e8f0;
+
+            padding: 18px;
+        }
+
+        .mode-title {
+
+            text-align: center;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+
+            color: #334155;
+
+            margin-bottom: 14px;
         }
 
         .button-group {
-            margin-bottom: 25px;
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 14px;
         }
 
-        button {
-            font-size: 22px;
-            font-weight: bold;
-            padding: 15px 35px;
-            margin: 8px;
+        .action-btn {
+
             border: none;
-            border-radius: 10px;
+
+            border-radius: 18px;
+
+            padding: 18px 12px;
+
+            color: white;
+
+            font-size: 17px;
+
+            font-weight: 900;
+
             cursor: pointer;
+
+            transition: .2s ease;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 10px;
+
+            box-shadow:
+                0 6px 14px rgba(0,0,0,0.18);
+        }
+
+        .action-btn:active {
+            transform: scale(.96);
         }
 
         .time-in-btn {
-            background: #28a745;
-            color: white;
+            background: linear-gradient(135deg,
+                        #22c55e,
+                        #16a34a);
         }
 
         .time-out-btn {
-            background: #dc3545;
-            color: white;
+            background: linear-gradient(135deg,
+                        #ff4d4d,
+                        #ef4444);
         }
 
         .active {
-            outline: 4px solid #222;
+
+            outline: 4px solid #111827;
+
+            transform: translateY(-2px);
         }
 
         #selectedMode {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #333;
+
+            text-align: center;
+
+            margin-top: 14px;
+
+            font-size: 15px;
+
+            font-weight: 800;
+
+            color: #334155;
+        }
+
+        .reader-card {
+
+            margin-top: 20px;
+
+            background: #f1f5f9;
+
+            border-radius: 24px;
+
+            border: 1px solid #dbe2ea;
+
+            padding: 18px;
         }
 
         #reader {
-            width: 420px;
-            margin: auto;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 12px;
-            background: #fafafa;
+
+            width: 100%;
+
+            overflow: hidden;
+
+            border-radius: 18px;
+        }
+
+        #reader video {
+            border-radius: 18px;
+        }
+
+        /* Hide image scan */
+        #reader__filescan_region {
+            display: none !important;
+        }
+
+        /* Hide scanner text */
+        #reader__dashboard_section_csr span {
+            display: none !important;
+        }
+
+        /* CAMERA SECTION SPACING */
+        #reader__dashboard_section_csr {
+
+            display: flex !important;
+
+            flex-direction: column !important;
+
+            align-items: center !important;
+
+            justify-content: center !important;
+
+            gap: 22px !important;
+
+            padding-top: 18px !important;
+
+            padding-bottom: 18px !important;
+        }
+
+        /* Camera permission button */
+        #reader__dashboard_section_csr button {
+
+            background: white !important;
+
+            color: #111827 !important;
+
+            border-radius: 999px !important;
+
+            padding: 13px 24px !important;
+
+            font-size: 14px !important;
+
+            font-weight: 700 !important;
+
+            border: none !important;
+
+            box-shadow:
+                0 5px 12px rgba(0,0,0,0.12) !important;
+
+            width: auto !important;
+
+            margin: 0 auto !important;
+        }
+
+        .helper-text {
+
+            text-align: center;
+
+            margin-top: 24px;
+
+            padding-top: 6px;
+
+            color: #64748b;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            line-height: 1.7;
         }
 
         #resultBox {
-            margin-top: 25px;
-            padding: 20px;
-            border-radius: 12px;
-            font-size: 22px;
-            font-weight: bold;
-            background: #f1f1f1;
-            color: #333;
+
+            margin-top: 20px;
+
+            background: #f8fafc;
+
+            border-radius: 24px;
+
+            border: 1px solid #e2e8f0;
+
+            min-height: 140px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            padding: 24px;
+
+            transition: .2s ease;
+        }
+
+        .waiting-content i {
+
+            font-size: 42px;
+
+            color: #60a5fa;
+
+            margin-bottom: 12px;
+        }
+
+        .waiting-title {
+
+            font-size: 18px;
+
+            font-weight: 900;
+
+            color: #0f172a;
+        }
+
+        .waiting-subtitle {
+
+            margin-top: 8px;
+
+            color: #64748b;
+
+            font-size: 14px;
+
+            font-weight: 600;
         }
 
         .success {
-            background: #d4edda !important;
-            color: #155724 !important;
-            border: 1px solid #c3e6cb;
+
+            background: #dcfce7 !important;
+
+            border: 2px solid #22c55e !important;
         }
 
         .error {
-            background: #f8d7da !important;
-            color: #721c24 !important;
-            border: 1px solid #f5c6cb;
+
+            background: #fee2e2 !important;
+
+            border: 2px solid #ef4444 !important;
+        }
+
+        .processing {
+
+            background: #dbeafe !important;
+
+            border: 2px solid #3b82f6 !important;
+        }
+
+        .scan-type {
+
+            font-size: 28px;
+
+            font-weight: 900;
+
+            margin-bottom: 6px;
+        }
+
+        .employee-name {
+
+            font-size: 22px;
+
+            font-weight: 900;
+
+            color: #0f172a;
         }
 
         .small {
-            font-size: 16px;
-            font-weight: normal;
-            margin-top: 8px;
+
+            margin-top: 10px;
+
+            font-size: 14px;
+
+            color: #475569;
+
+            font-weight: 700;
+
+            line-height: 1.6;
         }
+
+        .footer {
+
+            margin-top: 18px;
+
+            text-align: center;
+
+            color: #94a3b8;
+
+            font-size: 13px;
+        }
+
+        @media (max-width: 480px) {
+
+            body {
+                padding: 12px;
+                align-items: flex-start;
+            }
+
+            .scanner-wrapper {
+
+                margin-top: 12px;
+
+                border-radius: 28px;
+
+                padding: 20px;
+            }
+
+            .company {
+                font-size: 28px;
+            }
+
+            .action-btn {
+
+                font-size: 15px;
+
+                padding: 15px 10px;
+            }
+        }
+
     </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="scanner-wrapper">
 
-    <h1>HCQ MARKETING</h1>
-    <h2>Attendance QR Scanner</h2>
+    <div class="header">
 
-    <div class="date-time" id="dateTime"></div>
+        <h1 class="company">
+            HCQ MARKETING
+        </h1>
 
-    <div class="button-group">
-        <button id="timeInBtn" class="time-in-btn" onclick="setScanType('time_in')">
-            TIME IN
-        </button>
+        <div class="subtitle">
+            Attendance QR Scanner
+        </div>
 
-        <button id="timeOutBtn" class="time-out-btn" onclick="setScanType('time_out')">
-            TIME OUT
-        </button>
+        <div class="date-time" id="dateTime"></div>
+
     </div>
 
-    <div id="selectedMode">
-        Please select TIME IN or TIME OUT first.
+    <div class="mode-card">
+
+        <div class="mode-title">
+            CHOOSE ATTENDANCE ACTION
+        </div>
+
+        <div class="button-group">
+
+            <button id="timeInBtn"
+                    class="action-btn time-in-btn"
+                    onclick="setScanType('time_in')">
+
+                <i class="fa-solid fa-right-to-bracket"></i>
+
+                TIME IN
+
+            </button>
+
+            <button id="timeOutBtn"
+                    class="action-btn time-out-btn"
+                    onclick="setScanType('time_out')">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                TIME OUT
+
+            </button>
+
+        </div>
+
+        <div id="selectedMode">
+            Select TIME IN or TIME OUT
+        </div>
+
     </div>
 
-    <div id="reader"></div>
+    <div class="reader-card">
+
+        <div id="reader"></div>
+
+        <div class="helper-text">
+            Place the employee QR code inside the camera frame
+        </div>
+
+    </div>
 
     <div id="resultBox">
-        Waiting for scan...
+
+        <div class="waiting-content">
+
+            <i class="fa-solid fa-qrcode"></i>
+
+            <div class="waiting-title">
+                Waiting for scan...
+            </div>
+
+            <div class="waiting-subtitle">
+                Select TIME IN or TIME OUT and scan
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+        HCQ Attendance System
     </div>
 
 </div>
 
 <script>
+
     let canScan = true;
     let scanType = null;
 
     function updateClock() {
+
         const now = new Date();
+
+        const date = now.toLocaleDateString("en-US", {
+
+            weekday: "short",
+            year: "numeric",
+            month: "short",
+            day: "numeric"
+        });
+
+        const time = now.toLocaleTimeString("en-US", {
+
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        });
+
         document.getElementById("dateTime").innerHTML =
-            now.toLocaleDateString() + " | " + now.toLocaleTimeString();
+            date + " | " + time;
     }
 
     setInterval(updateClock, 1000);
+
     updateClock();
 
     function setScanType(type) {
+
         scanType = type;
 
-        document.getElementById("timeInBtn").classList.remove("active");
-        document.getElementById("timeOutBtn").classList.remove("active");
+        document.getElementById("timeInBtn")
+            .classList.remove("active");
+
+        document.getElementById("timeOutBtn")
+            .classList.remove("active");
+
+        const selectedMode =
+            document.getElementById("selectedMode");
 
         if (type === "time_in") {
-            document.getElementById("timeInBtn").classList.add("active");
-            document.getElementById("selectedMode").innerHTML = "Selected: TIME IN";
-        } else {
-            document.getElementById("timeOutBtn").classList.add("active");
-            document.getElementById("selectedMode").innerHTML = "Selected: TIME OUT";
-        }
 
-        const resultBox = document.getElementById("resultBox");
-        resultBox.className = "";
-        resultBox.innerHTML = "Waiting for scan...";
+            document.getElementById("timeInBtn")
+                .classList.add("active");
+
+            selectedMode.innerHTML =
+                "Selected: <span style='color:#16a34a;'>TIME IN</span>";
+
+        } else {
+
+            document.getElementById("timeOutBtn")
+                .classList.add("active");
+
+            selectedMode.innerHTML =
+                "Selected: <span style='color:#ef4444;'>TIME OUT</span>";
+        }
     }
 
     function playBeep() {
-        const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-        audio.play();
+
+        const audio = new Audio(
+            "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
+        );
+
+        audio.play().catch(() => {});
+    }
+
+    function resetScanner() {
+
+        canScan = true;
+
+        document.getElementById("resultBox").className = "";
+
+        document.getElementById("resultBox").innerHTML = `
+
+            <div class="waiting-content">
+
+                <i class="fa-solid fa-qrcode"></i>
+
+                <div class="waiting-title">
+                    Waiting for scan...
+                </div>
+
+                <div class="waiting-subtitle">
+                    Select TIME IN or TIME OUT and scan
+                </div>
+
+            </div>
+        `;
     }
 
     function sendScan(employeeId) {
+
+        const resultBox =
+            document.getElementById("resultBox");
+
         if (!scanType) {
-            const resultBox = document.getElementById("resultBox");
+
             resultBox.className = "error";
-            resultBox.innerHTML = "Please select TIME IN or TIME OUT first.";
+
+            resultBox.innerHTML = `
+                <div>
+                    <div class="scan-type">
+                        ERROR
+                    </div>
+
+                    <div class="small">
+                        Please select TIME IN or TIME OUT first.
+                    </div>
+                </div>
+            `;
+
             canScan = true;
+
             return;
         }
 
+        resultBox.className = "processing";
+
+        resultBox.innerHTML = `
+            <div>
+                <div class="scan-type">
+                    PROCESSING
+                </div>
+
+                <div class="small">
+                    Please wait...
+                </div>
+            </div>
+        `;
+
         fetch("/api/attendance/scan/", {
+
             method: "POST",
+
             headers: {
                 "Content-Type": "application/json"
             },
+
             body: JSON.stringify({
+
                 employee_id: employeeId,
                 scan_type: scanType
             })
+
         })
+
         .then(response => response.json())
+
         .then(data => {
-            const resultBox = document.getElementById("resultBox");
 
             if (data.success) {
+
                 playBeep();
 
                 resultBox.className = "success";
+
                 resultBox.innerHTML = `
-                    ${data.type}<br>
-                    ${data.employee_name}<br>
-                    <div class="small">
-                        Employee ID: ${data.employee_id}<br>
-                        Time: ${data.time}
+                    <div>
+
+                        <div class="scan-type">
+                            ${data.type}
+                        </div>
+
+                        <div class="employee-name">
+                            ${data.employee_name}
+                        </div>
+
+                        <div class="small">
+                            Employee ID: ${data.employee_id}<br>
+                            Time: ${data.time}
+                        </div>
+
                     </div>
                 `;
+
             } else {
+
                 resultBox.className = "error";
-                resultBox.innerHTML = data.message || data.error || "Scan failed.";
+
+                resultBox.innerHTML = `
+                    <div>
+
+                        <div class="scan-type">
+                            ERROR
+                        </div>
+
+                        <div class="small">
+                            ${data.message || data.error || "Scan failed."}
+                        </div>
+
+                    </div>
+                `;
             }
 
-            setTimeout(() => {
-                canScan = true;
-                resultBox.className = "";
-                resultBox.innerHTML = "Waiting for scan...";
-            }, 3000);
-        })
-        .catch(() => {
-            const resultBox = document.getElementById("resultBox");
-            resultBox.className = "error";
-            resultBox.innerHTML = "Connection error. Please try again.";
+            setTimeout(resetScanner, 3500);
 
-            setTimeout(() => {
-                canScan = true;
-                resultBox.className = "";
-                resultBox.innerHTML = "Waiting for scan...";
-            }, 3000);
+        })
+
+        .catch(() => {
+
+            resultBox.className = "error";
+
+            resultBox.innerHTML = `
+                <div>
+
+                    <div class="scan-type">
+                        CONNECTION ERROR
+                    </div>
+
+                    <div class="small">
+                        Please try again.
+                    </div>
+
+                </div>
+            `;
+
+            setTimeout(resetScanner, 3500);
         });
     }
 
     function onScanSuccess(decodedText) {
+
         if (!canScan) return;
 
         canScan = false;
+
         sendScan(decodedText.trim());
     }
 
@@ -245,11 +758,20 @@
         "reader",
         {
             fps: 10,
-            qrbox: 250
-        }
+
+            qrbox: {
+                width: 240,
+                height: 240
+            },
+
+            aspectRatio: 1.0
+        },
+
+        false
     );
 
     scanner.render(onScanSuccess);
+
 </script>
 
 </body>
