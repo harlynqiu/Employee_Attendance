@@ -1,0 +1,167 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ employee.last_name }}, {{ employee.first_name }}</title>
+
+    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+<div class="main-container">
+
+    <div class="sidebar">
+        <div class="logo">HCQ <br> MARKETING</div>
+
+        <div class="menu">
+            <a href="/dashboard/" class="menu-link">
+                <div class="menu-item"><i class="fa-solid fa-house"></i> Dashboard</div>
+            </a>
+
+            <a href="/attendance-page/" class="menu-link">
+                <div class="menu-item"><i class="fa-solid fa-check"></i> Attendance</div>
+            </a>
+
+            <a href="/employees-page/" class="menu-link">
+                <div class="menu-item active"><i class="fa-solid fa-user"></i> Employees</div>
+            </a>
+
+            <a href="/admin/payroll/" class="menu-link">
+                <div class="menu-item"><i class="fa-solid fa-file"></i> Payroll</div>
+            </a>
+        </div>
+    </div>
+
+    <div class="content view-employee-content">
+
+        <div class="view-top">
+            <h1>{{ employee.last_name }}, {{ employee.first_name }}</h1>
+
+            <div class="logout">
+                <a href="{% url 'admin:logout' %}">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="employee-profile-layout">
+
+            <div class="profile-photo-area">
+                <div class="profile-photo-box"></div>
+
+                <p>Upload Image <i class="fa-solid fa-upload"></i></p>
+                <p>Upload Documents <i class="fa-solid fa-upload"></i></p>
+            </div>
+
+            <div class="profile-personal-card">
+                <h3>PERSONAL INFORMATION</h3>
+
+                <div class="profile-personal-grid">
+
+                    <div class="profile-field">
+                        <label>First Name</label>
+                        <input value="{{ employee.first_name }}" readonly>
+                    </div>
+
+                    <div class="profile-field">
+                        <label>Address</label>
+                        <input value="{{ employee.address }}" readonly>
+                    </div>
+
+                    <div class="profile-field">
+                        <label>Middle Initial</label>
+                        <input value="{{ employee.middle_initial }}" readonly>
+                    </div>
+
+                    <div class="profile-field">
+                        <label>Contact No.</label>
+                        <input value="{{ employee.contact_number }}" readonly>
+                    </div>
+
+                    <div class="profile-field">
+                        <label>Last Name</label>
+                        <input value="{{ employee.last_name }}" readonly>
+                    </div>
+
+                    <div class="profile-field">
+                        <label>&nbsp;</label>
+                        <input readonly>
+                    </div>
+
+                    <div class="profile-field">
+                        <label>Birthday</label>
+                        <input value="{{ employee.date_of_birth|date:'F j, Y' }}" readonly>
+                    </div>
+
+                    <div class="profile-field">
+                        <label>Spouse Name</label>
+                        <input value="{{ employee.spouse_name }}" readonly>
+                    </div>
+
+                    <div class="profile-field">
+                        <label>Citizenship</label>
+                        <input value="{{ employee.citizenship }}" readonly>
+                    </div>
+
+                    <div class="profile-field">
+                        <label>Contact No.</label>
+                        <input value="{{ employee.spouse_contact_number }}" readonly>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="profile-work-card">
+                <h3>WORK POSITION</h3>
+
+                <div class="profile-small-field">
+                    <label>Position</label>
+                    <input value="{{ employee.position }}" readonly>
+                </div>
+
+                <div class="profile-small-field">
+                    <label>Salary Rate</label>
+                    <input value="{{ employee.rate }}" readonly>
+                </div>
+
+                <div class="profile-small-field">
+                    <label>Date Started</label>
+                    <input value="{{ employee.date_started|date:'F j, Y' }}" readonly>
+                </div>
+            </div>
+
+            <div class="profile-info-card">
+                <h3>VIEW INFORMATIONS</h3>
+
+                <div class="profile-line"></div>
+
+                <div class="profile-info-buttons">
+                    <button type="button">EDUCATIONAL INFORMATION</button>
+                    <button type="button">EMPLOYMENT HISTORY</button>
+                    <button type="button">CHARACTER REFERENCE</button>
+                </div>
+            </div>
+
+            <div class="profile-government-card">
+                <h3>GOVERNMENT DOCUMENTS</h3>
+
+                <div class="profile-gov-field"><label>SSS</label><input readonly><a href="#">VIEW FILE</a></div>
+                <div class="profile-gov-field"><label>PHILHEALTH</label><input readonly><a href="#">VIEW FILE</a></div>
+                <div class="profile-gov-field"><label>NBI CLEARANCE</label><input readonly><a href="#">VIEW FILE</a></div>
+                <div class="profile-gov-field"><label>BARANGAY CLEARANCE</label><input readonly><a href="#">VIEW FILE</a></div>
+                <div class="profile-gov-field"><label>TIN NO.</label><input readonly><a href="#">VIEW FILE</a></div>
+                <div class="profile-gov-field"><label>DRIVER'S LICENSE</label><input readonly><a href="#">VIEW FILE</a></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

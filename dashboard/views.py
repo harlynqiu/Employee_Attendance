@@ -1,9 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
 from employees.models import Employee
 from attendance.models import Attendance
-
+from employees.models import Employee
 
 def dashboard_view(request):
 
@@ -73,3 +73,31 @@ def attendance_page_view(request):
     }
 
     return render(request, 'dashboard/attendance_page.html', context)
+
+# BELOW IS FOR THE EMPLOYEES #---------------------
+
+def employees_page_view(request):
+    employees = Employee.objects.all().order_by(
+        'last_name',
+        'first_name'
+    )
+
+    context = {
+        'employees': employees,
+    }
+
+    return render(request, 'dashboard/employees_page.html', context)
+
+# BELOW IS FOR THE ADDING NEW EMPLOYEES #---------------------
+
+def new_employee_page_view(request):
+    return render(request, 'dashboard/new_employee_page.html')
+
+def view_employee_page_view(request, employee_id):
+    employee = get_object_or_404(Employee, id=employee_id)
+
+    context = {
+        'employee': employee,
+    }
+
+    return render(request, 'dashboard/view_employee_page.html', context)
