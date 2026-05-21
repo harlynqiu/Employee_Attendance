@@ -1,0 +1,377 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #efefef;
+}
+
+.main-container {
+    display: flex;
+    min-height: 100vh;
+    padding: 30px;
+}
+
+.sidebar {
+    width: 260px;
+    background: #0047b3;
+    border-radius: 35px 0 0 35px;
+    padding: 30px 20px;
+    color: white;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    line-height: 1.2;
+    margin-bottom: 55px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 10px 13px;
+    border-radius: 8px;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.menu-item.active {
+    background: white;
+    color: #0047b3;
+    font-weight: bold;
+}
+
+.content {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 0 35px 35px 0;
+    padding: 28px 35px;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.welcome-text {
+    font-size: 32px;
+    color: #003b95;
+    font-weight: 500;
+}
+
+.date-time-line {
+    margin-top: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #0047b3;
+}
+
+.logout a {
+    color: black;
+    text-decoration: none;
+}
+
+.logout i {
+    font-size: 34px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.logout i:hover {
+    color: #0047b3;
+}
+
+.divider {
+    margin-top: 14px;
+    border-bottom: 2px solid #d8d8d8;
+}
+
+.top-grid {
+    display: flex;
+    gap: 25px;
+    margin-top: 18px;
+}
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.attendance-link {
+    flex: 2;
+}
+
+.charges-link {
+    flex: 1;
+}
+
+.attendance-card {
+    height: 100%;
+    background: #ececec;
+    border-radius: 25px;
+    padding: 25px;
+}
+
+.charges-card {
+    height: 100%;
+    background: #ececec;
+    border-radius: 25px;
+    padding: 25px;
+}
+
+.attendance-card h2,
+.charges-card h2,
+.past-card h2 {
+    color: #0047b3;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.attendance-boxes {
+    display: flex;
+    gap: 20px;
+}
+
+.attendance-box {
+    flex: 1;
+    background: white;
+    border-radius: 14px;
+    padding: 25px 15px;
+    text-align: center;
+}
+
+.icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 34px;
+    color: white;
+}
+
+.green {
+    background: #3dc93d;
+}
+
+.red {
+    background: #f14f4f;
+}
+
+.yellow {
+    background: #f4cf34;
+}
+
+.label {
+    margin-top: 16px;
+    font-size: 17px;
+    color: #555;
+}
+
+.number {
+    margin-top: 12px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #0047b3;
+}
+
+.charge-box {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 16px;
+}
+
+.employee {
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.charge-details {
+    margin-top: 8px;
+    color: #666;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.past-link {
+    width: 45%;
+    margin-top: 22px;
+}
+
+.past-card {
+    width: 100%;
+    background: #ececec;
+    border-radius: 20px;
+    padding: 22px;
+}
+
+.attendance-history {
+    background: white;
+    border-radius: 10px;
+    padding: 12px 16px;
+}
+
+.history-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid #ddd;
+    font-size: 15px;
+    color: #444;
+}
+
+.history-row:last-child {
+    border-bottom: none;
+}
+
+.history-row button {
+    background: #0047b3;
+    color: white;
+    border: none;
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.history-row button:hover {
+    opacity: 0.9;
+}
+
+.attendance-card,
+.charges-card,
+.past-card,
+.attendance-box,
+.charge-box {
+    transition: all 0.3s ease;
+}
+
+.attendance-card:hover,
+.charges-card:hover,
+.past-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    cursor: pointer;
+}
+
+.attendance-box:hover,
+.charge-box:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.10);
+}
+
+.menu-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.attendance-content {
+    min-height: calc(100vh - 60px);
+}
+
+.attendance-header {
+    display: grid;
+    grid-template-columns: auto 320px 1fr;
+    align-items: center;
+    gap: 30px;
+}
+
+.attendance-header h1 {
+    color: #0047b3;
+    font-size: 34px;
+    letter-spacing: 2px;
+}
+
+.search-box {
+    height: 36px;
+    border: 1px solid #333;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+}
+
+.search-box input {
+    border: none;
+    outline: none;
+    flex: 1;
+    background: transparent;
+}
+
+.search-box i {
+    color: #111;
+}
+
+.attendance-header .logout {
+    text-align: right;
+}
+
+.attendance-date {
+    margin-top: 28px;
+    color: #0047b3;
+    font-size: 34px;
+}
+
+.attendance-table {
+    width: 95%;
+    margin-top: 30px;
+    border-collapse: collapse;
+}
+
+.attendance-table th {
+    text-align: left;
+    font-size: 18px;
+    font-weight: 500;
+    padding-bottom: 10px;
+    color: #111;
+    border-bottom: 1px solid #d6d6d6;
+}
+
+.attendance-table td {
+    padding-top: 10px;
+    font-size: 16px;
+    letter-spacing: 1px;
+    color: #4b5563;
+}
+
+.no-records {
+    text-align: center;
+    padding: 25px;
+    color: #777;
+}
+
+.attendance-past-card {
+    margin-top: 300px;
+    width: 45%;
+    background: #ececec;
+    border-radius: 20px;
+    padding: 22px;
+}
+
+.attendance-past-card h2 {
+    color: #0047b3;
+    font-size: 28px;
+    margin-bottom: 20px;
+}

@@ -12,16 +12,9 @@ from django.conf.urls.static import static
 urlpatterns = [
 
     path('admin/', admin.site.urls),
-
-    path(
-        'api/',
-        include('employees.urls')
-    ),
-
-    path(
-        'api/attendance/',
-        include('attendance.urls')
-    ),
+    path('api/',include('employees.urls')),
+    path('api/attendance/', include('attendance.urls')),
+    path('', include('dashboard.urls')),
 
 ]
 

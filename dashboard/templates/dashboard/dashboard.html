@@ -1,0 +1,121 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HCQ Marketing Dashboard</title>
+
+    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+<div class="main-container">
+
+    <div class="sidebar">
+        <div class="logo">HCQ <br> MARKETING</div>
+
+        <div class="menu">
+            <div class="menu-item active"><i class="fa-solid fa-house"></i> Dashboard</div>
+            <div class="menu-item"><i class="fa-solid fa-check"></i> Attendance</div>
+            <div class="menu-item"><i class="fa-solid fa-user"></i> Employees</div>
+            <div class="menu-item"><i class="fa-solid fa-file"></i> Payroll</div>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <div class="top-bar">
+            <div>
+                <div class="welcome-text">
+                    {{ greeting }}, User! ☀️
+                </div>
+
+                <div class="date-time-line">
+                    {{ current_date }} | {{ current_time }}
+                </div>
+            </div>
+
+            <div class="logout">
+                <a href="{% url 'admin:logout' %}">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="top-grid">
+
+            <a href="/attendance-page/" class="card-link attendance-link">
+                <div class="attendance-card">
+                    <h2>Attendance</h2>
+
+                    <div class="attendance-boxes">
+
+                        <div class="attendance-box">
+                            <div class="icon green"><i class="fa-solid fa-check"></i></div>
+                            <div class="label">Checked In</div>
+                            <div class="number">{{ checked_in }}</div>
+                        </div>
+
+                        <div class="attendance-box">
+                            <div class="icon red"><i class="fa-solid fa-xmark"></i></div>
+                            <div class="label">No Attendance</div>
+                            <div class="number">{{ no_attendance }}</div>
+                        </div>
+
+                        <div class="attendance-box">
+                            <div class="icon yellow"><i class="fa-solid fa-exclamation"></i></div>
+                            <div class="label">Late</div>
+                            <div class="number">{{ late }}</div>
+                        </div>
+
+                    </div>
+                </div>
+            </a>
+
+            <a href="/admin/payroll/" class="card-link charges-link">
+                <div class="charges-card">
+                    <h2>Charges</h2>
+
+                    <div class="charge-box">
+                        <div class="employee">Employee 0001</div>
+                        <div class="charge-details">April 26, 2026 | 1,000 Deduction on Rent</div>
+                    </div>
+
+                    <div class="charge-box">
+                        <div class="employee">Employee 0002</div>
+                        <div class="charge-details">May 1, 2026 | 450.00 Stock Charge</div>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        <a href="/admin/attendance/attendance/" class="card-link past-link">
+            <div class="past-card">
+                <h2>Past Attendances</h2>
+
+                <div class="attendance-history">
+                    <div class="history-row">
+                        <div>May 8 to May 15, 2026</div>
+                        <button type="button">Download PDF</button>
+                    </div>
+
+                    <div class="history-row">
+                        <div>May 16 to May 22, 2026</div>
+                        <button type="button">Download PDF</button>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>
