@@ -12,161 +12,181 @@
 
 <body>
 
-<div class="main-container">
+<div class="modern-page">
 
-    <div class="sidebar">
-
-        <div class="logo">
+    <aside class="modern-sidebar">
+        <div class="modern-logo">
             HCQ <br> MARKETING
         </div>
 
-        <div class="menu">
-
-            <a href="/dashboard/" class="menu-link">
-                <div class="menu-item">
-                    <i class="fa-solid fa-house"></i>
-                    Dashboard
-                </div>
+        <nav class="modern-menu">
+            <a href="/dashboard/">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
             </a>
 
-            <a href="/attendance-page/" class="menu-link">
-                <div class="menu-item">
-                    <i class="fa-solid fa-check"></i>
-                    Attendance
-                </div>
+            <a href="/attendance-page/">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Attendance</span>
             </a>
 
-            <a href="/employees-page/" class="menu-link">
-                <div class="menu-item active">
-                    <i class="fa-solid fa-user"></i>
-                    Employees
-                </div>
+            <a href="/employees-page/" class="active">
+                <i class="fa-solid fa-user"></i>
+                <span>Employees</span>
             </a>
 
-            <a href="/admin/payroll/" class="menu-link">
-                <div class="menu-item">
-                    <i class="fa-solid fa-file"></i>
-                    Payroll
-                </div>
+            <a href="/admin/payroll/">
+                <i class="fa-regular fa-file-lines"></i>
+                <span>Payroll</span>
             </a>
+        </nav>
+    </aside>
 
-        </div>
+    <main class="modern-content">
 
-    </div>
-
-    <div class="content employees-content">
-
-        <div class="employees-header">
-
+        <div class="modern-header">
             <h1>EMPLOYEES</h1>
 
-            <div class="employee-search-box">
-                <input type="text" placeholder="Search Employee">
+            <div class="modern-search">
                 <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search Employee...">
             </div>
 
-            <div class="logout">
-                <a href="{% url 'admin:logout' %}">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </a>
+            <a href="/new-employee/" class="modern-add-btn">
+                <i class="fa-solid fa-plus"></i>
+                Add New Employee
+            </a>
+
+            <a href="{% url 'admin:logout' %}" class="modern-logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+        </div>
+
+        <div class="employee-summary-grid">
+            <div class="summary-card">
+                <div class="summary-icon blue">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div>
+                    <p>Total Employees</p>
+                    <h2>{{ employees|length }}</h2>
+                    <span>All registered employees</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon green">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+                <div>
+                    <p>With Resume</p>
+                    <h2>0</h2>
+                    <span>Employees with resume</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon yellow">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+                <div>
+                    <p>Active Employees</p>
+                    <h2>{{ employees|length }}</h2>
+                    <span>Currently active</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon purple">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+                <div>
+                    <p>Average Rate</p>
+                    <h2>₱ 557.46</h2>
+                    <span>Average salary rate</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="modern-table-card">
+
+            <table class="modern-employees-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Employee Name</th>
+                        <th>D.O.B</th>
+                        <th>Date Started</th>
+                        <th>Rate</th>
+                        <th>Resume</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for employee in employees %}
+                    <tr>
+                        <td>
+                            <a href="/employees-page/{{ employee.id }}/" class="id-badge">
+                                {{ employee.employee_id }}
+                            </a>
+                        </td>
+
+                        <td>
+                            <a href="/employees-page/{{ employee.id }}/" class="name-link">
+                                {{ employee.last_name }}, {{ employee.first_name }}
+                            </a>
+                        </td>
+
+                        <td>{{ employee.date_of_birth|date:"M d, Y" }}</td>
+
+                        <td>{{ employee.date_started|date:"M d, Y" }}</td>
+
+                        <td>₱ {{ employee.rate }}</td>
+
+                        <td>
+                            {% if employee.resume %}
+                                <a href="{{ employee.resume.url }}" target="_blank" class="resume-badge has-file">
+                                    View PDF
+                                </a>
+                            {% else %}
+                                <span class="resume-badge">No File</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <a href="/employees-page/{{ employee.id }}/" class="view-btn">
+                                <i class="fa-regular fa-eye"></i>
+                                View
+                            </a>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="no-records">
+                            No employees found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="table-footer">
+                <p>Showing employees list</p>
+
+                <div class="pagination">
+                    <button type="button"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button type="button" class="active">1</button>
+                    <button type="button">2</button>
+                    <button type="button">3</button>
+                    <button type="button"><i class="fa-solid fa-arrow-right"></i></button>
+                </div>
             </div>
 
         </div>
 
-        <a href="/new-employee/" class="add-employee-btn">
-            Add New Employee
-        </a>
-
-        <table class="employees-table">
-
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Last Name</th>
-                    <th>First Name</th>
-                    <th>D.O.B</th>
-                    <th>Date Started</th>
-                    <th>Rate</th>
-                    <th>Resume</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                {% for employee in employees %}
-                <tr>
-
-                    <td>
-                        <a href="/employees-page/{{ employee.id }}/" class="employee-link">
-                            {{ employee.employee_id }}
-                        </a>
-                    </td>
-
-                    <td>
-                        <a href="/employees-page/{{ employee.id }}/" class="employee-link">
-                            {{ employee.last_name }}
-                        </a>
-                    </td>
-
-                    <td>
-                        <a href="/employees-page/{{ employee.id }}/" class="employee-link">
-                            {{ employee.first_name }}
-                        </a>
-                    </td>
-
-                    <td>
-                        {{ employee.date_of_birth|date:"F j, Y" }}
-                    </td>
-
-                    <td>
-                        {{ employee.date_started|date:"F j, Y" }}
-                    </td>
-
-                    <td>
-                        ₱ {{ employee.rate }}
-                    </td>
-
-                    <td>
-
-                        {% if employee.resume %}
-
-                            <a href="{{ employee.resume.url }}"
-                               target="_blank"
-                               class="resume-link">
-
-                                View PDF
-
-                            </a>
-
-                        {% else %}
-
-                            <span class="no-resume">
-                                No File
-                            </span>
-
-                        {% endif %}
-
-                    </td>
-
-                </tr>
-
-                {% empty %}
-
-                <tr>
-
-                    <td colspan="7" class="no-records">
-                        No employees found.
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
+    </main>
 
 </div>
 

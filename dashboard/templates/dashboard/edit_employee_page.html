@@ -1,0 +1,555 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Employee</title>
+
+    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+<div class="employee-page">
+
+    <aside class="employee-sidebar">
+
+        <div class="employee-logo">
+            HCQ <br> MARKETING
+        </div>
+
+        <nav class="employee-menu">
+
+            <a href="/dashboard/">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/attendance-page/">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Attendance</span>
+            </a>
+
+            <a href="/employees-page/" class="active">
+                <i class="fa-regular fa-user"></i>
+                <span>Employees</span>
+            </a>
+
+            <a href="/admin/payroll/">
+                <i class="fa-regular fa-file-lines"></i>
+                <span>Payroll</span>
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <main class="employee-content">
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="employee-header">
+
+                <div>
+
+                    <h1>
+                        Edit:
+                        {{ employee.last_name }},
+                        {{ employee.first_name }}
+                    </h1>
+
+                    <p>
+                        <a href="/employees-page/">Employees</a>
+                        <span>›</span>
+                        Edit Employee
+                    </p>
+
+                </div>
+
+                <div class="profile-header-actions">
+
+                    <button type="submit" class="save-employee-btn">
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Save Changes
+
+                    </button>
+
+                    <a href="/employees-page/{{ employee.id }}/"
+                       class="cancel-edit-btn">
+
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Cancel
+
+                    </a>
+
+                    <a href="{% url 'admin:logout' %}" class="logout-btn">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+            <div class="employee-grid">
+
+                <!-- PHOTO -->
+
+                <section class="profile-card photo-card">
+
+                    <div class="avatar-wrap">
+
+                        <div class="avatar">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+
+                        <button class="camera-btn" type="button">
+                            <i class="fa-solid fa-camera"></i>
+                        </button>
+
+                    </div>
+
+                    <p class="upload-title">
+                        Update Photo
+                    </p>
+
+                    <p class="upload-subtitle">
+                        JPG, PNG up to 2MB
+                    </p>
+
+                    <button class="upload-doc-btn" type="button">
+                        <i class="fa-regular fa-file-arrow-up"></i>
+                        Upload Documents
+                    </button>
+
+                </section>
+
+                <!-- PERSONAL -->
+
+                <section class="profile-card personal-card">
+
+                    <div class="card-title">
+
+                        <div class="title-icon">
+                            <i class="fa-regular fa-user"></i>
+                        </div>
+
+                        <h3>PERSONAL INFORMATION</h3>
+
+                    </div>
+
+                    <div class="profile-divider"></div>
+
+                    <div class="personal-grid">
+
+                        <div class="field-row">
+                            <label>First Name</label>
+
+                            <input
+                                type="text"
+                                name="first_name"
+                                value="{{ employee.first_name }}"
+                            >
+                        </div>
+
+                        <div class="field-row">
+                            <label>Address</label>
+
+                            <input
+                                type="text"
+                                name="address"
+                                value="{{ employee.address }}"
+                            >
+                        </div>
+
+                        <div class="field-row">
+                            <label>Middle Initial</label>
+
+                            <input
+                                type="text"
+                                name="middle_initial"
+                                value="{{ employee.middle_initial }}"
+                            >
+                        </div>
+
+                        <div class="field-row">
+                            <label>Contact No.</label>
+
+                            <input
+                                type="text"
+                                name="contact_number"
+                                value="{{ employee.contact_number }}"
+                            >
+                        </div>
+
+                        <div class="field-row">
+                            <label>Last Name</label>
+
+                            <input
+                                type="text"
+                                name="last_name"
+                                value="{{ employee.last_name }}"
+                            >
+                        </div>
+
+                        <div class="field-row">
+                            <label>Spouse Name</label>
+
+                            <input
+                                type="text"
+                                name="spouse_name"
+                                value="{{ employee.spouse_name }}"
+                            >
+                        </div>
+
+                        <div class="field-row">
+                            <label>Birthday</label>
+
+                            <input
+                                type="date"
+                                name="date_of_birth"
+                                value="{{ employee.date_of_birth|date:'Y-m-d' }}"
+                            >
+                        </div>
+
+                        <div class="field-row">
+                            <label>Spouse Contact No.</label>
+
+                            <input
+                                type="text"
+                                name="spouse_contact_number"
+                                value="{{ employee.spouse_contact_number }}"
+                            >
+                        </div>
+
+                        <div class="field-row">
+                            <label>Citizenship</label>
+
+                            <input
+                                type="text"
+                                name="citizenship"
+                                value="{{ employee.citizenship }}"
+                            >
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- WORK -->
+
+                <section class="profile-card work-card">
+
+                    <div class="card-title">
+
+                        <div class="title-icon">
+                            <i class="fa-solid fa-briefcase"></i>
+                        </div>
+
+                        <h3>WORK POSITION</h3>
+
+                    </div>
+
+                    <div class="profile-divider"></div>
+
+                    <div class="small-field-row">
+
+                        <label>Position</label>
+
+                        <input
+                            type="text"
+                            name="position"
+                            value="{{ employee.position }}"
+                        >
+
+                    </div>
+
+                    <div class="small-field-row">
+
+                        <label>Salary Rate</label>
+
+                        <input
+                            type="number"
+                            name="rate"
+                            value="{{ employee.rate }}"
+                        >
+
+                    </div>
+
+                    <div class="small-field-row">
+
+                        <label>Date Started</label>
+
+                        <input
+                            type="date"
+                            name="date_started"
+                            value="{{ employee.date_started|date:'Y-m-d' }}"
+                        >
+
+                    </div>
+
+                </section>
+
+                <!-- GOVERNMENT -->
+
+                <section class="profile-card government-card">
+
+                    <div class="card-title">
+
+                        <div class="title-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+
+                        <h3>GOVERNMENT DOCUMENTS</h3>
+
+                    </div>
+
+                    <div class="profile-divider"></div>
+
+                    <div class="gov-row">
+                        <div>
+                            <i class="fa-solid fa-users"></i>
+                            <label>SSS</label>
+                        </div>
+
+                        <input type="text">
+
+                        <a href="#">View File</a>
+                    </div>
+
+                    <div class="gov-row">
+                        <div>
+                            <i class="fa-solid fa-heart-pulse"></i>
+                            <label>PhilHealth</label>
+                        </div>
+
+                        <input type="text">
+
+                        <a href="#">View File</a>
+                    </div>
+
+                    <div class="gov-row">
+                        <div>
+                            <i class="fa-solid fa-shield"></i>
+                            <label>NBI Clearance</label>
+                        </div>
+
+                        <input type="text">
+
+                        <a href="#">View File</a>
+                    </div>
+
+                </section>
+
+                <!-- INFORMATION -->
+
+                <section class="profile-card info-card">
+
+                    <div class="card-title">
+
+                        <div class="title-icon">
+                            <i class="fa-regular fa-eye"></i>
+                        </div>
+
+                        <h3>VIEW INFORMATIONS</h3>
+
+                    </div>
+
+                    <div class="profile-divider"></div>
+
+                    <div class="info-buttons">
+
+                        <button
+                            type="button"
+                            onclick="showInfoBox('educational-info')"
+                        >
+
+                            <i class="fa-solid fa-graduation-cap"></i>
+
+                            <span>
+                                Educational<br>
+                                Information
+                            </span>
+
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="showInfoBox('employment-history')"
+                        >
+
+                            <i class="fa-solid fa-briefcase"></i>
+
+                            <span>
+                                Employment<br>
+                                History
+                            </span>
+
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="showInfoBox('character-reference')"
+                        >
+
+                            <i class="fa-solid fa-circle-user"></i>
+
+                            <span>
+                                Character<br>
+                                Reference
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                    <!-- EDUCATION -->
+
+                    <div class="employee-extra-info">
+
+                        <div id="educational-info" class="extra-info-box">
+
+                            <h3>Educational Information</h3>
+
+                            <div class="extra-grid">
+
+                                <input
+                                    type="text"
+                                    name="elementary"
+                                    placeholder="Elementary"
+                                    value="{{ employee.elementary }}"
+                                >
+
+                                <input
+                                    type="text"
+                                    name="high_school"
+                                    placeholder="High School"
+                                    value="{{ employee.high_school }}"
+                                >
+
+                                <input
+                                    type="text"
+                                    name="college"
+                                    placeholder="College"
+                                    value="{{ employee.college }}"
+                                >
+
+                            </div>
+
+                        </div>
+
+                        <!-- EMPLOYMENT -->
+
+                        <div id="employment-history" class="extra-info-box">
+
+                            <h3>Employment History</h3>
+
+                            <div class="extra-grid">
+
+                                <input
+                                    type="text"
+                                    name="company_1"
+                                    placeholder="Company"
+                                    value="{{ employee.company_1 }}"
+                                >
+
+                                <input
+                                    type="text"
+                                    name="company_address_1"
+                                    placeholder="Address"
+                                    value="{{ employee.company_address_1 }}"
+                                >
+
+                                <input
+                                    type="text"
+                                    name="occupation_1"
+                                    placeholder="Occupation"
+                                    value="{{ employee.occupation_1 }}"
+                                >
+
+                                <input
+                                    type="text"
+                                    name="years_1"
+                                    placeholder="Years"
+                                    value="{{ employee.years_1 }}"
+                                >
+
+                            </div>
+
+                        </div>
+
+                        <!-- CHARACTER -->
+
+                        <div id="character-reference" class="extra-info-box">
+
+                            <h3>Character Reference</h3>
+
+                            <div class="extra-grid">
+
+                                <input
+                                    type="text"
+                                    name="reference_name_1"
+                                    placeholder="Reference Name"
+                                    value="{{ employee.reference_name_1 }}"
+                                >
+
+                                <input
+                                    type="text"
+                                    name="reference_occupation_1"
+                                    placeholder="Occupation"
+                                    value="{{ employee.reference_occupation_1 }}"
+                                >
+
+                                <input
+                                    type="text"
+                                    name="reference_contact_1"
+                                    placeholder="Contact Number"
+                                    value="{{ employee.reference_contact_1 }}"
+                                >
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </form>
+
+        <footer class="employee-footer">
+            © 2024 HCQ Marketing. All rights reserved.
+        </footer>
+
+    </main>
+
+</div>
+
+<script>
+
+function showInfoBox(boxId) {
+
+    const boxes = document.querySelectorAll('.extra-info-box');
+
+    boxes.forEach(function(box) {
+        box.style.display = 'none';
+    });
+
+    const selectedBox = document.getElementById(boxId);
+
+    if (selectedBox) {
+        selectedBox.style.display = 'block';
+    }
+
+}
+
+</script>
+
+</body>
+</html>

@@ -12,103 +12,202 @@
 
 <body>
 
-<div class="main-container">
+<div class="modern-page">
 
-    <div class="sidebar">
-        <div class="logo">HCQ <br> MARKETING</div>
-
-        <div class="menu">
-            <a href="/dashboard/" class="menu-link">
-                <div class="menu-item">
-                    <i class="fa-solid fa-house"></i> Dashboard
-                </div>
-            </a>
-
-            <a href="/attendance-page/" class="menu-link">
-                <div class="menu-item active">
-                    <i class="fa-solid fa-check"></i> Attendance
-                </div>
-            </a>
-
-            <a href="/employees-page/" class="menu-link">
-                <div class="menu-item">
-                    <i class="fa-solid fa-user"></i>
-                    Employees
-                </div>
-            </a>
-
-            <div class="menu-item">
-                <i class="fa-solid fa-file"></i> Payroll
-            </div>
+    <aside class="modern-sidebar">
+        <div class="modern-logo">
+            HCQ <br> MARKETING
         </div>
-    </div>
 
-    <div class="content attendance-content">
+        <nav class="modern-menu">
+            <a href="/dashboard/">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+            </a>
 
-        <div class="attendance-header">
-            <h1>ATTENDANCE</h1>
+            <a href="/attendance-page/" class="active">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Attendance</span>
+            </a>
 
-            <div class="search-box">
-                <input type="text">
+            <a href="/employees-page/">
+                <i class="fa-solid fa-user"></i>
+                <span>Employees</span>
+            </a>
+
+            <a href="/admin/payroll/">
+                <i class="fa-regular fa-file-lines"></i>
+                <span>Payroll</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="modern-content">
+
+        <div class="attendance-modern-header">
+            <div>
+                <h1>ATTENDANCE</h1>
+                <p>Daily attendance monitoring</p>
+            </div>
+
+            <div class="attendance-modern-search">
                 <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search employee...">
             </div>
 
-            <div class="logout">
-                <a href="{% url 'admin:logout' %}">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </a>
-            </div>
+            <a href="{% url 'admin:logout' %}" class="modern-logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
         </div>
 
-        <h2 class="attendance-date">{{ current_date }}</h2>
-
-        <table class="attendance-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Last Name</th>
-                    <th>First Name</th>
-                    <th>D.O.B</th>
-                    <th>Time In</th>
-                    <th>Time Out</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for record in attendance_records %}
-                <tr>
-                    <td>{{ record.employee.employee_id }}</td>
-                    <td>{{ record.employee.last_name }}</td>
-                    <td>{{ record.employee.first_name }}</td>
-                    <td>{{ record.employee.date_of_birth|date:"F j, Y" }}</td>
-                    <td>{{ record.time_in|date:"g:i A" }}</td>
-                    <td>{{ record.time_out|date:"g:i A" }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="no-records">No attendance records today.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <div class="attendance-past-card">
-            <h2>Past Attendances</h2>
-
-            <div class="attendance-history">
-                <div class="history-row">
-                    <div>May 8 to May 15, 2026</div>
-                    <button type="button">Download PDF</button>
+        <div class="attendance-summary-grid">
+            <div class="attendance-summary-card">
+                <div class="attendance-summary-icon blue">
+                    <i class="fa-solid fa-calendar-day"></i>
                 </div>
+                <div>
+                    <p>Today</p>
+                    <h2>{{ current_date }}</h2>
+                    <span>Current attendance date</span>
+                </div>
+            </div>
 
-                <div class="history-row">
-                    <div>May 16 to May 22, 2026</div>
-                    <button type="button">Download PDF</button>
+            <div class="attendance-summary-card">
+                <div class="attendance-summary-icon green">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+                <div>
+                    <p>Records Today</p>
+                    <h2>{{ attendance_records|length }}</h2>
+                    <span>Total attendance entries</span>
+                </div>
+            </div>
+
+            <div class="attendance-summary-card">
+                <div class="attendance-summary-icon yellow">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+                <div>
+                    <p>Status</p>
+                    <h2>Open</h2>
+                    <span>Attendance monitoring active</span>
                 </div>
             </div>
         </div>
 
-    </div>
+        <section class="attendance-table-card">
+            <div class="attendance-card-header">
+                <div>
+                    <h2>Today's Attendance</h2>
+                    <p>{{ current_date }}</p>
+                </div>
+            </div>
+
+            <table class="modern-attendance-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Employee Name</th>
+                        <th>D.O.B</th>
+                        <th>Time In</th>
+                        <th>Time Out</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for record in attendance_records %}
+                    <tr>
+                        <td>
+                            <span class="attendance-id-badge">
+                                {{ record.employee.employee_id }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <strong>{{ record.employee.last_name }}, {{ record.employee.first_name }}</strong>
+                        </td>
+
+                        <td>{{ record.employee.date_of_birth|date:"M d, Y" }}</td>
+
+                        <td>
+                            {% if record.time_in %}
+                                <span class="time-badge in">
+                                    {{ record.time_in|date:"g:i A" }}
+                                </span>
+                            {% else %}
+                                <span class="time-badge empty">--</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if record.time_out %}
+                                <span class="time-badge out">
+                                    {{ record.time_out|date:"g:i A" }}
+                                </span>
+                            {% else %}
+                                <span class="time-badge empty">--</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if record.time_out %}
+                                <span class="status-badge complete">Complete</span>
+                            {% else %}
+                                <span class="status-badge active">Timed In</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="modern-empty-state">
+                            <i class="fa-regular fa-calendar-xmark"></i>
+                            <h3>No attendance records today.</h3>
+                            <p>Attendance entries will appear here once employees scan in.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="past-attendance-modern-card">
+            <div class="attendance-card-header">
+                <div>
+                    <h2>Past Attendances</h2>
+                    <p>Download previous attendance reports</p>
+                </div>
+            </div>
+
+            <div class="past-attendance-list">
+                <div class="past-attendance-row">
+                    <div>
+                        <strong>May 8 to May 15, 2026</strong>
+                        <span>Weekly attendance report</span>
+                    </div>
+
+                    <button type="button">
+                        <i class="fa-solid fa-download"></i>
+                        Download PDF
+                    </button>
+                </div>
+
+                <div class="past-attendance-row">
+                    <div>
+                        <strong>May 16 to May 22, 2026</strong>
+                        <span>Weekly attendance report</span>
+                    </div>
+
+                    <button type="button">
+                        <i class="fa-solid fa-download"></i>
+                        Download PDF
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
 
 </div>
 

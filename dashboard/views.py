@@ -1,16 +1,13 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
 from employees.models import Employee
 from attendance.models import Attendance
-from employees.models import Employee
+
 
 def dashboard_view(request):
-
     now = timezone.localtime()
-
     today = now.date()
-
     current_hour = now.hour
 
     current_time = now.strftime("%I:%M %p")
@@ -18,10 +15,8 @@ def dashboard_view(request):
 
     if 5 <= current_hour < 12:
         greeting = "Good Morning"
-
     elif 12 <= current_hour < 17:
         greeting = "Good Afternoon"
-
     else:
         greeting = "Good Evening"
 
@@ -54,6 +49,7 @@ def dashboard_view(request):
 
     return render(request, 'dashboard/dashboard.html', context)
 
+
 # BELOW IS FOR THE ATTENDANCE #---------------------
 
 def attendance_page_view(request):
@@ -63,8 +59,7 @@ def attendance_page_view(request):
     attendance_records = Attendance.objects.filter(
         date=today
     ).select_related('employee').order_by(
-        'employee__last_name',
-        'employee__first_name'
+        'employee__employee_id'
     )
 
     context = {
@@ -74,13 +69,11 @@ def attendance_page_view(request):
 
     return render(request, 'dashboard/attendance_page.html', context)
 
+
 # BELOW IS FOR THE EMPLOYEES #---------------------
 
 def employees_page_view(request):
-    employees = Employee.objects.all().order_by(
-        'last_name',
-        'first_name'
-    )
+    employees = Employee.objects.all().order_by('employee_id')
 
     context = {
         'employees': employees,
@@ -88,10 +81,14 @@ def employees_page_view(request):
 
     return render(request, 'dashboard/employees_page.html', context)
 
+
 # BELOW IS FOR THE ADDING NEW EMPLOYEES #---------------------
 
 def new_employee_page_view(request):
     return render(request, 'dashboard/new_employee_page.html')
+
+
+# BELOW IS FOR VIEWING EMPLOYEE PROFILE #---------------------
 
 def view_employee_page_view(request, employee_id):
     employee = get_object_or_404(Employee, id=employee_id)
@@ -101,3 +98,43 @@ def view_employee_page_view(request, employee_id):
     }
 
     return render(request, 'dashboard/view_employee_page.html', context)
+
+
+# BELOW IS FOR EDITING EMPLOYEE INFORMATION #---------------------
+
+def edit_employee_page_view(request, employee_id):
+    employee = get_object_or_404(Employee, id=employee_id)
+
+    if request.method == 'POST':
+        employee.first_name = request.POST.get('first_name', '')
+        employee.middle_initial = request.POST.get('middle_initial', '')
+        employee.last_name = request.POST.get('last_name', '')
+
+        employee.address = request.POST.get('address', '')
+        employee.contact_number = request.POST.get('contact_number', '')
+
+        employee.spouse_name = request.POST.get('spouse_name', '')
+        employee.spouse_contact_number = request.POST.get('spouse_contact_number', '')
+
+        employee.citizenship = request.POST.get('citizenship', '')
+
+        date_of_birth = request.POST.get('date_of_birth')
+        if date_of_birth:
+            employee.date_of_birth = date_of_birth
+
+        employee.position = request.POST.get('position', '')
+        employee.rate = request.POST.get('rate') or 0
+
+        date_started = request.POST.get('date_started')
+        if date_started:
+            employee.date_started = date_started
+
+        employee.save()
+
+        return redirect(f'/employees-page/{employee.id}/')
+
+    context = {
+        'employee': employee,
+    }
+
+    return render(request, 'dashboard/edit_employee_page.html', context)

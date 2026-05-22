@@ -12,156 +12,431 @@
 
 <body>
 
-<div class="main-container">
+<div class="employee-page">
 
-    <div class="sidebar">
-        <div class="logo">HCQ <br> MARKETING</div>
-
-        <div class="menu">
-            <a href="/dashboard/" class="menu-link">
-                <div class="menu-item"><i class="fa-solid fa-house"></i> Dashboard</div>
-            </a>
-
-            <a href="/attendance-page/" class="menu-link">
-                <div class="menu-item"><i class="fa-solid fa-check"></i> Attendance</div>
-            </a>
-
-            <a href="/employees-page/" class="menu-link">
-                <div class="menu-item active"><i class="fa-solid fa-user"></i> Employees</div>
-            </a>
-
-            <a href="/admin/payroll/" class="menu-link">
-                <div class="menu-item"><i class="fa-solid fa-file"></i> Payroll</div>
-            </a>
+    <aside class="employee-sidebar">
+        <div class="employee-logo">
+            HCQ <br> MARKETING
         </div>
-    </div>
 
-    <div class="content view-employee-content">
+        <nav class="employee-menu">
 
-        <div class="view-top">
-            <h1>{{ employee.last_name }}, {{ employee.first_name }}</h1>
+            <a href="/dashboard/">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+            </a>
 
-            <div class="logout">
-                <a href="{% url 'admin:logout' %}">
+            <a href="/attendance-page/">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Attendance</span>
+            </a>
+
+            <a href="/employees-page/" class="active">
+                <i class="fa-regular fa-user"></i>
+                <span>Employees</span>
+            </a>
+
+            <a href="/admin/payroll/">
+                <i class="fa-regular fa-file-lines"></i>
+                <span>Payroll</span>
+            </a>
+
+        </nav>
+    </aside>
+
+    <main class="employee-content">
+
+        <div class="employee-header">
+
+            <div>
+                <h1>
+                    {{ employee.last_name }},
+                    {{ employee.first_name }}
+                    {{ employee.middle_initial }}
+                </h1>
+
+                <p>
+                    <a href="/employees-page/">Employees</a>
+                    <span>›</span>
+                    Employee Profile
+                </p>
+            </div>
+
+            <div class="profile-header-actions">
+
+                <a href="/employees-page/edit/{{ employee.id }}/"
+                   class="edit-employee-btn">
+
+                    <i class="fa-solid fa-pen"></i>
+                    Edit Employee
+
+                </a>
+
+                <a href="{% url 'admin:logout' %}" class="logout-btn">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </a>
+
             </div>
+
         </div>
 
-        <div class="employee-profile-layout">
+        <div class="employee-grid">
 
-            <div class="profile-photo-area">
-                <div class="profile-photo-box"></div>
+            <!-- PHOTO -->
 
-                <p>Upload Image <i class="fa-solid fa-upload"></i></p>
-                <p>Upload Documents <i class="fa-solid fa-upload"></i></p>
-            </div>
+            <section class="profile-card photo-card">
 
-            <div class="profile-personal-card">
-                <h3>PERSONAL INFORMATION</h3>
+                <div class="avatar-wrap">
 
-                <div class="profile-personal-grid">
+                    <div class="avatar">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
 
-                    <div class="profile-field">
+                    <button class="camera-btn" type="button">
+                        <i class="fa-solid fa-camera"></i>
+                    </button>
+
+                </div>
+
+                <p class="upload-title">
+                    Upload Photo
+                </p>
+
+                <p class="upload-subtitle">
+                    JPG, PNG up to 2MB
+                </p>
+
+                <button class="upload-doc-btn" type="button">
+                    <i class="fa-regular fa-file-arrow-up"></i>
+                    Upload Documents
+                </button>
+
+            </section>
+
+            <!-- PERSONAL -->
+
+            <section class="profile-card personal-card">
+
+                <div class="card-title">
+
+                    <div class="title-icon">
+                        <i class="fa-regular fa-user"></i>
+                    </div>
+
+                    <h3>PERSONAL INFORMATION</h3>
+
+                </div>
+
+                <div class="profile-divider"></div>
+
+                <div class="personal-grid">
+
+                    <div class="field-row">
                         <label>First Name</label>
                         <input value="{{ employee.first_name }}" readonly>
                     </div>
 
-                    <div class="profile-field">
+                    <div class="field-row">
                         <label>Address</label>
                         <input value="{{ employee.address }}" readonly>
                     </div>
 
-                    <div class="profile-field">
+                    <div class="field-row">
                         <label>Middle Initial</label>
                         <input value="{{ employee.middle_initial }}" readonly>
                     </div>
 
-                    <div class="profile-field">
+                    <div class="field-row">
                         <label>Contact No.</label>
                         <input value="{{ employee.contact_number }}" readonly>
                     </div>
 
-                    <div class="profile-field">
+                    <div class="field-row">
                         <label>Last Name</label>
                         <input value="{{ employee.last_name }}" readonly>
                     </div>
 
-                    <div class="profile-field">
-                        <label>&nbsp;</label>
-                        <input readonly>
-                    </div>
-
-                    <div class="profile-field">
-                        <label>Birthday</label>
-                        <input value="{{ employee.date_of_birth|date:'F j, Y' }}" readonly>
-                    </div>
-
-                    <div class="profile-field">
+                    <div class="field-row">
                         <label>Spouse Name</label>
                         <input value="{{ employee.spouse_name }}" readonly>
                     </div>
 
-                    <div class="profile-field">
+                    <div class="field-row">
+                        <label>Birthday</label>
+                        <input value="{{ employee.date_of_birth|date:'F j, Y' }}" readonly>
+                    </div>
+
+                    <div class="field-row">
+                        <label>Spouse Contact No.</label>
+                        <input value="{{ employee.spouse_contact_number }}" readonly>
+                    </div>
+
+                    <div class="field-row">
                         <label>Citizenship</label>
                         <input value="{{ employee.citizenship }}" readonly>
                     </div>
 
-                    <div class="profile-field">
-                        <label>Contact No.</label>
-                        <input value="{{ employee.spouse_contact_number }}" readonly>
+                </div>
+
+            </section>
+
+            <!-- WORK -->
+
+            <section class="profile-card work-card">
+
+                <div class="card-title">
+
+                    <div class="title-icon">
+                        <i class="fa-solid fa-briefcase"></i>
                     </div>
 
+                    <h3>WORK POSITION</h3>
+
                 </div>
-            </div>
 
-            <div class="profile-work-card">
-                <h3>WORK POSITION</h3>
+                <div class="profile-divider"></div>
 
-                <div class="profile-small-field">
+                <div class="small-field-row">
                     <label>Position</label>
                     <input value="{{ employee.position }}" readonly>
                 </div>
 
-                <div class="profile-small-field">
+                <div class="small-field-row">
                     <label>Salary Rate</label>
                     <input value="{{ employee.rate }}" readonly>
                 </div>
 
-                <div class="profile-small-field">
+                <div class="small-field-row">
                     <label>Date Started</label>
                     <input value="{{ employee.date_started|date:'F j, Y' }}" readonly>
                 </div>
-            </div>
 
-            <div class="profile-info-card">
-                <h3>VIEW INFORMATIONS</h3>
+            </section>
 
-                <div class="profile-line"></div>
+            <!-- GOVERNMENT -->
 
-                <div class="profile-info-buttons">
-                    <button type="button">EDUCATIONAL INFORMATION</button>
-                    <button type="button">EMPLOYMENT HISTORY</button>
-                    <button type="button">CHARACTER REFERENCE</button>
+            <section class="profile-card government-card">
+
+                <div class="card-title">
+
+                    <div class="title-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+
+                    <h3>GOVERNMENT DOCUMENTS</h3>
+
                 </div>
-            </div>
 
-            <div class="profile-government-card">
-                <h3>GOVERNMENT DOCUMENTS</h3>
+                <div class="profile-divider"></div>
 
-                <div class="profile-gov-field"><label>SSS</label><input readonly><a href="#">VIEW FILE</a></div>
-                <div class="profile-gov-field"><label>PHILHEALTH</label><input readonly><a href="#">VIEW FILE</a></div>
-                <div class="profile-gov-field"><label>NBI CLEARANCE</label><input readonly><a href="#">VIEW FILE</a></div>
-                <div class="profile-gov-field"><label>BARANGAY CLEARANCE</label><input readonly><a href="#">VIEW FILE</a></div>
-                <div class="profile-gov-field"><label>TIN NO.</label><input readonly><a href="#">VIEW FILE</a></div>
-                <div class="profile-gov-field"><label>DRIVER'S LICENSE</label><input readonly><a href="#">VIEW FILE</a></div>
-            </div>
+                <div class="gov-row">
+                    <div>
+                        <i class="fa-solid fa-users"></i>
+                        <label>SSS</label>
+                    </div>
+
+                    <input readonly>
+
+                    <a href="#">View File</a>
+                </div>
+
+                <div class="gov-row">
+                    <div>
+                        <i class="fa-solid fa-heart-pulse"></i>
+                        <label>PhilHealth</label>
+                    </div>
+
+                    <input readonly>
+
+                    <a href="#">View File</a>
+                </div>
+
+                <div class="gov-row">
+                    <div>
+                        <i class="fa-solid fa-shield"></i>
+                        <label>NBI Clearance</label>
+                    </div>
+
+                    <input readonly>
+
+                    <a href="#">View File</a>
+                </div>
+
+            </section>
+
+            <!-- INFO BUTTONS -->
+
+            <section class="profile-card info-card">
+
+                <div class="card-title">
+
+                    <div class="title-icon">
+                        <i class="fa-regular fa-eye"></i>
+                    </div>
+
+                    <h3>VIEW INFORMATIONS</h3>
+
+                </div>
+
+                <div class="profile-divider"></div>
+
+                <div class="info-buttons">
+
+                    <button
+                        type="button"
+                        onclick="showInfoBox('educational-info')"
+                    >
+
+                        <i class="fa-solid fa-graduation-cap"></i>
+
+                        <span>
+                            Educational<br>
+                            Information
+                        </span>
+
+                    </button>
+
+                    <button
+                        type="button"
+                        onclick="showInfoBox('employment-history')"
+                    >
+
+                        <i class="fa-solid fa-briefcase"></i>
+
+                        <span>
+                            Employment<br>
+                            History
+                        </span>
+
+                    </button>
+
+                    <button
+                        type="button"
+                        onclick="showInfoBox('character-reference')"
+                    >
+
+                        <i class="fa-solid fa-circle-user"></i>
+
+                        <span>
+                            Character<br>
+                            Reference
+                        </span>
+
+                    </button>
+
+                </div>
+
+                <!-- EXTRA INFORMATION -->
+
+                <div class="employee-extra-info">
+
+                    <!-- EDUCATION -->
+
+                    <div id="educational-info" class="extra-info-box">
+
+                        <h3>Educational Information</h3>
+
+                        <p>
+                            <strong>Elementary:</strong>
+                            {{ employee.elementary|default:"No Data" }}
+                        </p>
+
+                        <p>
+                            <strong>High School:</strong>
+                            {{ employee.high_school|default:"No Data" }}
+                        </p>
+
+                        <p>
+                            <strong>College:</strong>
+                            {{ employee.college|default:"No Data" }}
+                        </p>
+
+                    </div>
+
+                    <!-- EMPLOYMENT -->
+
+                    <div id="employment-history" class="extra-info-box">
+
+                        <h3>Employment History</h3>
+
+                        <p>
+                            <strong>Company:</strong>
+                            {{ employee.company_1|default:"No Data" }}
+                        </p>
+
+                        <p>
+                            <strong>Address:</strong>
+                            {{ employee.company_address_1|default:"No Data" }}
+                        </p>
+
+                        <p>
+                            <strong>Occupation:</strong>
+                            {{ employee.occupation_1|default:"No Data" }}
+                        </p>
+
+                        <p>
+                            <strong>Years:</strong>
+                            {{ employee.years_1|default:"No Data" }}
+                        </p>
+
+                    </div>
+
+                    <!-- REFERENCE -->
+
+                    <div id="character-reference" class="extra-info-box">
+
+                        <h3>Character Reference</h3>
+
+                        <p>
+                            <strong>Name:</strong>
+                            {{ employee.reference_name_1|default:"No Data" }}
+                        </p>
+
+                        <p>
+                            <strong>Occupation:</strong>
+                            {{ employee.reference_occupation_1|default:"No Data" }}
+                        </p>
+
+                        <p>
+                            <strong>Contact:</strong>
+                            {{ employee.reference_contact_1|default:"No Data" }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
 
         </div>
 
-    </div>
+        <footer class="employee-footer">
+            © 2024 HCQ Marketing. All rights reserved.
+        </footer>
+
+    </main>
 
 </div>
+
+<script>
+
+function showInfoBox(boxId) {
+
+    const boxes = document.querySelectorAll('.extra-info-box');
+
+    boxes.forEach(function(box) {
+        box.style.display = 'none';
+    });
+
+    const selectedBox = document.getElementById(boxId);
+
+    if (selectedBox) {
+        selectedBox.style.display = 'block';
+    }
+
+}
+
+</script>
 
 </body>
 </html>

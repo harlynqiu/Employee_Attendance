@@ -12,195 +12,236 @@
 
 <body>
 
-<div class="main-container">
+<div class="modern-page">
 
-    <div class="sidebar">
-        <div class="logo">HCQ <br> MARKETING</div>
-
-        <div class="menu">
-            <a href="/dashboard/" class="menu-link">
-                <div class="menu-item"><i class="fa-solid fa-house"></i> Dashboard</div>
-            </a>
-
-            <a href="/attendance-page/" class="menu-link">
-                <div class="menu-item"><i class="fa-solid fa-check"></i> Attendance</div>
-            </a>
-
-            <a href="/employees-page/" class="menu-link">
-                <div class="menu-item active"><i class="fa-solid fa-user"></i> Employees</div>
-            </a>
-
-            <a href="/admin/payroll/" class="menu-link">
-                <div class="menu-item"><i class="fa-solid fa-file"></i> Payroll</div>
-            </a>
+    <aside class="modern-sidebar">
+        <div class="modern-logo">
+            HCQ <br> MARKETING
         </div>
-    </div>
 
-    <div class="content new-employee-content">
+        <nav class="modern-menu">
+            <a href="/dashboard/">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+            </a>
 
-        <div class="new-employee-header">
-            <h1>NEW EMPLOYEE</h1>
+            <a href="/attendance-page/">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Attendance</span>
+            </a>
 
-            <div class="logout">
-                <a href="{% url 'admin:logout' %}">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </a>
+            <a href="/employees-page/" class="active">
+                <i class="fa-solid fa-user"></i>
+                <span>Employees</span>
+            </a>
+
+            <a href="/admin/payroll/">
+                <i class="fa-regular fa-file-lines"></i>
+                <span>Payroll</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="modern-content">
+
+        <div class="new-modern-header">
+            <div>
+                <h1>NEW EMPLOYEE</h1>
+                <p>Employees <span>›</span> Add Employee</p>
             </div>
+
+            <a href="{% url 'admin:logout' %}" class="modern-logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
         </div>
 
-        <form class="new-employee-form">
+        <form class="modern-employee-form" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
 
-            <div class="employee-form-layout">
+            <div class="new-employee-layout">
 
-                <div class="left-upload-area">
-                    <div class="image-placeholder"></div>
+                <section class="new-photo-card">
+                    <div class="new-avatar">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
 
-                    <label class="upload-label">
-                        Upload Image <i class="fa-solid fa-upload"></i>
-                        <input type="file" hidden>
+                    <label class="photo-upload-btn">
+                        <i class="fa-solid fa-camera"></i>
+                        Upload Image
+                        <input type="file" name="image" hidden>
                     </label>
 
-                    <label class="upload-label">
-                        Upload Documents <i class="fa-solid fa-upload"></i>
-                        <input type="file" hidden>
+                    <p>JPG, PNG up to 2MB</p>
+
+                    <label class="document-upload-btn">
+                        <i class="fa-regular fa-file-arrow-up"></i>
+                        Upload Documents
+                        <input type="file" name="documents" hidden>
                     </label>
-                </div>
+                </section>
 
-                <div class="form-main-area">
-
-                    <div class="form-section">
+                <section class="new-form-card personal-new-card">
+                    <div class="new-card-title">
+                        <i class="fa-regular fa-user"></i>
                         <h3>PERSONAL INFORMATION</h3>
-
-                        <div class="two-column-form">
-                            <div>
-                                <label>First Name</label>
-                                <input type="text">
-
-                                <label>Middle Initial</label>
-                                <input type="text">
-
-                                <label>Last Name</label>
-                                <input type="text">
-
-                                <label>Birthday</label>
-                                <input type="date">
-
-                                <label>Citizenship</label>
-                                <input type="text">
-                            </div>
-
-                            <div>
-                                <label>Address</label>
-                                <input type="text">
-
-                                <label>Contact No.</label>
-                                <input type="text">
-
-                                <label>Spouse Name</label>
-                                <input type="text">
-
-                                <label>Contact No.</label>
-                                <input type="text">
-                            </div>
-                        </div>
                     </div>
 
-                    <div class="bottom-grid">
-
-                        <div>
-                            <div class="form-section">
-                                <h3>EDUCATIONAL INFORMATION</h3>
-
-                                <div class="school-row">
-                                    <label>Elementary</label>
-                                    <input type="text">
-                                    <label>Year Attended</label>
-                                    <input type="text">
-                                </div>
-
-                                <div class="school-row">
-                                    <label>High School</label>
-                                    <input type="text">
-                                    <label>Year Attended</label>
-                                    <input type="text">
-                                </div>
-
-                                <div class="school-row">
-                                    <label>College</label>
-                                    <input type="text">
-                                    <label>Year Attended</label>
-                                    <input type="text">
-                                </div>
-                            </div>
-
-                            <div class="form-section">
-                                <h3>EMPLOYMENT HISTORY</h3>
-
-                                <div class="history-grid">
-                                    <input type="text" placeholder="Name of Company">
-                                    <input type="text" placeholder="Address">
-                                    <input type="text" placeholder="Occupation">
-                                    <input type="text" placeholder="Years">
-
-                                    <input type="text">
-                                    <input type="text">
-                                    <input type="text">
-                                    <input type="text">
-
-                                    <input type="text">
-                                    <input type="text">
-                                    <input type="text">
-                                    <input type="text">
-                                </div>
-                            </div>
+                    <div class="new-form-grid two-cols">
+                        <div class="input-group">
+                            <label>First Name</label>
+                            <input type="text" name="first_name">
                         </div>
 
-                        <div>
-                            <div class="form-section">
-                                <h3>CHARACTER REFERENCE</h3>
-
-                                <div class="reference-grid">
-                                    <input type="text" placeholder="Name">
-                                    <input type="text" placeholder="Occupation">
-                                    <input type="text" placeholder="Contact Number">
-
-                                    <input type="text" placeholder="Name">
-                                    <input type="text" placeholder="Occupation">
-                                    <input type="text" placeholder="Contact Number">
-
-                                    <input type="text" placeholder="Name">
-                                    <input type="text" placeholder="Occupation">
-                                    <input type="text" placeholder="Contact Number">
-                                </div>
-                            </div>
-
-                            <div class="work-position-box">
-                                <h3>WORK POSITION</h3>
-
-                                <label>Position</label>
-                                <input type="text">
-
-                                <label>Salary Rate</label>
-                                <input type="number">
-
-                                <label>Date Started</label>
-                                <input type="date">
-                            </div>
+                        <div class="input-group">
+                            <label>Address</label>
+                            <input type="text" name="address">
                         </div>
 
+                        <div class="input-group">
+                            <label>Middle Initial</label>
+                            <input type="text" name="middle_initial">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Contact No.</label>
+                            <input type="text" name="contact_number">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Last Name</label>
+                            <input type="text" name="last_name">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Spouse Name</label>
+                            <input type="text" name="spouse_name">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Birthday</label>
+                            <input type="date" name="date_of_birth">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Spouse Contact No.</label>
+                            <input type="text" name="spouse_contact_number">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Citizenship</label>
+                            <input type="text" name="citizenship">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="new-form-card education-card">
+                    <div class="new-card-title">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <h3>EDUCATIONAL INFORMATION</h3>
                     </div>
 
-                    <div class="form-actions">
-                        <button type="button">Save Employee</button>
+                    <div class="education-row">
+                        <label>Elementary</label>
+                        <input type="text" name="elementary">
+                        <label>Year Attended</label>
+                        <input type="text" name="elementary_year">
                     </div>
 
-                </div>
+                    <div class="education-row">
+                        <label>High School</label>
+                        <input type="text" name="high_school">
+                        <label>Year Attended</label>
+                        <input type="text" name="high_school_year">
+                    </div>
 
+                    <div class="education-row">
+                        <label>College</label>
+                        <input type="text" name="college">
+                        <label>Year Attended</label>
+                        <input type="text" name="college_year">
+                    </div>
+                </section>
+
+                <section class="new-form-card reference-card">
+                    <div class="new-card-title">
+                        <i class="fa-solid fa-address-book"></i>
+                        <h3>CHARACTER REFERENCE</h3>
+                    </div>
+
+                    <div class="reference-modern-grid">
+                        <input type="text" name="reference_name_1" placeholder="Name">
+                        <input type="text" name="reference_occupation_1" placeholder="Occupation">
+                        <input type="text" name="reference_contact_1" placeholder="Contact Number">
+
+                        <input type="text" name="reference_name_2" placeholder="Name">
+                        <input type="text" name="reference_occupation_2" placeholder="Occupation">
+                        <input type="text" name="reference_contact_2" placeholder="Contact Number">
+
+                        <input type="text" name="reference_name_3" placeholder="Name">
+                        <input type="text" name="reference_occupation_3" placeholder="Occupation">
+                        <input type="text" name="reference_contact_3" placeholder="Contact Number">
+                    </div>
+                </section>
+
+                <section class="new-form-card history-card">
+                    <div class="new-card-title">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <h3>EMPLOYMENT HISTORY</h3>
+                    </div>
+
+                    <div class="history-modern-grid">
+                        <input type="text" name="company_1" placeholder="Name of Company">
+                        <input type="text" name="company_address_1" placeholder="Address">
+                        <input type="text" name="occupation_1" placeholder="Occupation">
+                        <input type="text" name="years_1" placeholder="Years">
+
+                        <input type="text" name="company_2" placeholder="Name of Company">
+                        <input type="text" name="company_address_2" placeholder="Address">
+                        <input type="text" name="occupation_2" placeholder="Occupation">
+                        <input type="text" name="years_2" placeholder="Years">
+
+                        <input type="text" name="company_3" placeholder="Name of Company">
+                        <input type="text" name="company_address_3" placeholder="Address">
+                        <input type="text" name="occupation_3" placeholder="Occupation">
+                        <input type="text" name="years_3" placeholder="Years">
+                    </div>
+                </section>
+
+                <section class="new-form-card work-new-card">
+                    <div class="new-card-title">
+                        <i class="fa-solid fa-id-card"></i>
+                        <h3>WORK POSITION</h3>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Position</label>
+                        <input type="text" name="position">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Salary Rate</label>
+                        <input type="number" name="rate">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Date Started</label>
+                        <input type="date" name="date_started">
+                    </div>
+                </section>
+
+            </div>
+
+            <div class="new-form-actions">
+                <a href="/employees-page/" class="cancel-btn">Cancel</a>
+                <button type="submit">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save Employee
+                </button>
             </div>
 
         </form>
 
-    </div>
+    </main>
 
 </div>
 

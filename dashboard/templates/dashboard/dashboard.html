@@ -12,137 +12,194 @@
 
 <body>
 
-<div class="main-container">
+<div class="modern-page">
 
-<div class="sidebar">
-
-    <div class="logo">
-        HCQ <br> MARKETING
-    </div>
-
-        <div class="menu">
-
-            <a href="/dashboard/" class="menu-link">
-                <div class="menu-item active">
-                    <i class="fa-solid fa-house"></i>
-                    Dashboard
-                </div>
-            </a>
-
-            <a href="/attendance-page/" class="menu-link">
-                <div class="menu-item">
-                    <i class="fa-solid fa-check"></i>
-                    Attendance
-                </div>
-            </a>
-
-            <a href="/employees-page/" class="menu-link">
-                <div class="menu-item">
-                    <i class="fa-solid fa-user"></i>
-                    Employees
-                </div>
-            </a>
-
-            <a href="/admin/payroll/" class="menu-link">
-                <div class="menu-item">
-                    <i class="fa-solid fa-file"></i>
-                    Payroll
-                </div>
-            </a>
-
+    <aside class="modern-sidebar">
+        <div class="modern-logo">
+            HCQ <br> MARKETING
         </div>
 
-    </div>
+        <nav class="modern-menu">
+            <a href="/dashboard/" class="active">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+            </a>
 
-    <div class="content">
+            <a href="/attendance-page/">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Attendance</span>
+            </a>
 
-        <div class="top-bar">
+            <a href="/employees-page/">
+                <i class="fa-solid fa-user"></i>
+                <span>Employees</span>
+            </a>
+
+            <a href="/admin/payroll/">
+                <i class="fa-regular fa-file-lines"></i>
+                <span>Payroll</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="modern-content">
+
+        <div class="dashboard-modern-header">
             <div>
-                <div class="welcome-text">
-                    {{ greeting }}, User! ☀️
-                </div>
-
-                <div class="date-time-line">
-                    {{ current_date }} | {{ current_time }}
-                </div>
+                <h1>{{ greeting }}, User! ☀️</h1>
+                <p>{{ current_date }} <span>|</span> {{ current_time }}</p>
             </div>
 
-            <div class="logout">
-                <a href="{% url 'admin:logout' %}">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </a>
-            </div>
+            <a href="{% url 'admin:logout' %}" class="modern-logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
         </div>
 
-        <div class="divider"></div>
+        <div class="dashboard-summary-grid">
 
-        <div class="top-grid">
-
-            <a href="/attendance-page/" class="card-link attendance-link">
-                <div class="attendance-card">
-                    <h2>Attendance</h2>
-
-                    <div class="attendance-boxes">
-
-                        <div class="attendance-box">
-                            <div class="icon green"><i class="fa-solid fa-check"></i></div>
-                            <div class="label">Checked In</div>
-                            <div class="number">{{ checked_in }}</div>
-                        </div>
-
-                        <div class="attendance-box">
-                            <div class="icon red"><i class="fa-solid fa-xmark"></i></div>
-                            <div class="label">No Attendance</div>
-                            <div class="number">{{ no_attendance }}</div>
-                        </div>
-
-                        <div class="attendance-box">
-                            <div class="icon yellow"><i class="fa-solid fa-exclamation"></i></div>
-                            <div class="label">Late</div>
-                            <div class="number">{{ late }}</div>
-                        </div>
-
-                    </div>
+            <a href="/attendance-page/" class="dashboard-summary-card">
+                <div class="dashboard-icon green">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <div>
+                    <p>Checked In</p>
+                    <h2>{{ checked_in }}</h2>
+                    <span>Employees present today</span>
                 </div>
             </a>
 
-            <a href="/admin/payroll/" class="card-link charges-link">
-                <div class="charges-card">
-                    <h2>Charges</h2>
+            <a href="/attendance-page/" class="dashboard-summary-card">
+                <div class="dashboard-icon red">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+                <div>
+                    <p>No Attendance</p>
+                    <h2>{{ no_attendance }}</h2>
+                    <span>Employees without record</span>
+                </div>
+            </a>
 
-                    <div class="charge-box">
-                        <div class="employee">Employee 0001</div>
-                        <div class="charge-details">April 26, 2026 | 1,000 Deduction on Rent</div>
-                    </div>
-
-                    <div class="charge-box">
-                        <div class="employee">Employee 0002</div>
-                        <div class="charge-details">May 1, 2026 | 450.00 Stock Charge</div>
-                    </div>
+            <a href="/attendance-page/" class="dashboard-summary-card">
+                <div class="dashboard-icon yellow">
+                    <i class="fa-solid fa-exclamation"></i>
+                </div>
+                <div>
+                    <p>Late</p>
+                    <h2>{{ late }}</h2>
+                    <span>Late employees today</span>
                 </div>
             </a>
 
         </div>
 
-        <a href="/admin/attendance/attendance/" class="card-link past-link">
-            <div class="past-card">
-                <h2>Past Attendances</h2>
+        <div class="dashboard-main-grid">
 
-                <div class="attendance-history">
-                    <div class="history-row">
-                        <div>May 8 to May 15, 2026</div>
-                        <button type="button">Download PDF</button>
+            <section class="dashboard-card dashboard-attendance-card">
+                <div class="dashboard-card-title">
+                    <div>
+                        <h2>Attendance Overview</h2>
+                        <p>Today’s employee attendance summary</p>
                     </div>
 
-                    <div class="history-row">
-                        <div>May 16 to May 22, 2026</div>
-                        <button type="button">Download PDF</button>
+                    <a href="/attendance-page/">View Details</a>
+                </div>
+
+                <div class="attendance-overview-grid">
+                    <div class="attendance-overview-box">
+                        <i class="fa-solid fa-user-check"></i>
+                        <span>Checked In</span>
+                        <strong>{{ checked_in }}</strong>
+                    </div>
+
+                    <div class="attendance-overview-box">
+                        <i class="fa-solid fa-user-xmark"></i>
+                        <span>No Attendance</span>
+                        <strong>{{ no_attendance }}</strong>
+                    </div>
+
+                    <div class="attendance-overview-box">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>Late</span>
+                        <strong>{{ late }}</strong>
                     </div>
                 </div>
-            </div>
-        </a>
+            </section>
 
-    </div>
+            <section class="dashboard-card dashboard-charges-card">
+                <div class="dashboard-card-title">
+                    <div>
+                        <h2>Charges</h2>
+                        <p>Recent employee deductions</p>
+                    </div>
+
+                    <a href="/admin/payroll/">View Payroll</a>
+                </div>
+
+                <div class="modern-charge-list">
+                    <div class="modern-charge-row">
+                        <div class="charge-icon">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+
+                        <div>
+                            <strong>Employee 0001</strong>
+                            <span>April 26, 2026 | ₱1,000 Deduction on Rent</span>
+                        </div>
+                    </div>
+
+                    <div class="modern-charge-row">
+                        <div class="charge-icon">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+
+                        <div>
+                            <strong>Employee 0002</strong>
+                            <span>May 1, 2026 | ₱450.00 Stock Charge</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="dashboard-card dashboard-past-card">
+                <div class="dashboard-card-title">
+                    <div>
+                        <h2>Past Attendances</h2>
+                        <p>Download previous attendance reports</p>
+                    </div>
+
+                    <a href="/admin/attendance/attendance/">View All</a>
+                </div>
+
+                <div class="modern-past-list">
+                    <div class="modern-past-row">
+                        <div>
+                            <strong>May 8 to May 15, 2026</strong>
+                            <span>Weekly attendance report</span>
+                        </div>
+
+                        <button type="button">
+                            <i class="fa-solid fa-download"></i>
+                            Download PDF
+                        </button>
+                    </div>
+
+                    <div class="modern-past-row">
+                        <div>
+                            <strong>May 16 to May 22, 2026</strong>
+                            <span>Weekly attendance report</span>
+                        </div>
+
+                        <button type="button">
+                            <i class="fa-solid fa-download"></i>
+                            Download PDF
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
 
 </div>
 
