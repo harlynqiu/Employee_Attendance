@@ -337,6 +337,12 @@ class Employee(models.Model):
 
     # FILES
 
+    photo = models.ImageField(
+        upload_to='employee_photos/',
+        blank=True,
+        null=True
+    )
+
     qr_code = models.ImageField(
         upload_to='employee_qrcodes/',
         blank=True,

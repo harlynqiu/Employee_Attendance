@@ -8,6 +8,15 @@
 
     <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+    </style>
 </head>
 
 <body>
@@ -20,7 +29,6 @@
         </div>
 
         <nav class="employee-menu">
-
             <a href="/dashboard/">
                 <i class="fa-solid fa-house"></i>
                 <span>Dashboard</span>
@@ -40,14 +48,12 @@
                 <i class="fa-regular fa-file-lines"></i>
                 <span>Payroll</span>
             </a>
-
         </nav>
     </aside>
 
     <main class="employee-content">
 
         <div class="employee-header">
-
             <div>
                 <h1>
                     {{ employee.last_name }},
@@ -63,68 +69,50 @@
             </div>
 
             <div class="profile-header-actions">
-
-                <a href="/employees-page/edit/{{ employee.id }}/"
-                   class="edit-employee-btn">
-
+                <a href="/employees-page/edit/{{ employee.id }}/" class="edit-employee-btn">
                     <i class="fa-solid fa-pen"></i>
                     Edit Employee
-
                 </a>
 
                 <a href="{% url 'admin:logout' %}" class="logout-btn">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </a>
-
             </div>
-
         </div>
 
         <div class="employee-grid">
 
             <!-- PHOTO -->
-
             <section class="profile-card photo-card">
 
                 <div class="avatar-wrap">
-
                     <div class="avatar">
-                        <i class="fa-solid fa-user"></i>
+                        {% if employee.photo %}
+                            <img src="{{ employee.photo.url }}" alt="Employee Photo">
+                        {% else %}
+                            <i class="fa-solid fa-user"></i>
+                        {% endif %}
                     </div>
-
-                    <button class="camera-btn" type="button">
-                        <i class="fa-solid fa-camera"></i>
-                    </button>
-
                 </div>
 
                 <p class="upload-title">
-                    Upload Photo
+                    {{ employee.employee_id }}
                 </p>
 
                 <p class="upload-subtitle">
-                    JPG, PNG up to 2MB
+                    Employee Photo
                 </p>
-
-                <button class="upload-doc-btn" type="button">
-                    <i class="fa-regular fa-file-arrow-up"></i>
-                    Upload Documents
-                </button>
 
             </section>
 
             <!-- PERSONAL -->
-
             <section class="profile-card personal-card">
 
                 <div class="card-title">
-
                     <div class="title-icon">
                         <i class="fa-regular fa-user"></i>
                     </div>
-
                     <h3>PERSONAL INFORMATION</h3>
-
                 </div>
 
                 <div class="profile-divider"></div>
@@ -133,32 +121,32 @@
 
                     <div class="field-row">
                         <label>First Name</label>
-                        <input value="{{ employee.first_name }}" readonly>
+                        <input value="{{ employee.first_name|default:'' }}" readonly>
                     </div>
 
                     <div class="field-row">
                         <label>Address</label>
-                        <input value="{{ employee.address }}" readonly>
+                        <input value="{{ employee.address|default:'' }}" readonly>
                     </div>
 
                     <div class="field-row">
                         <label>Middle Initial</label>
-                        <input value="{{ employee.middle_initial }}" readonly>
+                        <input value="{{ employee.middle_initial|default:'' }}" readonly>
                     </div>
 
                     <div class="field-row">
                         <label>Contact No.</label>
-                        <input value="{{ employee.contact_number }}" readonly>
+                        <input value="{{ employee.contact_number|default:'' }}" readonly>
                     </div>
 
                     <div class="field-row">
                         <label>Last Name</label>
-                        <input value="{{ employee.last_name }}" readonly>
+                        <input value="{{ employee.last_name|default:'' }}" readonly>
                     </div>
 
                     <div class="field-row">
                         <label>Spouse Name</label>
-                        <input value="{{ employee.spouse_name }}" readonly>
+                        <input value="{{ employee.spouse_name|default:'' }}" readonly>
                     </div>
 
                     <div class="field-row">
@@ -168,42 +156,37 @@
 
                     <div class="field-row">
                         <label>Spouse Contact No.</label>
-                        <input value="{{ employee.spouse_contact_number }}" readonly>
+                        <input value="{{ employee.spouse_contact_number|default:'' }}" readonly>
                     </div>
 
                     <div class="field-row">
                         <label>Citizenship</label>
-                        <input value="{{ employee.citizenship }}" readonly>
+                        <input value="{{ employee.citizenship|default:'' }}" readonly>
                     </div>
 
                 </div>
-
             </section>
 
             <!-- WORK -->
-
             <section class="profile-card work-card">
 
                 <div class="card-title">
-
                     <div class="title-icon">
                         <i class="fa-solid fa-briefcase"></i>
                     </div>
-
                     <h3>WORK POSITION</h3>
-
                 </div>
 
                 <div class="profile-divider"></div>
 
                 <div class="small-field-row">
                     <label>Position</label>
-                    <input value="{{ employee.position }}" readonly>
+                    <input value="{{ employee.position|default:'' }}" readonly>
                 </div>
 
                 <div class="small-field-row">
                     <label>Salary Rate</label>
-                    <input value="{{ employee.rate }}" readonly>
+                    <input value="{{ employee.rate|default:'' }}" readonly>
                 </div>
 
                 <div class="small-field-row">
@@ -214,17 +197,13 @@
             </section>
 
             <!-- GOVERNMENT -->
-
             <section class="profile-card government-card">
 
                 <div class="card-title">
-
                     <div class="title-icon">
                         <i class="fa-solid fa-shield-halved"></i>
                     </div>
-
                     <h3>GOVERNMENT DOCUMENTS</h3>
-
                 </div>
 
                 <div class="profile-divider"></div>
@@ -235,9 +214,13 @@
                         <label>SSS</label>
                     </div>
 
-                    <input readonly>
+                    <input value="{{ employee.sss_number|default:'' }}" readonly>
 
-                    <a href="#">View File</a>
+                    {% if employee.sss_file %}
+                        <a href="{{ employee.sss_file.url }}" target="_blank">View File</a>
+                    {% else %}
+                        <span>No file</span>
+                    {% endif %}
                 </div>
 
                 <div class="gov-row">
@@ -246,9 +229,13 @@
                         <label>PhilHealth</label>
                     </div>
 
-                    <input readonly>
+                    <input value="{{ employee.philhealth_number|default:'' }}" readonly>
 
-                    <a href="#">View File</a>
+                    {% if employee.philhealth_file %}
+                        <a href="{{ employee.philhealth_file.url }}" target="_blank">View File</a>
+                    {% else %}
+                        <span>No file</span>
+                    {% endif %}
                 </div>
 
                 <div class="gov-row">
@@ -257,83 +244,51 @@
                         <label>NBI Clearance</label>
                     </div>
 
-                    <input readonly>
+                    <input value="{{ employee.nbi_clearance_number|default:'' }}" readonly>
 
-                    <a href="#">View File</a>
+                    {% if employee.nbi_clearance_file %}
+                        <a href="{{ employee.nbi_clearance_file.url }}" target="_blank">View File</a>
+                    {% else %}
+                        <span>No file</span>
+                    {% endif %}
                 </div>
 
             </section>
 
             <!-- INFO BUTTONS -->
-
             <section class="profile-card info-card">
 
                 <div class="card-title">
-
                     <div class="title-icon">
                         <i class="fa-regular fa-eye"></i>
                     </div>
-
-                    <h3>VIEW INFORMATIONS</h3>
-
+                    <h3>VIEW INFORMATION</h3>
                 </div>
 
                 <div class="profile-divider"></div>
 
                 <div class="info-buttons">
 
-                    <button
-                        type="button"
-                        onclick="showInfoBox('educational-info')"
-                    >
-
+                    <button type="button" onclick="showInfoBox('educational-info')">
                         <i class="fa-solid fa-graduation-cap"></i>
-
-                        <span>
-                            Educational<br>
-                            Information
-                        </span>
-
+                        <span>Educational<br>Information</span>
                     </button>
 
-                    <button
-                        type="button"
-                        onclick="showInfoBox('employment-history')"
-                    >
-
+                    <button type="button" onclick="showInfoBox('employment-history')">
                         <i class="fa-solid fa-briefcase"></i>
-
-                        <span>
-                            Employment<br>
-                            History
-                        </span>
-
+                        <span>Employment<br>History</span>
                     </button>
 
-                    <button
-                        type="button"
-                        onclick="showInfoBox('character-reference')"
-                    >
-
+                    <button type="button" onclick="showInfoBox('character-reference')">
                         <i class="fa-solid fa-circle-user"></i>
-
-                        <span>
-                            Character<br>
-                            Reference
-                        </span>
-
+                        <span>Character<br>Reference</span>
                     </button>
 
                 </div>
 
-                <!-- EXTRA INFORMATION -->
-
                 <div class="employee-extra-info">
 
-                    <!-- EDUCATION -->
-
                     <div id="educational-info" class="extra-info-box">
-
                         <h3>Educational Information</h3>
 
                         <p>
@@ -350,13 +305,9 @@
                             <strong>College:</strong>
                             {{ employee.college|default:"No Data" }}
                         </p>
-
                     </div>
 
-                    <!-- EMPLOYMENT -->
-
                     <div id="employment-history" class="extra-info-box">
-
                         <h3>Employment History</h3>
 
                         <p>
@@ -378,13 +329,9 @@
                             <strong>Years:</strong>
                             {{ employee.years_1|default:"No Data" }}
                         </p>
-
                     </div>
 
-                    <!-- REFERENCE -->
-
                     <div id="character-reference" class="extra-info-box">
-
                         <h3>Character Reference</h3>
 
                         <p>
@@ -401,7 +348,6 @@
                             <strong>Contact:</strong>
                             {{ employee.reference_contact_1|default:"No Data" }}
                         </p>
-
                     </div>
 
                 </div>
@@ -419,9 +365,7 @@
 </div>
 
 <script>
-
 function showInfoBox(boxId) {
-
     const boxes = document.querySelectorAll('.extra-info-box');
 
     boxes.forEach(function(box) {
@@ -433,9 +377,7 @@ function showInfoBox(boxId) {
     if (selectedBox) {
         selectedBox.style.display = 'block';
     }
-
 }
-
 </script>
 
 </body>

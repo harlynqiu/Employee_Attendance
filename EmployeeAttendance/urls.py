@@ -10,26 +10,25 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-
     path('admin/', admin.site.urls),
-    path('api/',include('employees.urls')),
-    path('api/attendance/', include('attendance.urls')),
-    path('', include('dashboard.urls')),
 
+    # API ROUTES
+    path('api/', include('employees.urls')),
+    path('api/attendance/', include('attendance.urls')),
+
+    # DASHBOARD ROUTES
+    path('', include('dashboard.urls')),
 ]
 
 
 # ==============================
-# MEDIA FILES (QR CODES, IMAGES)
+# MEDIA FILES
+# For uploaded employee photos,
+# government documents, QR codes
 # ==============================
 
-urlpatterns += static(
-    settings.MEDIA_URL,
-    document_root=settings.MEDIA_ROOT
-)
-
-
-print("DEBUG:", settings.DEBUG)
-print("MEDIA_URL:", settings.MEDIA_URL)
-print("MEDIA_ROOT:", settings.MEDIA_ROOT)
-print("URLPATTERNS:", urlpatterns)
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )

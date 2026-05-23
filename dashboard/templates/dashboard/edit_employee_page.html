@@ -8,6 +8,19 @@
 
     <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+
+        #photoPreview,
+        .avatar img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            border-radius:50%;
+        }
+
+    </style>
+
 </head>
 
 <body>
@@ -48,7 +61,7 @@
 
     <main class="employee-content">
 
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
 
             {% csrf_token %}
 
@@ -104,12 +117,47 @@
                     <div class="avatar-wrap">
 
                         <div class="avatar">
-                            <i class="fa-solid fa-user"></i>
+
+                            {% if employee.photo %}
+
+                                <img
+                                    src="{{ employee.photo.url }}"
+                                    alt="Employee Photo"
+                                    id="photoPreview"
+                                >
+
+                            {% else %}
+
+                                <i class="fa-solid fa-user"
+                                   id="defaultPhotoIcon"></i>
+
+                                <img
+                                    src=""
+                                    alt="Employee Photo"
+                                    id="photoPreview"
+                                    style="display:none;"
+                                >
+
+                            {% endif %}
+
                         </div>
 
-                        <button class="camera-btn" type="button">
+                        <button
+                            class="camera-btn"
+                            type="button"
+                            onclick="document.getElementById('photoInput').click();"
+                        >
                             <i class="fa-solid fa-camera"></i>
                         </button>
+
+                        <input
+                            type="file"
+                            id="photoInput"
+                            name="photo"
+                            accept="image/jpeg,image/png,image/jpg"
+                            style="display:none;"
+                            onchange="previewPhoto(event)"
+                        >
 
                     </div>
 
@@ -120,11 +168,6 @@
                     <p class="upload-subtitle">
                         JPG, PNG up to 2MB
                     </p>
-
-                    <button class="upload-doc-btn" type="button">
-                        <i class="fa-regular fa-file-arrow-up"></i>
-                        Upload Documents
-                    </button>
 
                 </section>
 
@@ -310,210 +353,114 @@
 
                     <div class="profile-divider"></div>
 
+                    <!-- SSS -->
+
                     <div class="gov-row">
+
                         <div>
                             <i class="fa-solid fa-users"></i>
                             <label>SSS</label>
                         </div>
 
-                        <input type="text">
+                        <input
+                            type="text"
+                            name="sss_number"
+                            value="{{ employee.sss_number }}"
+                        >
 
-                        <a href="#">View File</a>
+                        <input
+                            type="file"
+                            name="sss_file"
+                            id="sssFile"
+                            style="display:none;"
+                        >
+
+                        <button
+                            type="button"
+                            onclick="document.getElementById('sssFile').click();"
+                        >
+                            Upload
+                        </button>
+
+                        {% if employee.sss_file %}
+                            <a href="{{ employee.sss_file.url }}" target="_blank">
+                                View File
+                            </a>
+                        {% endif %}
+
                     </div>
 
+                    <!-- PHILHEALTH -->
+
                     <div class="gov-row">
+
                         <div>
                             <i class="fa-solid fa-heart-pulse"></i>
                             <label>PhilHealth</label>
                         </div>
 
-                        <input type="text">
+                        <input
+                            type="text"
+                            name="philhealth_number"
+                            value="{{ employee.philhealth_number }}"
+                        >
 
-                        <a href="#">View File</a>
+                        <input
+                            type="file"
+                            name="philhealth_file"
+                            id="philhealthFile"
+                            style="display:none;"
+                        >
+
+                        <button
+                            type="button"
+                            onclick="document.getElementById('philhealthFile').click();"
+                        >
+                            Upload
+                        </button>
+
+                        {% if employee.philhealth_file %}
+                            <a href="{{ employee.philhealth_file.url }}" target="_blank">
+                                View File
+                            </a>
+                        {% endif %}
+
                     </div>
 
+                    <!-- NBI -->
+
                     <div class="gov-row">
+
                         <div>
                             <i class="fa-solid fa-shield"></i>
                             <label>NBI Clearance</label>
                         </div>
 
-                        <input type="text">
+                        <input
+                            type="text"
+                            name="nbi_clearance_number"
+                            value="{{ employee.nbi_clearance_number }}"
+                        >
 
-                        <a href="#">View File</a>
-                    </div>
-
-                </section>
-
-                <!-- INFORMATION -->
-
-                <section class="profile-card info-card">
-
-                    <div class="card-title">
-
-                        <div class="title-icon">
-                            <i class="fa-regular fa-eye"></i>
-                        </div>
-
-                        <h3>VIEW INFORMATIONS</h3>
-
-                    </div>
-
-                    <div class="profile-divider"></div>
-
-                    <div class="info-buttons">
+                        <input
+                            type="file"
+                            name="nbi_clearance_file"
+                            id="nbiFile"
+                            style="display:none;"
+                        >
 
                         <button
                             type="button"
-                            onclick="showInfoBox('educational-info')"
+                            onclick="document.getElementById('nbiFile').click();"
                         >
-
-                            <i class="fa-solid fa-graduation-cap"></i>
-
-                            <span>
-                                Educational<br>
-                                Information
-                            </span>
-
+                            Upload
                         </button>
 
-                        <button
-                            type="button"
-                            onclick="showInfoBox('employment-history')"
-                        >
-
-                            <i class="fa-solid fa-briefcase"></i>
-
-                            <span>
-                                Employment<br>
-                                History
-                            </span>
-
-                        </button>
-
-                        <button
-                            type="button"
-                            onclick="showInfoBox('character-reference')"
-                        >
-
-                            <i class="fa-solid fa-circle-user"></i>
-
-                            <span>
-                                Character<br>
-                                Reference
-                            </span>
-
-                        </button>
-
-                    </div>
-
-                    <!-- EDUCATION -->
-
-                    <div class="employee-extra-info">
-
-                        <div id="educational-info" class="extra-info-box">
-
-                            <h3>Educational Information</h3>
-
-                            <div class="extra-grid">
-
-                                <input
-                                    type="text"
-                                    name="elementary"
-                                    placeholder="Elementary"
-                                    value="{{ employee.elementary }}"
-                                >
-
-                                <input
-                                    type="text"
-                                    name="high_school"
-                                    placeholder="High School"
-                                    value="{{ employee.high_school }}"
-                                >
-
-                                <input
-                                    type="text"
-                                    name="college"
-                                    placeholder="College"
-                                    value="{{ employee.college }}"
-                                >
-
-                            </div>
-
-                        </div>
-
-                        <!-- EMPLOYMENT -->
-
-                        <div id="employment-history" class="extra-info-box">
-
-                            <h3>Employment History</h3>
-
-                            <div class="extra-grid">
-
-                                <input
-                                    type="text"
-                                    name="company_1"
-                                    placeholder="Company"
-                                    value="{{ employee.company_1 }}"
-                                >
-
-                                <input
-                                    type="text"
-                                    name="company_address_1"
-                                    placeholder="Address"
-                                    value="{{ employee.company_address_1 }}"
-                                >
-
-                                <input
-                                    type="text"
-                                    name="occupation_1"
-                                    placeholder="Occupation"
-                                    value="{{ employee.occupation_1 }}"
-                                >
-
-                                <input
-                                    type="text"
-                                    name="years_1"
-                                    placeholder="Years"
-                                    value="{{ employee.years_1 }}"
-                                >
-
-                            </div>
-
-                        </div>
-
-                        <!-- CHARACTER -->
-
-                        <div id="character-reference" class="extra-info-box">
-
-                            <h3>Character Reference</h3>
-
-                            <div class="extra-grid">
-
-                                <input
-                                    type="text"
-                                    name="reference_name_1"
-                                    placeholder="Reference Name"
-                                    value="{{ employee.reference_name_1 }}"
-                                >
-
-                                <input
-                                    type="text"
-                                    name="reference_occupation_1"
-                                    placeholder="Occupation"
-                                    value="{{ employee.reference_occupation_1 }}"
-                                >
-
-                                <input
-                                    type="text"
-                                    name="reference_contact_1"
-                                    placeholder="Contact Number"
-                                    value="{{ employee.reference_contact_1 }}"
-                                >
-
-                            </div>
-
-                        </div>
+                        {% if employee.nbi_clearance_file %}
+                            <a href="{{ employee.nbi_clearance_file.url }}" target="_blank">
+                                View File
+                            </a>
+                        {% endif %}
 
                     </div>
 
@@ -523,30 +470,27 @@
 
         </form>
 
-        <footer class="employee-footer">
-            © 2024 HCQ Marketing. All rights reserved.
-        </footer>
-
     </main>
 
 </div>
 
 <script>
 
-function showInfoBox(boxId) {
+function previewPhoto(event) {
 
-    const boxes = document.querySelectorAll('.extra-info-box');
+    const file = event.target.files[0];
 
-    boxes.forEach(function(box) {
-        box.style.display = 'none';
-    });
+    if (!file) return;
 
-    const selectedBox = document.getElementById(boxId);
+    const preview = document.getElementById('photoPreview');
+    const icon = document.getElementById('defaultPhotoIcon');
 
-    if (selectedBox) {
-        selectedBox.style.display = 'block';
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+
+    if (icon) {
+        icon.style.display = 'none';
     }
-
 }
 
 </script>

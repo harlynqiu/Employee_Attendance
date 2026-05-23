@@ -106,6 +106,8 @@ def edit_employee_page_view(request, employee_id):
     employee = get_object_or_404(Employee, id=employee_id)
 
     if request.method == 'POST':
+        print("FILES:", request.FILES)
+
         employee.first_name = request.POST.get('first_name', '')
         employee.middle_initial = request.POST.get('middle_initial', '')
         employee.last_name = request.POST.get('last_name', '')
@@ -115,26 +117,48 @@ def edit_employee_page_view(request, employee_id):
 
         employee.spouse_name = request.POST.get('spouse_name', '')
         employee.spouse_contact_number = request.POST.get('spouse_contact_number', '')
-
         employee.citizenship = request.POST.get('citizenship', '')
 
-        date_of_birth = request.POST.get('date_of_birth')
-        if date_of_birth:
-            employee.date_of_birth = date_of_birth
-
+        employee.date_of_birth = request.POST.get('date_of_birth') or None
         employee.position = request.POST.get('position', '')
         employee.rate = request.POST.get('rate') or 0
+        employee.date_started = request.POST.get('date_started') or None
 
-        date_started = request.POST.get('date_started')
-        if date_started:
-            employee.date_started = date_started
+        employee.elementary = request.POST.get('elementary', '')
+        employee.high_school = request.POST.get('high_school', '')
+        employee.college = request.POST.get('college', '')
+
+        employee.company_1 = request.POST.get('company_1', '')
+        employee.company_address_1 = request.POST.get('company_address_1', '')
+        employee.occupation_1 = request.POST.get('occupation_1', '')
+        employee.years_1 = request.POST.get('years_1', '')
+
+        employee.reference_name_1 = request.POST.get('reference_name_1', '')
+        employee.reference_occupation_1 = request.POST.get('reference_occupation_1', '')
+        employee.reference_contact_1 = request.POST.get('reference_contact_1', '')
+
+        if 'photo' in request.FILES:
+            employee.photo = request.FILES['photo']
+
+        employee.sss_number = request.POST.get('sss_number', '')
+        employee.philhealth_number = request.POST.get('philhealth_number', '')
+        employee.nbi_clearance_number = request.POST.get('nbi_clearance_number', '')
+
+        if 'sss_file' in request.FILES:
+            employee.sss_file = request.FILES['sss_file']
+
+        if 'philhealth_file' in request.FILES:
+            employee.philhealth_file = request.FILES['philhealth_file']
+
+        if 'nbi_clearance_file' in request.FILES:
+            employee.nbi_clearance_file = request.FILES['nbi_clearance_file']
 
         employee.save()
 
+        print("SAVED PHOTO:", employee.photo)
+
         return redirect(f'/employees-page/{employee.id}/')
 
-    context = {
+    return render(request, 'dashboard/edit_employee_page.html', {
         'employee': employee,
-    }
-
-    return render(request, 'dashboard/edit_employee_page.html', context)
+    })
