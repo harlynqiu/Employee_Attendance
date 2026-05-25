@@ -1,0 +1,614 @@
+{% load static %}
+{% load humanize %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HCQ Payroll</title>
+
+    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+
+        .payroll-header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:28px;
+            gap:20px;
+        }
+
+        .payroll-title{
+            font-size:58px;
+            font-weight:900;
+            color:#061b49;
+            margin:0;
+            letter-spacing:1px;
+        }
+
+        .header-actions{
+            display:flex;
+            align-items:center;
+            gap:14px;
+        }
+
+        .payroll-search{
+            width:360px;
+            height:58px;
+            border:1px solid #dfe7f3;
+            border-radius:16px;
+            background:white;
+            display:flex;
+            align-items:center;
+            gap:12px;
+            padding:0 18px;
+        }
+
+        .payroll-search i{
+            color:#60708e;
+            font-size:16px;
+        }
+
+        .payroll-search input{
+            border:none;
+            outline:none;
+            background:transparent;
+            width:100%;
+            font-size:15px;
+            color:#061b49;
+        }
+
+        .payroll-btn{
+            height:58px;
+            padding:0 24px;
+            border:none;
+            border-radius:16px;
+            background:#0758d6;
+            color:white !important;
+            text-decoration:none;
+            font-weight:800;
+            display:flex;
+            align-items:center;
+            gap:10px;
+            box-shadow:0 12px 22px rgba(7,88,214,0.18);
+        }
+
+        .payroll-filter-card{
+            background:white;
+            border:1px solid #dfe7f3;
+            border-radius:22px;
+            padding:22px;
+            display:flex;
+            align-items:end;
+            gap:18px;
+            margin-bottom:30px;
+        }
+
+        .filter-group{
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+        }
+
+        .filter-group label{
+            font-size:13px;
+            font-weight:900;
+            color:#061b49;
+        }
+
+        .filter-group input{
+            width:210px;
+            height:52px;
+            border-radius:14px;
+            border:1px solid #dfe7f3;
+            background:#fbfdff;
+            padding:0 15px;
+            font-size:14px;
+            color:#061b49;
+        }
+
+        .filter-btn{
+            height:52px;
+            padding:0 22px;
+            border:none;
+            border-radius:14px;
+            background:#061b49;
+            color:white;
+            font-weight:800;
+            cursor:pointer;
+        }
+
+        .payroll-summary-grid{
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:22px;
+            margin-bottom:32px;
+        }
+
+        .payroll-summary-card{
+            background:white;
+            border:1px solid #dfe7f3;
+            border-radius:22px;
+            padding:26px;
+            display:flex;
+            align-items:center;
+            gap:20px;
+            min-height:135px;
+        }
+
+        .payroll-icon{
+            width:72px;
+            height:72px;
+            border-radius:18px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:28px;
+        }
+
+        .blue{
+            background:#eaf2ff;
+            color:#0758d6;
+        }
+
+        .green{
+            background:#dff8e9;
+            color:#159947;
+        }
+
+        .yellow{
+            background:#fff3c9;
+            color:#e4a400;
+        }
+
+        .purple{
+            background:#f0ddff;
+            color:#9346d6;
+        }
+
+        .payroll-summary-card p{
+            margin:0 0 7px;
+            color:#2b3d5c;
+            text-transform:uppercase;
+            font-weight:900;
+            font-size:13px;
+        }
+
+        .payroll-summary-card h2{
+            margin:0;
+            color:#061b49;
+            font-size:32px;
+            font-weight:900;
+        }
+
+        .payroll-summary-card span{
+            display:block;
+            margin-top:7px;
+            color:#61708d;
+            font-size:14px;
+        }
+
+        .payroll-table-card{
+            background:white;
+            border:1px solid #dfe7f3;
+            border-radius:24px;
+            padding:18px;
+            overflow-x:auto;
+        }
+
+        .payroll-table{
+            width:100%;
+            border-collapse:collapse;
+            min-width:1200px;
+        }
+
+        .payroll-table th{
+            text-align:left;
+            padding:18px 16px;
+            color:#0758d6;
+            font-size:13px;
+            text-transform:uppercase;
+            border-bottom:1px solid #dfe7f3;
+            white-space:nowrap;
+        }
+
+        .payroll-table td{
+            padding:18px 16px;
+            border-bottom:1px solid #edf1f7;
+            color:#061b49;
+            font-size:15px;
+            white-space:nowrap;
+        }
+
+        .employee-id{
+            background:#eef5ff;
+            color:#0758d6;
+            font-weight:900;
+            padding:10px 14px;
+            border-radius:12px;
+            display:inline-block;
+        }
+
+        .employee-name{
+            font-weight:900;
+        }
+
+        .salary{
+            font-weight:900;
+            color:#159947;
+        }
+
+        .status-badge{
+            background:#eef5ff;
+            color:#0758d6;
+            padding:9px 14px;
+            border-radius:10px;
+            font-weight:800;
+            display:inline-block;
+        }
+
+        .view-btn{
+            background:#0758d6;
+            color:white !important;
+            text-decoration:none;
+            padding:10px 18px;
+            border-radius:10px;
+            font-weight:800;
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+        }
+
+        .empty-row{
+            text-align:center;
+            padding:40px !important;
+            color:#61708d !important;
+        }
+
+        @media (max-width:1300px){
+
+            .payroll-summary-grid{
+                grid-template-columns:repeat(2,1fr);
+            }
+
+            .payroll-header{
+                flex-direction:column;
+                align-items:flex-start;
+            }
+
+            .header-actions{
+                width:100%;
+                flex-wrap:wrap;
+            }
+
+            .payroll-search{
+                width:100%;
+            }
+
+            .payroll-filter-card{
+                flex-wrap:wrap;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="modern-page">
+
+    <aside class="modern-sidebar">
+
+        <div class="modern-logo">
+            HCQ <br> MARKETING
+        </div>
+
+        <nav class="modern-menu">
+
+            <a href="/dashboard/">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/attendance-page/">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Attendance</span>
+            </a>
+
+            <a href="/employees-page/">
+                <i class="fa-solid fa-user"></i>
+                <span>Employees</span>
+            </a>
+
+            <a href="/payroll-page/" class="active">
+                <i class="fa-regular fa-file-lines"></i>
+                <span>Payroll</span>
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <main class="modern-content">
+
+        <div class="payroll-header">
+
+            <h1 class="payroll-title">
+                PAYROLL
+            </h1>
+
+            <div class="header-actions">
+
+                <form method="get" class="payroll-search">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="text"
+                        name="q"
+                        value="{{ q }}"
+                        placeholder="Search Payroll..."
+                    >
+
+                </form>
+
+                <a href="/payroll-page/add/" class="payroll-btn">
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    Add Payroll
+
+                </a>
+
+                <a href="/admin/logout/" class="modern-logout">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <form method="get" class="payroll-filter-card">
+
+            <div class="filter-group">
+
+                <label>Start Date</label>
+
+                <input
+                    type="date"
+                    name="start_date"
+                    value="{{ start_date }}"
+                >
+
+            </div>
+
+            <div class="filter-group">
+
+                <label>End Date</label>
+
+                <input
+                    type="date"
+                    name="end_date"
+                    value="{{ end_date }}"
+                >
+
+            </div>
+
+            <button type="submit" class="filter-btn">
+
+                <i class="fa-solid fa-filter"></i>
+
+                Filter Payroll
+
+            </button>
+
+        </form>
+
+        <div class="payroll-summary-grid">
+
+            <div class="payroll-summary-card">
+
+                <div class="payroll-icon blue">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <div>
+
+                    <p>Total Employees</p>
+
+                    <h2>{{ total_employees }}</h2>
+
+                    <span>Employees in payroll</span>
+
+                </div>
+
+            </div>
+
+            <div class="payroll-summary-card">
+
+                <div class="payroll-icon green">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                </div>
+
+                <div>
+
+                    <p>Total Payroll</p>
+
+                    <h2>
+                        ₱ {{ total_payroll|floatformat:2|intcomma }}
+                    </h2>
+
+                    <span>Total salary amount</span>
+
+                </div>
+
+            </div>
+
+            <div class="payroll-summary-card">
+
+                <div class="payroll-icon yellow">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+
+                <div>
+
+                    <p>Overtime</p>
+
+                    <h2>
+                        {{ total_overtime|floatformat:2 }}
+                    </h2>
+
+                    <span>Total overtime pay</span>
+
+                </div>
+
+            </div>
+
+            <div class="payroll-summary-card">
+
+                <div class="payroll-icon purple">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+
+                <div>
+
+                    <p>Deductions</p>
+
+                    <h2>
+                        ₱ {{ total_deductions|floatformat:2|intcomma }}
+                    </h2>
+
+                    <span>Total employee charges</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="payroll-table-card">
+
+            <table class="payroll-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Employee Name</th>
+                        <th>Position</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Hours</th>
+                        <th>Late</th>
+                        <th>Rate</th>
+                        <th>Salary</th>
+                        <th>Status</th>
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for row in payroll_data %}
+
+                    <tr>
+
+                        <td>
+                            <span class="employee-id">
+                                {{ row.employee.employee_id }}
+                            </span>
+                        </td>
+
+                        <td class="employee-name">
+
+                            {{ row.employee.last_name }},
+                            {{ row.employee.first_name }}
+
+                        </td>
+
+                        <td>
+                            {{ row.employee.position }}
+                        </td>
+
+                        <td>
+                            {{ row.start_date }}
+                        </td>
+
+                        <td>
+                            {{ row.end_date }}
+                        </td>
+
+                        <td>
+                            {{ row.total_payable_hours|floatformat:2 }}
+                        </td>
+
+                        <td>
+                            {{ row.total_late_minutes }}
+                        </td>
+
+                        <td>
+                            ₱ {{ row.employee.rate|floatformat:2|intcomma }}
+                        </td>
+
+                        <td class="salary">
+
+                            ₱ {{ row.total_salary|floatformat:2|intcomma }}
+
+                        </td>
+
+                        <td>
+
+                            <span class="status-badge">
+                                Saved
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <a href="#" class="view-btn">
+
+                                <i class="fa-solid fa-eye"></i>
+
+                                View
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="11" class="empty-row">
+                            No payroll records yet.
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

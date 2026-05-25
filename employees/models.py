@@ -14,6 +14,13 @@ class Employee(models.Model):
         ('hourly', 'Hourly'),
     )
 
+    EMPLOYMENT_STATUS_CHOICES = (
+        ('ACTIVE', 'Active'),
+        ('RESIGNED', 'Resigned'),
+        ('MIA', 'MIA'),
+        ('TERMINATED', 'Terminated'),
+    )
+
     employee_id = models.CharField(
         max_length=10,
         unique=True,
@@ -312,6 +319,17 @@ class Employee(models.Model):
     # WORK POSITION
 
     position = models.CharField(max_length=100)
+
+    employment_status = models.CharField(
+        max_length=20,
+        choices=EMPLOYMENT_STATUS_CHOICES,
+        default='ACTIVE'
+    )
+
+    employment_remarks = models.TextField(
+        blank=True,
+        null=True
+    )
 
     salary_type = models.CharField(
         max_length=10,

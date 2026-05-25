@@ -8,6 +8,97 @@
 
     <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .employee-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            border-radius: 999px;
+            font-weight: 900;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .employee-status span {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+        }
+
+        .status-active {
+            background: #dff8e9;
+            color: #159947;
+        }
+
+        .status-active span {
+            background: #159947;
+        }
+
+        .status-resigned {
+            background: #fff3c9;
+            color: #d89200;
+        }
+
+        .status-resigned span {
+            background: #d89200;
+        }
+
+        .status-mia {
+            background: #ffe1e1;
+            color: #d92d2d;
+        }
+
+        .status-mia span {
+            background: #d92d2d;
+        }
+
+        .status-terminated {
+            background: #e8e8e8;
+            color: #555;
+        }
+
+        .status-terminated span {
+            background: #555;
+        }
+
+        .employee-filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .status-filter-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-filter-form label {
+            font-weight: 800;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .status-filter-form select {
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            font-weight: 700;
+            outline: none;
+            background: white;
+        }
+
+        .filter-note {
+            font-size: 14px;
+            color: #666;
+            font-weight: 700;
+        }
+    </style>
 </head>
 
 <body>
@@ -35,7 +126,7 @@
                 <span>Employees</span>
             </a>
 
-            <a href="/admin/payroll/">
+            <a href="/payroll-page/">
                 <i class="fa-regular fa-file-lines"></i>
                 <span>Payroll</span>
             </a>
@@ -69,7 +160,7 @@
                 </div>
                 <div>
                     <p>Total Employees</p>
-                    <h2>{{ employees|length }}</h2>
+                    <h2>{{ total_employees }}</h2>
                     <span>All registered employees</span>
                 </div>
             </div>
@@ -79,20 +170,9 @@
                     <i class="fa-solid fa-user-check"></i>
                 </div>
                 <div>
-                    <p>With Resume</p>
-                    <h2>0</h2>
-                    <span>Employees with resume</span>
-                </div>
-            </div>
-
-            <div class="summary-card">
-                <div class="summary-icon yellow">
-                    <i class="fa-solid fa-calendar-days"></i>
-                </div>
-                <div>
-                    <p>Active Employees</p>
-                    <h2>{{ employees|length }}</h2>
-                    <span>Currently active</span>
+                    <p>Active</p>
+                    <h2>{{ active_employees }}</h2>
+                    <span>Included in payroll</span>
                 </div>
             </div>
 
@@ -102,19 +182,49 @@
                 </div>
                 <div>
                     <p>Average Rate</p>
-                    <h2>₱ 557.46</h2>
-                    <span>Average salary rate</span>
+                    <h2>₱ {{ average_rate|floatformat:2 }}</h2>
+                    <span>Average active employee rate</span>
                 </div>
             </div>
         </div>
 
         <div class="modern-table-card">
 
+            <div class="employee-filter-bar">
+                <p class="filter-note">
+                    Showing:
+                    {% if status_filter == "ALL" %}
+                        All Employees
+                    {% elif status_filter == "ACTIVE" %}
+                        Active Employees
+                    {% elif status_filter == "RESIGNED" %}
+                        Resigned Employees
+                    {% elif status_filter == "MIA" %}
+                        MIA Employees
+                    {% elif status_filter == "TERMINATED" %}
+                        Terminated Employees
+                    {% endif %}
+                </p>
+
+                <form method="get" class="status-filter-form">
+                    <label for="status">Filter Status:</label>
+
+                    <select name="status" id="status" onchange="this.form.submit()">
+                        <option value="ALL" {% if status_filter == "ALL" %}selected{% endif %}>All Employees</option>
+                        <option value="ACTIVE" {% if status_filter == "ACTIVE" %}selected{% endif %}>Active Only</option>
+                        <option value="RESIGNED" {% if status_filter == "RESIGNED" %}selected{% endif %}>Resigned</option>
+                        <option value="MIA" {% if status_filter == "MIA" %}selected{% endif %}>MIA</option>
+                        <option value="TERMINATED" {% if status_filter == "TERMINATED" %}selected{% endif %}>Terminated</option>
+                    </select>
+                </form>
+            </div>
+
             <table class="modern-employees-table">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Employee Name</th>
+                        <th>Status</th>
                         <th>D.O.B</th>
                         <th>Date Started</th>
                         <th>Rate</th>
@@ -136,6 +246,24 @@
                             <a href="/employees-page/{{ employee.id }}/" class="name-link">
                                 {{ employee.last_name }}, {{ employee.first_name }}
                             </a>
+                        </td>
+
+                        <td>
+                            <div class="
+                                employee-status
+                                {% if employee.employment_status == 'ACTIVE' %}
+                                    status-active
+                                {% elif employee.employment_status == 'RESIGNED' %}
+                                    status-resigned
+                                {% elif employee.employment_status == 'MIA' %}
+                                    status-mia
+                                {% elif employee.employment_status == 'TERMINATED' %}
+                                    status-terminated
+                                {% endif %}
+                            ">
+                                <span></span>
+                                {{ employee.get_employment_status_display }}
+                            </div>
                         </td>
 
                         <td>{{ employee.date_of_birth|date:"M d, Y" }}</td>
@@ -164,25 +292,13 @@
 
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="no-records">
+                        <td colspan="8" class="no-records">
                             No employees found.
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-
-            <div class="table-footer">
-                <p>Showing employees list</p>
-
-                <div class="pagination">
-                    <button type="button"><i class="fa-solid fa-arrow-left"></i></button>
-                    <button type="button" class="active">1</button>
-                    <button type="button">2</button>
-                    <button type="button">3</button>
-                    <button type="button"><i class="fa-solid fa-arrow-right"></i></button>
-                </div>
-            </div>
 
         </div>
 

@@ -16,6 +16,72 @@
             object-fit: cover;
             border-radius: 50%;
         }
+
+        .employee-status-badge {
+            height: 45px;
+            border-radius: 12px;
+            padding: 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 900;
+            border: none;
+        }
+
+        .employee-status-badge span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .status-active {
+            background: #dff8e9;
+            color: #159947;
+        }
+
+        .status-active span {
+            background: #159947;
+        }
+
+        .status-resigned {
+            background: #fff3c9;
+            color: #d89200;
+        }
+
+        .status-resigned span {
+            background: #d89200;
+        }
+
+        .status-mia {
+            background: #ffe1e1;
+            color: #d92d2d;
+        }
+
+        .status-mia span {
+            background: #d92d2d;
+        }
+
+        .status-terminated {
+            background: #2b2b2b;
+            color: white;
+        }
+
+        .status-terminated span {
+            background: white;
+        }
+
+        .remarks-box {
+            width: 100%;
+            min-height: 95px;
+            resize: none;
+            border: 1px solid #dfe7f3;
+            border-radius: 12px;
+            padding: 12px;
+            background: #fbfdff;
+            color: #061b49;
+            font-weight: 600;
+            font-family: Arial, sans-serif;
+        }
     </style>
 </head>
 
@@ -44,7 +110,7 @@
                 <span>Employees</span>
             </a>
 
-            <a href="/admin/payroll/">
+            <a href="/payroll-page/">
                 <i class="fa-regular fa-file-lines"></i>
                 <span>Payroll</span>
             </a>
@@ -82,7 +148,6 @@
 
         <div class="employee-grid">
 
-            <!-- PHOTO -->
             <section class="profile-card photo-card">
 
                 <div class="avatar-wrap">
@@ -105,7 +170,6 @@
 
             </section>
 
-            <!-- PERSONAL -->
             <section class="profile-card personal-card">
 
                 <div class="card-title">
@@ -167,7 +231,6 @@
                 </div>
             </section>
 
-            <!-- WORK -->
             <section class="profile-card work-card">
 
                 <div class="card-title">
@@ -185,6 +248,33 @@
                 </div>
 
                 <div class="small-field-row">
+                    <label>Employment Status</label>
+
+                    <div class="
+                        employee-status-badge
+                        {% if employee.employment_status == 'ACTIVE' %}
+                            status-active
+                        {% elif employee.employment_status == 'RESIGNED' %}
+                            status-resigned
+                        {% elif employee.employment_status == 'MIA' %}
+                            status-mia
+                        {% elif employee.employment_status == 'TERMINATED' %}
+                            status-terminated
+                        {% endif %}
+                    ">
+                        <span></span>
+                        {{ employee.get_employment_status_display }}
+                    </div>
+                </div>
+
+                {% if employee.employment_remarks %}
+                <div class="small-field-row">
+                    <label>Status Remarks</label>
+                    <textarea class="remarks-box" readonly>{{ employee.employment_remarks }}</textarea>
+                </div>
+                {% endif %}
+
+                <div class="small-field-row">
                     <label>Salary Rate</label>
                     <input value="{{ employee.rate|default:'' }}" readonly>
                 </div>
@@ -196,7 +286,6 @@
 
             </section>
 
-            <!-- GOVERNMENT -->
             <section class="profile-card government-card">
 
                 <div class="card-title">
@@ -255,7 +344,6 @@
 
             </section>
 
-            <!-- INFO BUTTONS -->
             <section class="profile-card info-card">
 
                 <div class="card-title">

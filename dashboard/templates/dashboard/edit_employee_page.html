@@ -7,7 +7,8 @@
     <title>Edit Employee</title>
 
     <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
 
@@ -17,6 +18,36 @@
             height:100%;
             object-fit:cover;
             border-radius:50%;
+        }
+
+        .status-select{
+            font-weight:900;
+        }
+
+        .remarks-box{
+            width:100%;
+            min-height:110px;
+            resize:none;
+            border:1px solid #dfe7f3;
+            border-radius:12px;
+            padding:14px;
+            background:#fbfdff;
+            color:#061b49;
+            font-size:14px;
+            font-family:Arial, sans-serif;
+        }
+
+        .remarks-label{
+            display:flex;
+            align-items:center;
+            gap:8px;
+            margin-bottom:8px;
+            font-weight:900;
+            color:#061b49;
+        }
+
+        .remarks-label i{
+            color:#d92d2d;
         }
 
     </style>
@@ -50,7 +81,7 @@
                 <span>Employees</span>
             </a>
 
-            <a href="/admin/payroll/">
+            <a href="/payroll-page/">
                 <i class="fa-regular fa-file-lines"></i>
                 <span>Payroll</span>
             </a>
@@ -88,6 +119,7 @@
                     <button type="submit" class="save-employee-btn">
 
                         <i class="fa-solid fa-floppy-disk"></i>
+
                         Save Changes
 
                     </button>
@@ -96,12 +128,16 @@
                        class="cancel-edit-btn">
 
                         <i class="fa-solid fa-arrow-left"></i>
+
                         Cancel
 
                     </a>
 
-                    <a href="{% url 'admin:logout' %}" class="logout-btn">
+                    <a href="{% url 'admin:logout' %}"
+                       class="logout-btn">
+
                         <i class="fa-solid fa-right-from-bracket"></i>
+
                     </a>
 
                 </div>
@@ -110,7 +146,7 @@
 
             <div class="employee-grid">
 
-                <!-- PHOTO -->
+                <!-- PHOTO CARD -->
 
                 <section class="profile-card photo-card">
 
@@ -120,11 +156,9 @@
 
                             {% if employee.photo %}
 
-                                <img
-                                    src="{{ employee.photo.url }}"
-                                    alt="Employee Photo"
-                                    id="photoPreview"
-                                >
+                                <img src="{{ employee.photo.url }}"
+                                     alt="Employee Photo"
+                                     id="photoPreview">
 
                             {% else %}
 
@@ -147,7 +181,9 @@
                             type="button"
                             onclick="document.getElementById('photoInput').click();"
                         >
+
                             <i class="fa-solid fa-camera"></i>
+
                         </button>
 
                         <input
@@ -171,7 +207,7 @@
 
                 </section>
 
-                <!-- PERSONAL -->
+                <!-- PERSONAL INFORMATION -->
 
                 <section class="profile-card personal-card">
 
@@ -191,99 +227,72 @@
 
                         <div class="field-row">
                             <label>First Name</label>
-
-                            <input
-                                type="text"
-                                name="first_name"
-                                value="{{ employee.first_name }}"
-                            >
+                            <input type="text"
+                                   name="first_name"
+                                   value="{{ employee.first_name|default:'' }}">
                         </div>
 
                         <div class="field-row">
                             <label>Address</label>
-
-                            <input
-                                type="text"
-                                name="address"
-                                value="{{ employee.address }}"
-                            >
+                            <input type="text"
+                                   name="address"
+                                   value="{{ employee.address|default:'' }}">
                         </div>
 
                         <div class="field-row">
                             <label>Middle Initial</label>
-
-                            <input
-                                type="text"
-                                name="middle_initial"
-                                value="{{ employee.middle_initial }}"
-                            >
+                            <input type="text"
+                                   name="middle_initial"
+                                   value="{{ employee.middle_initial|default:'' }}">
                         </div>
 
                         <div class="field-row">
                             <label>Contact No.</label>
-
-                            <input
-                                type="text"
-                                name="contact_number"
-                                value="{{ employee.contact_number }}"
-                            >
+                            <input type="text"
+                                   name="contact_number"
+                                   value="{{ employee.contact_number|default:'' }}">
                         </div>
 
                         <div class="field-row">
                             <label>Last Name</label>
-
-                            <input
-                                type="text"
-                                name="last_name"
-                                value="{{ employee.last_name }}"
-                            >
+                            <input type="text"
+                                   name="last_name"
+                                   value="{{ employee.last_name|default:'' }}">
                         </div>
 
                         <div class="field-row">
                             <label>Spouse Name</label>
-
-                            <input
-                                type="text"
-                                name="spouse_name"
-                                value="{{ employee.spouse_name }}"
-                            >
+                            <input type="text"
+                                   name="spouse_name"
+                                   value="{{ employee.spouse_name|default:'' }}">
                         </div>
 
                         <div class="field-row">
                             <label>Birthday</label>
-
-                            <input
-                                type="date"
-                                name="date_of_birth"
-                                value="{{ employee.date_of_birth|date:'Y-m-d' }}"
-                            >
+                            <input type="date"
+                                   name="date_of_birth"
+                                   value="{{ employee.date_of_birth|date:'Y-m-d' }}">
                         </div>
 
                         <div class="field-row">
                             <label>Spouse Contact No.</label>
-
-                            <input
-                                type="text"
-                                name="spouse_contact_number"
-                                value="{{ employee.spouse_contact_number }}"
-                            >
+                            <input type="text"
+                                   name="spouse_contact_number"
+                                   value="{{ employee.spouse_contact_number|default:'' }}">
                         </div>
 
                         <div class="field-row">
                             <label>Citizenship</label>
-
-                            <input
-                                type="text"
-                                name="citizenship"
-                                value="{{ employee.citizenship }}"
-                            >
+                            <input type="text"
+                                   name="citizenship"
+                                   value="{{ employee.citizenship|default:'' }}">
                         </div>
 
                     </div>
 
                 </section>
 
-                <!-- WORK -->
+                <!-- WORK POSITION -->
 
                 <section class="profile-card work-card">
 
@@ -306,8 +315,67 @@
                         <input
                             type="text"
                             name="position"
-                            value="{{ employee.position }}"
+                            value="{{ employee.position|default:'' }}"
                         >
+
+                    </div>
+
+                    <div class="small-field-row">
+
+                        <label>Employment Status</label>
+
+                        <select
+                            name="employment_status"
+                            class="status-select"
+                        >
+
+                            <option value="ACTIVE"
+                            {% if employee.employment_status == "ACTIVE" %}
+                            selected
+                            {% endif %}>
+                                Active
+                            </option>
+
+                            <option value="RESIGNED"
+                            {% if employee.employment_status == "RESIGNED" %}
+                            selected
+                            {% endif %}>
+                                Resigned
+                            </option>
+
+                            <option value="MIA"
+                            {% if employee.employment_status == "MIA" %}
+                            selected
+                            {% endif %}>
+                                MIA
+                            </option>
+
+                            <option value="TERMINATED"
+                            {% if employee.employment_status == "TERMINATED" %}
+                            selected
+                            {% endif %}>
+                                Terminated
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="small-field-row">
+
+                        <div class="remarks-label">
+
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+
+                            <label>Employment Remarks</label>
+
+                        </div>
+
+                        <textarea
+                            name="employment_remarks"
+                            class="remarks-box"
+                            placeholder="Reason for resignation, termination, MIA, suspension, etc."
+                        >{{ employee.employment_remarks|default:'' }}</textarea>
 
                     </div>
 
@@ -317,6 +385,7 @@
 
                         <input
                             type="number"
+                            step="0.01"
                             name="rate"
                             value="{{ employee.rate }}"
                         >
@@ -337,7 +406,7 @@
 
                 </section>
 
-                <!-- GOVERNMENT -->
+                <!-- GOVERNMENT DOCUMENTS -->
 
                 <section class="profile-card government-card">
 
@@ -353,8 +422,6 @@
 
                     <div class="profile-divider"></div>
 
-                    <!-- SSS -->
-
                     <div class="gov-row">
 
                         <div>
@@ -362,35 +429,23 @@
                             <label>SSS</label>
                         </div>
 
-                        <input
-                            type="text"
-                            name="sss_number"
-                            value="{{ employee.sss_number }}"
-                        >
+                        <input type="text"
+                               name="sss_number"
+                               value="{{ employee.sss_number|default:'' }}">
 
-                        <input
-                            type="file"
-                            name="sss_file"
-                            id="sssFile"
-                            style="display:none;"
-                        >
+                        <input type="file"
+                               name="sss_file"
+                               id="sssFile"
+                               style="display:none;">
 
-                        <button
-                            type="button"
-                            onclick="document.getElementById('sssFile').click();"
-                        >
+                        <button type="button"
+                                onclick="document.getElementById('sssFile').click();">
+
                             Upload
+
                         </button>
 
-                        {% if employee.sss_file %}
-                            <a href="{{ employee.sss_file.url }}" target="_blank">
-                                View File
-                            </a>
-                        {% endif %}
-
                     </div>
-
-                    <!-- PHILHEALTH -->
 
                     <div class="gov-row">
 
@@ -399,35 +454,23 @@
                             <label>PhilHealth</label>
                         </div>
 
-                        <input
-                            type="text"
-                            name="philhealth_number"
-                            value="{{ employee.philhealth_number }}"
-                        >
+                        <input type="text"
+                               name="philhealth_number"
+                               value="{{ employee.philhealth_number|default:'' }}">
 
-                        <input
-                            type="file"
-                            name="philhealth_file"
-                            id="philhealthFile"
-                            style="display:none;"
-                        >
+                        <input type="file"
+                               name="philhealth_file"
+                               id="philhealthFile"
+                               style="display:none;">
 
-                        <button
-                            type="button"
-                            onclick="document.getElementById('philhealthFile').click();"
-                        >
+                        <button type="button"
+                                onclick="document.getElementById('philhealthFile').click();">
+
                             Upload
+
                         </button>
 
-                        {% if employee.philhealth_file %}
-                            <a href="{{ employee.philhealth_file.url }}" target="_blank">
-                                View File
-                            </a>
-                        {% endif %}
-
                     </div>
-
-                    <!-- NBI -->
 
                     <div class="gov-row">
 
@@ -436,31 +479,21 @@
                             <label>NBI Clearance</label>
                         </div>
 
-                        <input
-                            type="text"
-                            name="nbi_clearance_number"
-                            value="{{ employee.nbi_clearance_number }}"
-                        >
+                        <input type="text"
+                               name="nbi_clearance_number"
+                               value="{{ employee.nbi_clearance_number|default:'' }}">
 
-                        <input
-                            type="file"
-                            name="nbi_clearance_file"
-                            id="nbiFile"
-                            style="display:none;"
-                        >
+                        <input type="file"
+                               name="nbi_clearance_file"
+                               id="nbiFile"
+                               style="display:none;">
 
-                        <button
-                            type="button"
-                            onclick="document.getElementById('nbiFile').click();"
-                        >
+                        <button type="button"
+                                onclick="document.getElementById('nbiFile').click();">
+
                             Upload
-                        </button>
 
-                        {% if employee.nbi_clearance_file %}
-                            <a href="{{ employee.nbi_clearance_file.url }}" target="_blank">
-                                View File
-                            </a>
-                        {% endif %}
+                        </button>
 
                     </div>
 
@@ -476,21 +509,23 @@
 
 <script>
 
-function previewPhoto(event) {
+function previewPhoto(event){
 
     const file = event.target.files[0];
 
-    if (!file) return;
+    if(!file) return;
 
     const preview = document.getElementById('photoPreview');
     const icon = document.getElementById('defaultPhotoIcon');
 
     preview.src = URL.createObjectURL(file);
+
     preview.style.display = 'block';
 
-    if (icon) {
+    if(icon){
         icon.style.display = 'none';
     }
+
 }
 
 </script>
