@@ -318,3 +318,33 @@ def edit_employee_page_view(request, employee_id):
             "employee": employee,
         }
     )
+
+# =========================================
+# CHARGES PAGE
+# =========================================
+
+def charges_page_view(request):
+
+    charges = Payroll.objects.filter(
+        benefits__gt=0
+    ) | Payroll.objects.filter(
+        cash_advance__gt=0
+    ) | Payroll.objects.filter(
+        charges__gt=0
+    ) | Payroll.objects.filter(
+        rent__gt=0
+    )
+
+    charges = charges.select_related(
+        "employee"
+    ).order_by(
+        "-id"
+    )
+
+    return render(
+        request,
+        "dashboard/charges_page.html",
+        {
+            "charges": charges,
+        }
+    )
