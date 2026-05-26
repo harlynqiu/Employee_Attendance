@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -132,69 +133,126 @@
                         <p>Recent employee deductions</p>
                     </div>
 
-                    <a href="/admin/payroll/">View Payroll</a>
+                    <a href="/payroll-page/">View More</a>
                 </div>
 
                 <div class="modern-charge-list">
-                    <div class="modern-charge-row">
-                        <div class="charge-icon">
-                            <i class="fa-solid fa-receipt"></i>
+
+                    {% for payroll in recent_charges %}
+
+                        <div class="modern-charge-row">
+                            <div class="charge-icon">
+                                <i class="fa-solid fa-receipt"></i>
+                            </div>
+
+                            <div>
+                                <strong>
+                                    {{ payroll.employee.employee_id }} -
+                                    {{ payroll.employee.last_name }},
+                                    {{ payroll.employee.first_name }}
+                                </strong>
+
+                                <span>
+                                    {{ payroll.start_date|date:"M d, Y" }}
+                                    to
+                                    {{ payroll.end_date|date:"M d, Y" }}
+
+                                    {% if payroll.benefits > 0 %}
+                                        | Benefits: ₱{{ payroll.benefits|floatformat:2|intcomma }}
+                                    {% endif %}
+
+                                    {% if payroll.cash_advance > 0 %}
+                                        | Cash Advance: ₱{{ payroll.cash_advance|floatformat:2|intcomma }}
+                                    {% endif %}
+
+                                    {% if payroll.charges > 0 %}
+                                        | Charges: ₱{{ payroll.charges|floatformat:2|intcomma }}
+                                    {% endif %}
+
+                                    {% if payroll.rent > 0 %}
+                                        | Rent: ₱{{ payroll.rent|floatformat:2|intcomma }}
+                                    {% endif %}
+                                </span>
+                            </div>
                         </div>
 
-                        <div>
-                            <strong>Employee 0001</strong>
-                            <span>April 26, 2026 | ₱1,000 Deduction on Rent</span>
-                        </div>
-                    </div>
+                    {% empty %}
 
-                    <div class="modern-charge-row">
-                        <div class="charge-icon">
-                            <i class="fa-solid fa-receipt"></i>
+                        <div class="modern-charge-row">
+                            <div class="charge-icon">
+                                <i class="fa-solid fa-receipt"></i>
+                            </div>
+
+                            <div>
+                                <strong>No charges</strong>
+                                <span>No recent payroll deductions found.</span>
+                            </div>
                         </div>
 
-                        <div>
-                            <strong>Employee 0002</strong>
-                            <span>May 1, 2026 | ₱450.00 Stock Charge</span>
-                        </div>
-                    </div>
+                    {% endfor %}
+
                 </div>
             </section>
 
             <section class="dashboard-card dashboard-past-card">
+
                 <div class="dashboard-card-title">
+
                     <div>
                         <h2>Past Attendances</h2>
-                        <p>Download previous attendance reports</p>
+                        <p>Previous weekly attendance summaries</p>
                     </div>
 
-                    <a href="/admin/attendance/attendance/">View All</a>
+                    <a href="/attendance-page/">View All</a>
+
                 </div>
 
                 <div class="modern-past-list">
-                    <div class="modern-past-row">
-                        <div>
-                            <strong>May 8 to May 15, 2026</strong>
-                            <span>Weekly attendance report</span>
+
+                    {% if weekly_attendance_groups %}
+
+                        {% for week in weekly_attendance_groups %}
+
+                            <div class="modern-past-row">
+
+                                <div>
+
+                                    <strong>
+                                        {{ week.start_date|date:"F d" }}
+                                        to
+                                        {{ week.end_date|date:"F d, Y" }}
+                                    </strong>
+
+                                    <span>
+                                        {{ week.total_records }} attendance records
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <div class="modern-past-row">
+
+                            <div>
+
+                                <strong>No attendances</strong>
+
+                                <span>
+                                    No previous attendance records found.
+                                </span>
+
+                            </div>
+
                         </div>
 
-                        <button type="button">
-                            <i class="fa-solid fa-download"></i>
-                            Download PDF
-                        </button>
-                    </div>
+                    {% endif %}
 
-                    <div class="modern-past-row">
-                        <div>
-                            <strong>May 16 to May 22, 2026</strong>
-                            <span>Weekly attendance report</span>
-                        </div>
-
-                        <button type="button">
-                            <i class="fa-solid fa-download"></i>
-                            Download PDF
-                        </button>
-                    </div>
                 </div>
+
             </section>
 
         </div>

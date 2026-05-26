@@ -8,14 +8,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from payroll.views import (
-    payroll_page,
-    add_payroll,
-)
-
-from employees.views import (
-    employees_page,
-)
+from employees.views import employees_page
 
 
 urlpatterns = [
@@ -38,18 +31,11 @@ urlpatterns = [
     ),
 
     # =========================
-    # CUSTOM PAYROLL PAGES
+    # PAYROLL ROUTES
     # =========================
     path(
         'payroll-page/',
-        payroll_page,
-        name='payroll-page'
-    ),
-
-    path(
-        'payroll-page/add/',
-        add_payroll,
-        name='add-payroll'
+        include('payroll.urls')
     ),
 
     # =========================

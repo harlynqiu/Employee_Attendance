@@ -1,0 +1,885 @@
+{% load static %}
+{% load humanize %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payroll Details</title>
+
+    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .details-header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:28px;
+            gap:20px;
+        }
+
+        .header-buttons{
+            display:flex;
+            gap:12px;
+            align-items:center;
+        }
+
+        .back-link{
+            color:#0758d6;
+            text-decoration:none;
+            font-weight:800;
+        }
+
+        .details-title{
+            font-size:46px;
+            font-weight:900;
+            color:#061b49;
+            margin:12px 0 6px;
+        }
+
+        .details-subtitle{
+            color:#61708d;
+            margin:0;
+            font-size:15px;
+        }
+
+        .print-btn,
+        .edit-btn{
+            color:white !important;
+            border:none;
+            border-radius:14px;
+            padding:16px 24px;
+            font-weight:800;
+            cursor:pointer;
+            text-decoration:none;
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+        }
+
+        .print-btn{
+            background:#0758d6;
+        }
+
+        .edit-btn{
+            background:#061b49;
+        }
+
+        .employee-card,
+        .breakdown-card,
+        .attendance-card{
+            background:white;
+            border:1px solid #dfe7f3;
+            border-radius:22px;
+            padding:24px;
+            margin-bottom:24px;
+        }
+
+        .employee-card{
+            display:grid;
+            grid-template-columns:1.4fr 1fr 1fr;
+            gap:24px;
+            align-items:center;
+        }
+
+        .employee-info{
+            display:flex;
+            gap:18px;
+            align-items:center;
+        }
+
+        .avatar{
+            width:72px;
+            height:72px;
+            border-radius:50%;
+            background:#eaf2ff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:#0758d6;
+            font-size:32px;
+        }
+
+        .employee-info h2{
+            margin:0;
+            color:#061b49;
+            font-size:28px;
+            font-weight:900;
+        }
+
+        .employee-info p,
+        .employee-meta p{
+            margin:5px 0 0;
+            color:#61708d;
+        }
+
+        .employee-id{
+            color:#0758d6 !important;
+            font-weight:900;
+        }
+
+        .status-badge{
+            display:inline-block;
+            background:#dff8e9;
+            color:#159947;
+            font-weight:900;
+            padding:9px 14px;
+            border-radius:10px;
+            margin-top:5px;
+        }
+
+        .summary-grid{
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:22px;
+            margin-bottom:24px;
+        }
+
+        .summary-card{
+            background:white;
+            border:1px solid #dfe7f3;
+            border-radius:22px;
+            padding:24px;
+            display:flex;
+            gap:18px;
+            align-items:center;
+        }
+
+        .summary-icon{
+            width:62px;
+            height:62px;
+            border-radius:16px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:24px;
+        }
+
+        .green{background:#dff8e9;color:#159947;}
+        .blue{background:#eaf2ff;color:#0758d6;}
+        .yellow{background:#fff3c9;color:#e4a400;}
+        .purple{background:#f0ddff;color:#9346d6;}
+
+        .summary-card p{
+            margin:0 0 6px;
+            font-size:13px;
+            font-weight:900;
+            color:#061b49;
+            text-transform:uppercase;
+        }
+
+        .summary-card h2{
+            margin:0;
+            font-size:26px;
+            color:#061b49;
+            font-weight:900;
+        }
+
+        .summary-card span{
+            color:#61708d;
+            font-size:13px;
+        }
+
+        .section-title{
+            margin:0 0 20px;
+            color:#061b49;
+            font-size:18px;
+            font-weight:900;
+            text-transform:uppercase;
+        }
+
+        .section-title::after{
+            content:"";
+            display:block;
+            width:42px;
+            height:3px;
+            background:#0758d6;
+            margin-top:8px;
+            border-radius:10px;
+        }
+
+        .breakdown-layout{
+            display:grid;
+            grid-template-columns:2fr 1fr;
+            gap:28px;
+        }
+
+        .breakdown-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:10px 40px;
+        }
+
+        .breakdown-row{
+            display:flex;
+            justify-content:space-between;
+            border-bottom:1px solid #edf1f7;
+            padding:10px 0;
+            color:#061b49;
+            font-size:15px;
+        }
+
+        .breakdown-row strong{
+            font-weight:900;
+        }
+
+        .deduct{
+            color:#e63946;
+            font-weight:900;
+        }
+
+        .total-row{
+            margin-top:18px;
+            background:#eef5ff;
+            padding:16px 18px;
+            border-radius:14px;
+            display:flex;
+            justify-content:space-between;
+            color:#0758d6;
+            font-size:22px;
+            font-weight:900;
+        }
+
+        .remarks-box{
+            background:#f8fbff;
+            border-radius:16px;
+            padding:18px;
+            min-height:160px;
+            color:#61708d;
+        }
+
+        .attendance-table{
+            width:100%;
+            border-collapse:collapse;
+            min-width:1200px;
+        }
+
+        .attendance-table th{
+            text-align:left;
+            padding:14px;
+            color:#0758d6;
+            font-size:12px;
+            text-transform:uppercase;
+            border-bottom:1px solid #dfe7f3;
+            white-space:nowrap;
+        }
+
+        .attendance-table td{
+            padding:14px;
+            border-bottom:1px solid #edf1f7;
+            color:#061b49;
+            font-size:14px;
+            white-space:nowrap;
+        }
+
+        .table-wrapper{
+            overflow-x:auto;
+        }
+
+        .small-badge{
+            padding:7px 11px;
+            border-radius:9px;
+            font-weight:900;
+            font-size:12px;
+            display:inline-block;
+        }
+
+        .present{background:#dff8e9;color:#159947;}
+        .half_day{background:#fff3c9;color:#e4a400;}
+        .absent,.leave{background:#ffe0e0;color:#d62828;}
+        .rest_day,.holiday{background:#eef5ff;color:#0758d6;}
+
+        .footer-total{
+            display:flex;
+            justify-content:flex-end;
+            gap:34px;
+            margin-top:18px;
+            color:#0758d6;
+            font-weight:900;
+        }
+
+        .print-only{
+            display:none;
+        }
+
+    @media print{
+
+        @page{
+            size:Letter portrait;
+            margin:12mm;
+        }
+
+        body{
+            background:white !important;
+            color:black !important;
+            font-family:Arial, sans-serif !important;
+            font-size:11px !important;
+        }
+
+        .modern-sidebar,
+        .details-header,
+        .summary-grid,
+        .attendance-card,
+        .avatar,
+        .print-btn,
+        .edit-btn,
+        .back-link{
+            display:none !important;
+        }
+
+        .modern-page{
+            display:block !important;
+        }
+
+        .modern-content{
+            margin:0 !important;
+            padding:0 !important;
+            width:100% !important;
+            max-width:100% !important;
+        }
+
+        .print-only{
+            display:block !important;
+            margin-bottom:16px !important;
+        }
+
+        .print-only h1{
+            margin:0 0 4px 0 !important;
+            font-size:18px !important;
+            font-weight:900 !important;
+            text-align:left !important;
+            color:black !important;
+        }
+
+        .print-only p{
+            display:none !important;
+        }
+
+        .employee-card{
+            border:none !important;
+            border-radius:0 !important;
+            padding:0 0 10px 0 !important;
+            margin-bottom:14px !important;
+            display:block !important;
+            border-bottom:1px solid black !important;
+            background:white !important;
+        }
+
+        .employee-info{
+            display:block !important;
+        }
+
+        .employee-id{
+            display:none !important;
+        }
+
+        .employee-info h2{
+            font-size:13px !important;
+            color:black !important;
+            margin:0 0 14px 0 !important;
+            font-weight:900 !important;
+            text-transform:uppercase !important;
+        }
+
+        .employee-info p{
+            display:none !important;
+        }
+
+        .employee-meta{
+            display:inline-block !important;
+            width:49% !important;
+            vertical-align:top !important;
+        }
+
+        .employee-meta p{
+            color:black !important;
+            margin:0 !important;
+            font-size:10px !important;
+            font-weight:900 !important;
+        }
+
+        .employee-meta h3{
+            color:black !important;
+            margin:2px 0 0 0 !important;
+            font-size:11px !important;
+            font-weight:900 !important;
+        }
+
+        .status-badge{
+            border:none !important;
+            background:white !important;
+            color:black !important;
+            padding:0 !important;
+            font-size:11px !important;
+            font-weight:900 !important;
+        }
+
+        .breakdown-card{
+            border:none !important;
+            border-radius:0 !important;
+            padding:0 !important;
+            margin:0 !important;
+            background:white !important;
+        }
+
+        .section-title{
+            color:black !important;
+            font-size:12px !important;
+            margin:0 0 10px 0 !important;
+            font-weight:900 !important;
+        }
+
+        .section-title::after{
+            display:none !important;
+        }
+
+        .breakdown-layout{
+            display:block !important;
+        }
+
+        .breakdown-grid{
+            display:block !important;
+        }
+
+        .breakdown-row{
+            color:black !important;
+            border-bottom:1px solid #777 !important;
+            padding:4px 0 !important;
+            font-size:10px !important;
+            display:flex !important;
+            justify-content:space-between !important;
+        }
+
+        .breakdown-row strong{
+            color:black !important;
+            font-weight:700 !important;
+        }
+
+        .deduct{
+            color:black !important;
+        }
+
+        .total-row{
+            margin-top:10px !important;
+            border:1px solid black !important;
+            border-radius:0 !important;
+            background:white !important;
+            color:black !important;
+            padding:6px 8px !important;
+            font-size:11px !important;
+            font-weight:900 !important;
+            display:flex !important;
+            justify-content:space-between !important;
+        }
+
+        .remarks-box{
+            border:1px solid black !important;
+            background:white !important;
+            border-radius:0 !important;
+            min-height:40px !important;
+            padding:6px !important;
+            color:black !important;
+            font-size:10px !important;
+            margin-top:4px !important;
+        }
+
+        .breakdown-layout > div:last-child h4{
+            color:black !important;
+            margin:8px 0 4px 0 !important;
+            font-size:10px !important;
+            font-weight:900 !important;
+        }
+    }
+
+        @media(max-width:1300px){
+            .employee-card,
+            .summary-grid,
+            .breakdown-layout,
+            .breakdown-grid{
+                grid-template-columns:1fr;
+            }
+
+            .details-header{
+                flex-direction:column;
+                align-items:flex-start;
+            }
+
+            .header-buttons{
+                flex-wrap:wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="modern-page">
+
+    <aside class="modern-sidebar">
+
+        <div class="modern-logo">
+            HCQ <br> MARKETING
+        </div>
+
+        <nav class="modern-menu">
+
+            <a href="/dashboard/">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/attendance-page/">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Attendance</span>
+            </a>
+
+            <a href="/employees-page/">
+                <i class="fa-solid fa-user"></i>
+                <span>Employees</span>
+            </a>
+
+            <a href="/payroll-page/" class="active">
+                <i class="fa-regular fa-file-lines"></i>
+                <span>Payroll</span>
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <main class="modern-content">
+
+        <div class="print-only">
+            <h1>HCQ MARKETING</h1>
+            <p>Payroll Summary</p>
+            <p>
+                {{ payroll.start_date }} to {{ payroll.end_date }}
+            </p>
+        </div>
+
+        <div class="details-header">
+            <div>
+                <a href="/payroll-page/" class="back-link">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to Payroll
+                </a>
+
+                <h1 class="details-title">PAYROLL DETAILS</h1>
+
+                <p class="details-subtitle">
+                    View payroll summary, breakdown, and attendance records.
+                </p>
+            </div>
+
+            <div class="header-buttons">
+                <a href="{% url 'edit-payroll' payroll.id %}" class="edit-btn">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    Edit Payroll
+                </a>
+
+                <button onclick="window.print()" class="print-btn">
+                    <i class="fa-solid fa-print"></i>
+                    Print Payroll
+                </button>
+            </div>
+        </div>
+
+        <div class="employee-card">
+
+            <div class="employee-info">
+                <div class="avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div>
+                    <p class="employee-id">
+                        {{ payroll.employee.employee_id }}
+                    </p>
+
+                    <h2>
+                        {{ payroll.employee.last_name }},
+                        {{ payroll.employee.first_name }}
+                    </h2>
+
+                    <p>
+                        {{ payroll.employee.position }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="employee-meta">
+                <p><strong>Payroll Period</strong></p>
+                <h3>
+                    {{ payroll.start_date }} - {{ payroll.end_date }}
+                </h3>
+            </div>
+
+            <div class="employee-meta">
+                <p><strong>Employment Status</strong></p>
+                <span class="status-badge">
+                    {{ payroll.employee.employment_status }}
+                </span>
+            </div>
+
+        </div>
+
+        <div class="summary-grid">
+
+            <div class="summary-card">
+                <div class="summary-icon green">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                </div>
+
+                <div>
+                    <p>Total Salary</p>
+                    <h2>₱ {{ payroll.total_salary|floatformat:2|intcomma }}</h2>
+                    <span>Final Pay</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon blue">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+
+                <div>
+                    <p>Base Salary</p>
+                    <h2>₱ {{ payroll.base_salary|floatformat:2|intcomma }}</h2>
+                    <span>From payable hours</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon yellow">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+
+                <div>
+                    <p>Overtime Pay</p>
+                    <h2>₱ {{ payroll.overtime_pay|floatformat:2|intcomma }}</h2>
+                    <span>Additional pay</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon purple">
+                    <i class="fa-solid fa-arrow-down"></i>
+                </div>
+
+                <div>
+                    <p>Total Deductions</p>
+                    <h2>
+                        ₱ {{ payroll.benefits|add:payroll.cash_advance|add:payroll.charges|add:payroll.rent|floatformat:2|intcomma }}
+                    </h2>
+                    <span>All deductions</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="breakdown-card">
+
+            <h3 class="section-title">Payroll Breakdown</h3>
+
+            <div class="breakdown-layout">
+
+                <div>
+
+                    <div class="breakdown-grid">
+
+                        <div>
+                            <div class="breakdown-row">
+                                <span>Total Payable Hours</span>
+                                <strong>{{ payroll.total_payable_hours|floatformat:2 }} hrs</strong>
+                            </div>
+
+                            <div class="breakdown-row">
+                                <span>Total Late Minutes</span>
+                                <strong>{{ payroll.total_late_minutes }} mins</strong>
+                            </div>
+
+                            <div class="breakdown-row">
+                                <span>Total Undertime Minutes</span>
+                                <strong>{{ payroll.total_undertime_minutes }} mins</strong>
+                            </div>
+
+                            <div class="breakdown-row">
+                                <span>Base Salary</span>
+                                <strong>₱ {{ payroll.base_salary|floatformat:2|intcomma }}</strong>
+                            </div>
+
+                            <div class="breakdown-row">
+                                <span>Overtime Pay</span>
+                                <strong>₱ {{ payroll.overtime_pay|floatformat:2|intcomma }}</strong>
+                            </div>
+
+                            <div class="breakdown-row">
+                                <span>Transportation Fee</span>
+                                <strong>₱ {{ payroll.transportation_fee|floatformat:2|intcomma }}</strong>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="breakdown-row">
+                                <span>Delivery Allowance</span>
+                                <strong>₱ {{ payroll.delivery_allowance|floatformat:2|intcomma }}</strong>
+                            </div>
+
+                            <div class="breakdown-row">
+                                <span>Allowance</span>
+                                <strong>₱ {{ payroll.allowance|floatformat:2|intcomma }}</strong>
+                            </div>
+
+                            <div class="breakdown-row">
+                                <span>Benefits</span>
+                                <strong class="deduct">- ₱ {{ payroll.benefits|floatformat:2|intcomma }}</strong>
+                            </div>
+
+                            <div class="breakdown-row">
+                                <span>Cash Advance</span>
+                                <strong class="deduct">- ₱ {{ payroll.cash_advance|floatformat:2|intcomma }}</strong>
+                            </div>
+
+                            <div class="breakdown-row">
+                                <span>Charges</span>
+                                <strong class="deduct">- ₱ {{ payroll.charges|floatformat:2|intcomma }}</strong>
+                            </div>
+
+                            <div class="breakdown-row">
+                                <span>Rent</span>
+                                <strong class="deduct">- ₱ {{ payroll.rent|floatformat:2|intcomma }}</strong>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="total-row">
+                        <span>TOTAL SALARY</span>
+                        <span>₱ {{ payroll.total_salary|floatformat:2|intcomma }}</span>
+                    </div>
+
+                </div>
+
+                <div>
+                    <h4 style="margin-top:0;color:#061b49;">Remarks</h4>
+
+                    <div class="remarks-box">
+                        {% if payroll.remarks %}
+                            {{ payroll.remarks }}
+                        {% else %}
+                            No remarks.
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="attendance-card">
+
+            <h3 class="section-title">Attendance Records</h3>
+
+            <div class="table-wrapper">
+
+                <table class="attendance-table">
+
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Time In</th>
+                            <th>Time Out</th>
+                            <th>Worked Hours</th>
+                            <th>Payable Hours</th>
+                            <th>Late</th>
+                            <th>Undertime</th>
+                            <th>Overtime</th>
+                            <th>Work Type</th>
+                            <th>Location</th>
+                            <th>Delivery Allowance</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for attendance in attendance_records %}
+
+                        <tr>
+                            <td>{{ attendance.date }}</td>
+
+                            <td>
+                                <span class="small-badge {{ attendance.status }}">
+                                    {{ attendance.get_status_display }}
+                                </span>
+                            </td>
+
+                            <td>{{ attendance.time_in_display }}</td>
+
+                            <td>{{ attendance.time_out_display }}</td>
+
+                            <td>{{ attendance.worked_hours|default:"0.00"|floatformat:2 }}</td>
+
+                            <td>{{ attendance.payable_hours|default:"0.00"|floatformat:2 }}</td>
+
+                            <td>{{ attendance.late_minutes }} mins</td>
+
+                            <td>{{ attendance.undertime_minutes }} mins</td>
+
+                            <td>{{ attendance.overtime_minutes }} mins</td>
+
+                            <td>{{ attendance.get_work_type_display }}</td>
+
+                            <td>
+                                {% if attendance.work_location %}
+                                    {{ attendance.work_location }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if attendance.delivery_allowance_applicable %}
+                                    <span style="color:#159947;font-weight:900;">
+                                        Yes
+                                    </span>
+                                {% else %}
+                                    <span style="color:#d62828;font-weight:900;">
+                                        No
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td colspan="12" style="text-align:center;padding:35px;color:#61708d;">
+                                No attendance records found for this payroll period.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="footer-total">
+                <span>Total Payable Hours: {{ payroll.total_payable_hours|floatformat:2 }} hrs</span>
+                <span>Late: {{ payroll.total_late_minutes }} mins</span>
+                <span>Undertime: {{ payroll.total_undertime_minutes }} mins</span>
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

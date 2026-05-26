@@ -4,7 +4,7 @@ from django.db.models import Sum, Q
 
 from .models import Payroll
 from employees.models import Employee
-
+from attendance.models import Attendance
 
 # =========================================
 # PAYROLL DASHBOARD PAGE
@@ -167,9 +167,62 @@ def view_payroll(request, payroll_id):
         id=payroll_id
     )
 
+    attendance_records = Attendance.objects.filter(
+        employee=payroll.employee,
+        date__range=[
+            payroll.start_date,
+            payroll.end_date
+        ]
+    ).order_by(
+        "date",
+        "time_in"
+    )
+
+    context = {
+        "payroll": payroll,
+        "attendance_records": attendance_records,
+    }
+
     return render(
         request,
         "admin/payroll/view_payroll.html",
+        context
+    )
+
+# =========================================
+# EDIT PAYROLL PAGE
+# =========================================
+
+def edit_payroll(request, payroll_id):
+
+    payroll = get_object_or_404(
+        Payroll,
+        id=payroll_id
+    )
+
+    if request.method == "POST":
+
+        payroll.allowance = request.POST.get("allowance") or 0
+        payroll.cash_advance = request.POST.get("cash_advance") or 0
+        payroll.charges = request.POST.get("charges") or 0
+        payroll.rent = request.POST.get("rent") or 0
+        payroll.remarks = request.POST.get("remarks")
+
+        payroll.save()
+
+        messages.success(
+            request,
+            "Payroll updated successfully."
+        )
+
+        return redirect(
+            "view-payroll",
+            payroll_id=payroll.id
+        )
+
+    return render(
+        request,
+        "admin/payroll/edit_payroll.html",
         {
             "payroll": payroll
         }
