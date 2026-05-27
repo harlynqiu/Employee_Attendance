@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -98,6 +99,29 @@
             color: #666;
             font-weight: 700;
         }
+
+        .count-badge {
+            background: #eef5ff;
+            color: #0758d6;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 900;
+            display: inline-block;
+        }
+
+        .charge-amount {
+            color: #d62828;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .modern-table-card {
+            overflow-x: auto;
+        }
+
+        .modern-employees-table {
+            min-width: 1250px;
+        }
     </style>
 </head>
 
@@ -182,7 +206,7 @@
                 </div>
                 <div>
                     <p>Average Rate</p>
-                    <h2>₱ {{ average_rate|floatformat:2 }}</h2>
+                    <h2>₱ {{ average_rate|floatformat:2|intcomma }}</h2>
                     <span>Average active employee rate</span>
                 </div>
             </div>
@@ -228,6 +252,9 @@
                         <th>D.O.B</th>
                         <th>Date Started</th>
                         <th>Rate</th>
+                        <th>Attendances</th>
+                        <th>Payrolls</th>
+                        <th>Total Charges</th>
                         <th>Resume</th>
                         <th>Action</th>
                     </tr>
@@ -270,7 +297,23 @@
 
                         <td>{{ employee.date_started|date:"M d, Y" }}</td>
 
-                        <td>₱ {{ employee.rate }}</td>
+                        <td>₱ {{ employee.rate|floatformat:2|intcomma }}</td>
+
+                        <td>
+                            <span class="count-badge">
+                                {{ employee.attendance_count }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="count-badge">
+                                {{ employee.payroll_count }}
+                            </span>
+                        </td>
+
+                        <td class="charge-amount">
+                            ₱ {{ employee.total_cash_advance|add:employee.total_charges_amount|add:employee.total_rent|add:employee.total_benefits|floatformat:2|intcomma }}
+                        </td>
 
                         <td>
                             {% if employee.resume %}
@@ -292,7 +335,7 @@
 
                     {% empty %}
                     <tr>
-                        <td colspan="8" class="no-records">
+                        <td colspan="11" class="no-records">
                             No employees found.
                         </td>
                     </tr>
