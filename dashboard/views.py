@@ -216,11 +216,132 @@ def employees_page_view(request):
 
 def new_employee_page_view(request):
 
+    if request.method == "POST":
+
+        employee = Employee(
+
+            # PERSONAL INFORMATION
+            first_name=request.POST.get("first_name", ""),
+            middle_initial=request.POST.get("middle_initial", ""),
+            last_name=request.POST.get("last_name", ""),
+            date_of_birth=request.POST.get("date_of_birth") or None,
+            citizenship=request.POST.get("citizenship", ""),
+            address=request.POST.get("address", ""),
+            contact_number=request.POST.get("contact_number", ""),
+            spouse_name=request.POST.get("spouse_name", ""),
+            spouse_contact_number=request.POST.get(
+                "spouse_contact_number",
+                ""
+            ),
+
+            # EDUCATION
+            elementary=request.POST.get("elementary", ""),
+            elementary_year=request.POST.get(
+                "elementary_year",
+                ""
+            ),
+
+            high_school=request.POST.get("high_school", ""),
+            high_school_year=request.POST.get(
+                "high_school_year",
+                ""
+            ),
+
+            college=request.POST.get("college", ""),
+            college_year=request.POST.get(
+                "college_year",
+                ""
+            ),
+
+            # EMPLOYMENT HISTORY
+            company_1=request.POST.get("company_1", ""),
+            company_address_1=request.POST.get(
+                "company_address_1",
+                ""
+            ),
+            occupation_1=request.POST.get("occupation_1", ""),
+            years_1=request.POST.get("years_1", ""),
+
+            company_2=request.POST.get("company_2", ""),
+            company_address_2=request.POST.get(
+                "company_address_2",
+                ""
+            ),
+            occupation_2=request.POST.get("occupation_2", ""),
+            years_2=request.POST.get("years_2", ""),
+
+            company_3=request.POST.get("company_3", ""),
+            company_address_3=request.POST.get(
+                "company_address_3",
+                ""
+            ),
+            occupation_3=request.POST.get("occupation_3", ""),
+            years_3=request.POST.get("years_3", ""),
+
+            # REFERENCES
+            reference_name_1=request.POST.get(
+                "reference_name_1",
+                ""
+            ),
+            reference_occupation_1=request.POST.get(
+                "reference_occupation_1",
+                ""
+            ),
+            reference_contact_1=request.POST.get(
+                "reference_contact_1",
+                ""
+            ),
+
+            reference_name_2=request.POST.get(
+                "reference_name_2",
+                ""
+            ),
+            reference_occupation_2=request.POST.get(
+                "reference_occupation_2",
+                ""
+            ),
+            reference_contact_2=request.POST.get(
+                "reference_contact_2",
+                ""
+            ),
+
+            reference_name_3=request.POST.get(
+                "reference_name_3",
+                ""
+            ),
+            reference_occupation_3=request.POST.get(
+                "reference_occupation_3",
+                ""
+            ),
+            reference_contact_3=request.POST.get(
+                "reference_contact_3",
+                ""
+            ),
+
+            # WORK
+            position=request.POST.get("position", ""),
+            rate=request.POST.get("rate") or 0,
+            date_started=request.POST.get(
+                "date_started"
+            ) or None,
+        )
+
+        # PHOTO
+        if "photo" in request.FILES:
+            employee.photo = request.FILES["photo"]
+
+        # RESUME
+        if "resume" in request.FILES:
+            employee.resume = request.FILES["resume"]
+
+        employee.save()
+
+        return redirect("/employees-page/")
+
     return render(
         request,
         "dashboard/new_employee_page.html"
     )
-
 
 # =========================================
 # VIEW EMPLOYEE PROFILE
