@@ -68,7 +68,7 @@
                     <label class="photo-upload-btn">
                         <i class="fa-solid fa-camera"></i>
                         Upload Image
-                        <input type="file" name="image" hidden>
+                        <input type="file" name="photo" hidden>
                     </label>
 
                     <p>JPG, PNG up to 2MB</p>
@@ -76,7 +76,7 @@
                     <label class="document-upload-btn">
                         <i class="fa-regular fa-file-arrow-up"></i>
                         Upload Documents
-                        <input type="file" name="documents" hidden>
+                        <input type="file" name="resume" hidden>
                     </label>
                 </section>
 
@@ -89,32 +89,56 @@
                     <div class="new-form-grid two-cols">
                         <div class="input-group">
                             <label>First Name</label>
-                            <input type="text" name="first_name">
+                            <input
+                                type="text"
+                                name="first_name"
+                                maxlength="100"
+                            >
                         </div>
 
                         <div class="input-group">
                             <label>Address</label>
-                            <input type="text" name="address">
+                            <input
+                                type="text"
+                                name="address"
+                                maxlength="255"
+                            >
                         </div>
 
                         <div class="input-group">
                             <label>Middle Initial</label>
-                            <input type="text" name="middle_initial">
+                            <input type="text"
+                                name="middle_initial"
+                                maxlength="50"
+                                placeholder="Middle Name / Initial"
+                            >
                         </div>
 
                         <div class="input-group">
                             <label>Contact No.</label>
-                            <input type="text" name="contact_number">
+                            <input
+                                type="text"
+                                name="contact_number"
+                                maxlength="20"
+                            >
                         </div>
 
                         <div class="input-group">
                             <label>Last Name</label>
-                            <input type="text" name="last_name">
+                            <input
+                                type="text"
+                                name="last_name"
+                                maxlength="100"
+                            >
                         </div>
 
                         <div class="input-group">
                             <label>Spouse Name</label>
-                            <input type="text" name="spouse_name">
+                            <input
+                                type="text"
+                                name="spouse_name"
+                                maxlength="100"
+                            >
                         </div>
 
                         <div class="input-group">
@@ -124,7 +148,11 @@
 
                         <div class="input-group">
                             <label>Spouse Contact No.</label>
-                            <input type="text" name="spouse_contact_number">
+                            <input
+                                type="text"
+                                name="spouse_contact_number"
+                                maxlength="20"
+                            >
                         </div>
 
                         <div class="input-group">

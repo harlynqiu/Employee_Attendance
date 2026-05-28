@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.shortcuts import redirect
 
 from django.shortcuts import get_object_or_404, render
 from django.db.models import Count, Sum, Q
@@ -146,4 +147,71 @@ def view_employee_page_view(request, employee_id):
         request,
         "dashboard/view_employee_page.html",
         context
+    )
+
+def new_employee_page(request):
+    if request.method == "POST":
+        employee = Employee(
+            first_name=request.POST.get("first_name", "").strip(),
+            middle_initial=request.POST.get("middle_initial", "").strip(),
+            last_name=request.POST.get("last_name", "").strip(),
+            date_of_birth=request.POST.get("date_of_birth") or None,
+            citizenship=request.POST.get("citizenship", "").strip(),
+            address=request.POST.get("address", "").strip(),
+            contact_number=request.POST.get("contact_number", "").strip(),
+            spouse_name=request.POST.get("spouse_name", "").strip(),
+            spouse_contact_number=request.POST.get("spouse_contact_number", "").strip(),
+
+            elementary=request.POST.get("elementary", "").strip(),
+            elementary_year=request.POST.get("elementary_year", "").strip(),
+            high_school=request.POST.get("high_school", "").strip(),
+            high_school_year=request.POST.get("high_school_year", "").strip(),
+            college=request.POST.get("college", "").strip(),
+            college_year=request.POST.get("college_year", "").strip(),
+
+            company_1=request.POST.get("company_1", "").strip(),
+            company_address_1=request.POST.get("company_address_1", "").strip(),
+            occupation_1=request.POST.get("occupation_1", "").strip(),
+            years_1=request.POST.get("years_1", "").strip(),
+
+            company_2=request.POST.get("company_2", "").strip(),
+            company_address_2=request.POST.get("company_address_2", "").strip(),
+            occupation_2=request.POST.get("occupation_2", "").strip(),
+            years_2=request.POST.get("years_2", "").strip(),
+
+            company_3=request.POST.get("company_3", "").strip(),
+            company_address_3=request.POST.get("company_address_3", "").strip(),
+            occupation_3=request.POST.get("occupation_3", "").strip(),
+            years_3=request.POST.get("years_3", "").strip(),
+
+            reference_name_1=request.POST.get("reference_name_1", "").strip(),
+            reference_occupation_1=request.POST.get("reference_occupation_1", "").strip(),
+            reference_contact_1=request.POST.get("reference_contact_1", "").strip(),
+
+            reference_name_2=request.POST.get("reference_name_2", "").strip(),
+            reference_occupation_2=request.POST.get("reference_occupation_2", "").strip(),
+            reference_contact_2=request.POST.get("reference_contact_2", "").strip(),
+
+            reference_name_3=request.POST.get("reference_name_3", "").strip(),
+            reference_occupation_3=request.POST.get("reference_occupation_3", "").strip(),
+            reference_contact_3=request.POST.get("reference_contact_3", "").strip(),
+
+            position=request.POST.get("position", "").strip(),
+            rate=request.POST.get("rate") or Decimal("0.00"),
+            date_started=request.POST.get("date_started") or None,
+        )
+
+        if request.FILES.get("photo"):
+            employee.photo = request.FILES.get("photo")
+
+        if request.FILES.get("resume"):
+            employee.resume = request.FILES.get("resume")
+
+        employee.save()
+
+        return redirect("/employees-page/")
+
+    return render(
+        request,
+        "dashboard/new_employee_page.html"
     )
