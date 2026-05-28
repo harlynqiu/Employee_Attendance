@@ -32,7 +32,7 @@ class Employee(models.Model):
     first_name = models.CharField(max_length=100)
 
     middle_initial = models.CharField(
-        max_length=10,
+        max_length=50,
         blank=True,
         null=True
     )
