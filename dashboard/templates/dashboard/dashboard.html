@@ -4,11 +4,441 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>HCQ Marketing Dashboard</title>
+<meta charset="UTF-8">
+<title>HCQ Marketing Dashboard</title>
 
-    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#f5f8fd;
+    font-family:'Segoe UI',sans-serif;
+    color:#071f4f;
+}
+
+.modern-page{
+    display:flex;
+    min-height:100vh;
+}
+
+.modern-sidebar{
+    width:245px;
+    background:linear-gradient(180deg,#0758d6,#0042a8);
+    color:white;
+    position:fixed;
+    top:0;
+    left:0;
+    bottom:0;
+    padding:38px 22px;
+    border-radius:0 0 28px 0;
+}
+
+.modern-logo{
+    font-size:31px;
+    font-weight:900;
+    line-height:1;
+    margin-bottom:65px;
+}
+
+.modern-menu{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.modern-menu a{
+    color:white;
+    text-decoration:none;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding:16px 18px;
+    border-radius:14px;
+    font-weight:800;
+}
+
+.modern-menu a.active,
+.modern-menu a:hover{
+    background:white;
+    color:#0758d6;
+}
+
+.modern-content{
+    margin-left:245px;
+    width:calc(100% - 245px);
+    padding:42px 48px;
+}
+
+.dashboard-modern-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:28px;
+}
+
+.dashboard-modern-header h1{
+    font-size:36px;
+    font-weight:900;
+    margin-bottom:12px;
+}
+
+.dashboard-modern-header p{
+    color:#0758d6;
+    font-weight:900;
+}
+
+.dashboard-modern-header span{
+    color:#9aa7bd;
+    margin:0 12px;
+}
+
+.modern-logout{
+    width:54px;
+    height:54px;
+    border-radius:14px;
+    background:white;
+    border:1px solid #dfe7f3;
+    color:#0758d6;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    font-size:20px;
+    box-shadow:0 8px 24px rgba(15,35,95,.06);
+}
+
+.dashboard-summary-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+    margin-bottom:26px;
+}
+
+.dashboard-summary-card{
+    background:white;
+    border:1px solid #dfe7f3;
+    border-radius:18px;
+    padding:28px;
+    min-height:150px;
+    display:flex;
+    align-items:center;
+    gap:24px;
+    text-decoration:none;
+    color:#071f4f;
+    box-shadow:0 8px 24px rgba(15,35,95,.04);
+    position:relative;
+    overflow:hidden;
+}
+
+.dashboard-summary-card::before{
+    content:"";
+    position:absolute;
+    top:18px;
+    bottom:18px;
+    left:0;
+    width:6px;
+    border-radius:0 8px 8px 0;
+}
+
+.dashboard-summary-card.green-line::before{
+    background:#2ecc71;
+}
+
+.dashboard-summary-card.red-line::before{
+    background:#ff6b6b;
+}
+
+.dashboard-summary-card.yellow-line::before{
+    background:#ffc542;
+}
+
+.dashboard-icon{
+    width:76px;
+    height:76px;
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:30px;
+    flex-shrink:0;
+}
+
+.green{
+    background:#dcf8e8;
+    color:#18a957;
+}
+
+.red{
+    background:#ffe1e1;
+    color:#ef4b4b;
+}
+
+.yellow{
+    background:#fff1c7;
+    color:#f0ad00;
+}
+
+.dashboard-summary-card p{
+    text-transform:uppercase;
+    font-size:13px;
+    font-weight:900;
+    margin-bottom:8px;
+}
+
+.dashboard-summary-card h2{
+    font-size:34px;
+    font-weight:900;
+    margin-bottom:6px;
+}
+
+.dashboard-summary-card span{
+    color:#61708d;
+    font-size:14px;
+}
+
+.dashboard-main-grid{
+    display:grid;
+    grid-template-columns:1.6fr 1.05fr;
+    gap:24px;
+}
+
+.dashboard-card{
+    background:white;
+    border:1px solid #dfe7f3;
+    border-radius:18px;
+    padding:28px;
+    box-shadow:0 8px 24px rgba(15,35,95,.04);
+}
+
+.dashboard-card-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:28px;
+}
+
+.title-left{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+}
+
+.title-icon{
+    width:34px;
+    height:34px;
+    border-radius:10px;
+    background:#eef5ff;
+    color:#0758d6;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-top:3px;
+}
+
+.dashboard-card-title h2{
+    font-size:26px;
+    font-weight:900;
+    color:#0758d6;
+    margin-bottom:6px;
+}
+
+.dashboard-card-title p{
+    color:#61708d;
+    font-size:15px;
+}
+
+.dashboard-card-title a,
+.view-all-link{
+    background:#f0f6ff;
+    color:#0758d6;
+    text-decoration:none;
+    font-weight:900;
+    padding:11px 18px;
+    border-radius:12px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+}
+
+.attendance-overview-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+}
+
+.attendance-overview-box{
+    background:#fbfdff;
+    border:1px solid #dfe7f3;
+    border-radius:16px;
+    min-height:165px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+}
+
+.attendance-overview-box i{
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    background:#eef5ff;
+    color:#0758d6;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+    margin-bottom:18px;
+}
+
+.attendance-overview-box span{
+    color:#61708d;
+    font-size:14px;
+    margin-bottom:8px;
+}
+
+.attendance-overview-box strong{
+    font-size:30px;
+    font-weight:900;
+}
+
+.modern-charge-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.modern-charge-row{
+    background:#fbfdff;
+    border:1px solid #dfe7f3;
+    border-radius:16px;
+    padding:18px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+}
+
+.charge-icon{
+    width:48px;
+    height:48px;
+    border-radius:12px;
+    background:#eef5ff;
+    color:#0758d6;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+
+.modern-charge-row strong{
+    display:block;
+    font-size:16px;
+    margin-bottom:6px;
+}
+
+.modern-charge-row span{
+    color:#61708d;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.view-charges-bottom{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:18px;
+}
+
+.dashboard-past-card{
+    grid-column:1 / -1;
+}
+
+.modern-past-list{
+    background:#fbfdff;
+    border:1px solid #dfe7f3;
+    border-radius:16px;
+    min-height:155px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:26px;
+}
+
+.empty-past{
+    display:flex;
+    align-items:center;
+    gap:24px;
+    text-align:left;
+}
+
+.empty-past-icon{
+    width:86px;
+    height:86px;
+    border-radius:20px;
+    background:#eef5ff;
+    color:#8cb5ff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:40px;
+}
+
+.empty-past strong,
+.modern-past-row strong{
+    display:block;
+    font-size:18px;
+    font-weight:900;
+    margin-bottom:6px;
+}
+
+.empty-past span,
+.modern-past-row span{
+    color:#61708d;
+}
+
+.modern-past-row{
+    width:100%;
+    padding:18px;
+    border-bottom:1px solid #edf1f7;
+}
+
+.modern-past-row:last-child{
+    border-bottom:none;
+}
+
+@media(max-width:1200px){
+    .dashboard-summary-grid,
+    .dashboard-main-grid{
+        grid-template-columns:1fr;
+    }
+
+    .attendance-overview-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:850px){
+    .modern-sidebar{
+        display:none;
+    }
+
+    .modern-content{
+        margin-left:0;
+        width:100%;
+        padding:24px;
+    }
+
+    .dashboard-modern-header{
+        flex-direction:column;
+        gap:20px;
+    }
+}
+</style>
 </head>
 
 <body>
@@ -47,8 +477,22 @@
 
         <div class="dashboard-modern-header">
             <div>
-                <h1>{{ greeting }}, User! ☀️</h1>
-                <p>{{ current_date }} <span>|</span> {{ current_time }}</p>
+                <h1>
+                    {{ greeting }},
+                    {% if request.user.first_name %}
+                        {{ request.user.first_name }}
+                    {% else %}
+                        {{ request.user.username }}
+                    {% endif %}
+                    ! 👋
+                </h1>
+                <p>
+                    <i class="fa-regular fa-calendar"></i>
+                    {{ current_date }}
+                    <span>|</span>
+                    <i class="fa-regular fa-clock"></i>
+                    {{ current_time }}
+                </p>
             </div>
 
             <a href="{% url 'admin:logout' %}" class="modern-logout">
@@ -58,10 +502,11 @@
 
         <div class="dashboard-summary-grid">
 
-            <a href="/attendance-page/" class="dashboard-summary-card">
+            <a href="/attendance-page/" class="dashboard-summary-card green-line">
                 <div class="dashboard-icon green">
                     <i class="fa-solid fa-check"></i>
                 </div>
+
                 <div>
                     <p>Checked In</p>
                     <h2>{{ checked_in }}</h2>
@@ -69,10 +514,11 @@
                 </div>
             </a>
 
-            <a href="/attendance-page/" class="dashboard-summary-card">
+            <a href="/attendance-page/" class="dashboard-summary-card red-line">
                 <div class="dashboard-icon red">
                     <i class="fa-solid fa-xmark"></i>
                 </div>
+
                 <div>
                     <p>No Attendance</p>
                     <h2>{{ no_attendance }}</h2>
@@ -80,10 +526,11 @@
                 </div>
             </a>
 
-            <a href="/attendance-page/" class="dashboard-summary-card">
+            <a href="/attendance-page/" class="dashboard-summary-card yellow-line">
                 <div class="dashboard-icon yellow">
                     <i class="fa-solid fa-exclamation"></i>
                 </div>
+
                 <div>
                     <p>Late</p>
                     <h2>{{ late }}</h2>
@@ -96,16 +543,27 @@
         <div class="dashboard-main-grid">
 
             <section class="dashboard-card dashboard-attendance-card">
+
                 <div class="dashboard-card-title">
-                    <div>
-                        <h2>Attendance Overview</h2>
-                        <p>Today’s employee attendance summary</p>
+                    <div class="title-left">
+                        <div class="title-icon">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+
+                        <div>
+                            <h2>Attendance Overview</h2>
+                            <p>Today’s employee attendance summary</p>
+                        </div>
                     </div>
 
-                    <a href="/attendance-page/">View Details</a>
+                    <a href="/attendance-page/">
+                        View Details
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
                 </div>
 
                 <div class="attendance-overview-grid">
+
                     <div class="attendance-overview-box">
                         <i class="fa-solid fa-user-check"></i>
                         <span>Checked In</span>
@@ -123,130 +581,152 @@
                         <span>Late</span>
                         <strong>{{ late }}</strong>
                     </div>
+
                 </div>
+
             </section>
 
             <section class="dashboard-card dashboard-charges-card">
+
                 <div class="dashboard-card-title">
-                    <div>
-                        <h2>Charges</h2>
-                        <p>Recent employee deductions</p>
+                    <div class="title-left">
+                        <div class="title-icon">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+
+                        <div>
+                            <h2>Recent Charges</h2>
+                            <p>Recent employee deductions</p>
+                        </div>
                     </div>
 
-                    <a href="/charges/">View More</a>
+                    <a href="/charges/">
+                        View More
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
                 </div>
 
                 <div class="modern-charge-list">
 
                     {% for payroll in recent_charges %}
 
-                        <div class="modern-charge-row">
-                            <div class="charge-icon">
-                                <i class="fa-solid fa-receipt"></i>
-                            </div>
-
-                            <div>
-                                <strong>
-                                    {{ payroll.employee.employee_id }} -
-                                    {{ payroll.employee.last_name }},
-                                    {{ payroll.employee.first_name }}
-                                </strong>
-
-                                <span>
-                                    {{ payroll.start_date|date:"M d, Y" }}
-                                    to
-                                    {{ payroll.end_date|date:"M d, Y" }}
-
-                                    {% if payroll.benefits > 0 %}
-                                        | Benefits: ₱{{ payroll.benefits|floatformat:2|intcomma }}
-                                    {% endif %}
-
-                                    {% if payroll.cash_advance > 0 %}
-                                        | Cash Advance: ₱{{ payroll.cash_advance|floatformat:2|intcomma }}
-                                    {% endif %}
-
-                                    {% if payroll.charges > 0 %}
-                                        | Charges: ₱{{ payroll.charges|floatformat:2|intcomma }}
-                                    {% endif %}
-
-                                    {% if payroll.rent > 0 %}
-                                        | Rent: ₱{{ payroll.rent|floatformat:2|intcomma }}
-                                    {% endif %}
-                                </span>
-                            </div>
+                    <div class="modern-charge-row">
+                        <div class="charge-icon">
+                            <i class="fa-solid fa-receipt"></i>
                         </div>
+
+                        <div>
+                            <strong>
+                                {{ payroll.employee.employee_id }} -
+                                {{ payroll.employee.last_name }},
+                                {{ payroll.employee.first_name }}
+                            </strong>
+
+                            <span>
+                                {{ payroll.start_date|date:"M d, Y" }}
+                                to
+                                {{ payroll.end_date|date:"M d, Y" }}
+
+                                {% if payroll.benefits > 0 %}
+                                    | Benefits: ₱{{ payroll.benefits|floatformat:2|intcomma }}
+                                {% endif %}
+
+                                {% if payroll.cash_advance > 0 %}
+                                    | Cash Advance: ₱{{ payroll.cash_advance|floatformat:2|intcomma }}
+                                {% endif %}
+
+                                {% if payroll.charges > 0 %}
+                                    | Charges: ₱{{ payroll.charges|floatformat:2|intcomma }}
+                                {% endif %}
+
+                                {% if payroll.rent > 0 %}
+                                    | Rent: ₱{{ payroll.rent|floatformat:2|intcomma }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
 
                     {% empty %}
 
-                        <div class="modern-charge-row">
-                            <div class="charge-icon">
-                                <i class="fa-solid fa-receipt"></i>
-                            </div>
-
-                            <div>
-                                <strong>No charges</strong>
-                                <span>No recent payroll deductions found.</span>
-                            </div>
+                    <div class="modern-charge-row">
+                        <div class="charge-icon">
+                            <i class="fa-solid fa-receipt"></i>
                         </div>
+
+                        <div>
+                            <strong>No charges</strong>
+                            <span>No recent payroll deductions found.</span>
+                        </div>
+                    </div>
 
                     {% endfor %}
 
                 </div>
+
+                <div class="view-charges-bottom">
+                    <a href="/charges/" class="view-all-link">
+                        View all charges
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+
             </section>
 
             <section class="dashboard-card dashboard-past-card">
 
                 <div class="dashboard-card-title">
+                    <div class="title-left">
+                        <div class="title-icon">
+                            <i class="fa-regular fa-calendar-days"></i>
+                        </div>
 
-                    <div>
-                        <h2>Past Attendances</h2>
-                        <p>Previous weekly attendance summaries</p>
+                        <div>
+                            <h2>Past Attendances</h2>
+                            <p>Previous weekly attendance summaries</p>
+                        </div>
                     </div>
 
-                    <a href="/attendance-page/">View All</a>
-
+                    <a href="/attendance-page/">
+                        View All
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
                 </div>
 
                 <div class="modern-past-list">
 
                     {% if weekly_attendance_groups %}
 
-                        {% for week in weekly_attendance_groups %}
+                        <div style="width:100%;">
+
+                            {% for week in weekly_attendance_groups %}
 
                             <div class="modern-past-row">
+                                <strong>
+                                    {{ week.start_date|date:"F d" }}
+                                    to
+                                    {{ week.end_date|date:"F d, Y" }}
+                                </strong>
 
-                                <div>
-
-                                    <strong>
-                                        {{ week.start_date|date:"F d" }}
-                                        to
-                                        {{ week.end_date|date:"F d, Y" }}
-                                    </strong>
-
-                                    <span>
-                                        {{ week.total_records }} attendance records
-                                    </span>
-
-                                </div>
-
+                                <span>
+                                    {{ week.total_records }} attendance records
+                                </span>
                             </div>
 
-                        {% endfor %}
+                            {% endfor %}
+
+                        </div>
 
                     {% else %}
 
-                        <div class="modern-past-row">
-
-                            <div>
-
-                                <strong>No attendances</strong>
-
-                                <span>
-                                    No previous attendance records found.
-                                </span>
-
+                        <div class="empty-past">
+                            <div class="empty-past-icon">
+                                <i class="fa-regular fa-calendar-xmark"></i>
                             </div>
 
+                            <div>
+                                <strong>No attendances</strong>
+                                <span>No previous attendance records found.</span>
+                            </div>
                         </div>
 
                     {% endif %}

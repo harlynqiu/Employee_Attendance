@@ -4,141 +4,211 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Employee Charges</title>
+<meta charset="UTF-8">
+<title>Employee Charges</title>
 
-    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <style>
-        .charges-header{
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-bottom:28px;
-        }
+<style>
+.charges-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:28px;
+    gap:18px;
+}
 
-        .charges-title{
-            font-size:46px;
-            font-weight:900;
-            color:#061b49;
-            margin:0;
-        }
+.charges-title{
+    font-size:46px;
+    font-weight:900;
+    color:#061b49;
+    margin:0;
+}
 
-        .back-btn{
-            background:#eef5ff;
-            color:#0758d6;
-            padding:14px 20px;
-            border-radius:14px;
-            font-weight:900;
-            text-decoration:none;
-        }
+.charges-header p{
+    color:#61708d;
+    margin-top:6px;
+    font-weight:600;
+}
 
-        .charges-card{
-            background:white;
-            border:1px solid #dfe7f3;
-            border-radius:24px;
-            padding:22px;
-            overflow-x:auto;
-        }
+.back-btn{
+    background:#eef5ff;
+    color:#0758d6;
+    padding:14px 20px;
+    border-radius:14px;
+    font-weight:900;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+}
 
-        .charges-table{
-            width:100%;
-            border-collapse:collapse;
-            min-width:1000px;
-        }
+.charges-card{
+    background:white;
+    border:1px solid #dfe7f3;
+    border-radius:24px;
+    padding:22px;
 
-        .charges-table th{
-            text-align:left;
-            padding:16px;
-            color:#0758d6;
-            font-size:13px;
-            text-transform:uppercase;
-            border-bottom:1px solid #dfe7f3;
-        }
+    /* FIX: prevents card from being taller than needed */
+    max-height:520px;
+    overflow:hidden;
 
-        .charges-table td{
-            padding:16px;
-            border-bottom:1px solid #edf1f7;
-            color:#061b49;
-            font-size:14px;
-        }
+    display:flex;
+    flex-direction:column;
+}
 
-        .employee-id{
-            background:#eef5ff;
-            color:#0758d6;
-            font-weight:900;
-            padding:8px 12px;
-            border-radius:10px;
-            display:inline-block;
-        }
+.charges-table-wrapper{
+    width:100%;
+    overflow:auto;
+    border-radius:16px;
+}
 
-        .amount{
-            font-weight:900;
-            color:#d62828;
-        }
+.charges-table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:1050px;
+}
 
-        .empty-row{
-            text-align:center;
-            padding:40px !important;
-            color:#61708d !important;
-        }
-    </style>
+.charges-table th{
+    text-align:left;
+    padding:16px;
+    color:#0758d6;
+    font-size:13px;
+    text-transform:uppercase;
+    border-bottom:1px solid #dfe7f3;
+    background:white;
+    position:sticky;
+    top:0;
+    z-index:2;
+    white-space:nowrap;
+}
+
+.charges-table td{
+    padding:16px;
+    border-bottom:1px solid #edf1f7;
+    color:#061b49;
+    font-size:14px;
+    white-space:nowrap;
+}
+
+.employee-id{
+    background:#eef5ff;
+    color:#0758d6;
+    font-weight:900;
+    padding:8px 12px;
+    border-radius:10px;
+    display:inline-block;
+}
+
+.employee-name-link,
+.payroll-period-link{
+    color:#061b49;
+    text-decoration:none;
+    font-weight:900;
+}
+
+.employee-name-link:hover,
+.payroll-period-link:hover{
+    color:#0758d6;
+    text-decoration:underline;
+}
+
+.amount{
+    font-weight:900;
+    color:#d62828;
+}
+
+.view-payroll-btn{
+    background:#0758d6;
+    color:white !important;
+    text-decoration:none;
+    padding:10px 15px;
+    border-radius:10px;
+    font-weight:900;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+}
+
+.empty-row{
+    text-align:center;
+    padding:40px !important;
+    color:#61708d !important;
+}
+
+@media(max-width:900px){
+    .charges-header{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .charges-title{
+        font-size:34px;
+    }
+
+    .charges-card{
+        max-height:460px;
+    }
+}
+</style>
 </head>
 
 <body>
 
 <div class="modern-page">
 
-    <aside class="modern-sidebar">
+<aside class="modern-sidebar">
 
-        <div class="modern-logo">
-            HCQ <br> MARKETING
+    <div class="modern-logo">
+        HCQ <br> MARKETING
+    </div>
+
+    <nav class="modern-menu">
+
+        <a href="/dashboard/">
+            <i class="fa-solid fa-house"></i>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="/attendance-page/">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Attendance</span>
+        </a>
+
+        <a href="/employees-page/">
+            <i class="fa-solid fa-user"></i>
+            <span>Employees</span>
+        </a>
+
+        <a href="/payroll-page/" class="active">
+            <i class="fa-regular fa-file-lines"></i>
+            <span>Payroll</span>
+        </a>
+
+    </nav>
+
+</aside>
+
+<main class="modern-content">
+
+    <div class="charges-header">
+
+        <div>
+            <h1 class="charges-title">EMPLOYEE CHARGES</h1>
+            <p>List of employees with payroll deductions</p>
         </div>
 
-        <nav class="modern-menu">
+        <a href="/dashboard/" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
 
-            <a href="/dashboard/">
-                <i class="fa-solid fa-house"></i>
-                <span>Dashboard</span>
-            </a>
+    </div>
 
-            <a href="/attendance-page/">
-                <i class="fa-solid fa-circle-check"></i>
-                <span>Attendance</span>
-            </a>
+    <div class="charges-card">
 
-            <a href="/employees-page/">
-                <i class="fa-solid fa-user"></i>
-                <span>Employees</span>
-            </a>
-
-            <a href="/payroll-page/">
-                <i class="fa-regular fa-file-lines"></i>
-                <span>Payroll</span>
-            </a>
-
-        </nav>
-
-    </aside>
-
-    <main class="modern-content">
-
-        <div class="charges-header">
-
-            <div>
-                <h1 class="charges-title">EMPLOYEE CHARGES</h1>
-                <p>List of employees with payroll deductions</p>
-            </div>
-
-            <a href="/dashboard/" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i>
-                Back to Dashboard
-            </a>
-
-        </div>
-
-        <div class="charges-card">
+        <div class="charges-table-wrapper">
 
             <table class="charges-table">
 
@@ -151,6 +221,7 @@
                         <th>Cash Advance</th>
                         <th>Charges</th>
                         <th>Rent</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
 
@@ -159,23 +230,26 @@
                     {% for payroll in charges %}
 
                     <tr>
+
                         <td>
-                            <span class="employee-id">
+                            <a href="{% url 'view-payroll' payroll.id %}" class="employee-id">
                                 {{ payroll.employee.employee_id }}
-                            </span>
+                            </a>
                         </td>
 
                         <td>
-                            <strong>
+                            <a href="{% url 'view-payroll' payroll.id %}" class="employee-name-link">
                                 {{ payroll.employee.last_name }},
                                 {{ payroll.employee.first_name }}
-                            </strong>
+                            </a>
                         </td>
 
                         <td>
-                            {{ payroll.start_date|date:"M d, Y" }}
-                            -
-                            {{ payroll.end_date|date:"M d, Y" }}
+                            <a href="{% url 'view-payroll' payroll.id %}" class="payroll-period-link">
+                                {{ payroll.start_date|date:"M d, Y" }}
+                                -
+                                {{ payroll.end_date|date:"M d, Y" }}
+                            </a>
                         </td>
 
                         <td class="amount">
@@ -193,12 +267,20 @@
                         <td class="amount">
                             ₱ {{ payroll.rent|floatformat:2|intcomma }}
                         </td>
+
+                        <td>
+                            <a href="{% url 'view-payroll' payroll.id %}" class="view-payroll-btn">
+                                <i class="fa-solid fa-eye"></i>
+                                View
+                            </a>
+                        </td>
+
                     </tr>
 
                     {% empty %}
 
                     <tr>
-                        <td colspan="7" class="empty-row">
+                        <td colspan="8" class="empty-row">
                             No employee charges found.
                         </td>
                     </tr>
@@ -211,7 +293,9 @@
 
         </div>
 
-    </main>
+    </div>
+
+</main>
 
 </div>
 

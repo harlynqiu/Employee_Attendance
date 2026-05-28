@@ -162,10 +162,18 @@
         <div class="modern-header">
             <h1>EMPLOYEES</h1>
 
-            <div class="modern-search">
+            <form method="get" class="modern-search">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" placeholder="Search Employee...">
-            </div>
+
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ q }}"
+                    placeholder="Search Employee..."
+                >
+
+                <input type="hidden" name="status" value="{{ status_filter }}">
+            </form>
 
             <a href="/new-employee/" class="modern-add-btn">
                 <i class="fa-solid fa-plus"></i>

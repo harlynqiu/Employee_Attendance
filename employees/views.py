@@ -1,7 +1,7 @@
 from decimal import Decimal
 
-from django.shortcuts import render
-from django.db.models import Count, Sum
+from django.shortcuts import get_object_or_404, render
+from django.db.models import Count, Sum, Q
 from django.db.models.functions import Coalesce
 
 from rest_framework import viewsets
@@ -16,14 +16,24 @@ class EmployeeViewSet(viewsets.ModelViewSet):
 
 
 def employees_page(request):
-
     status_filter = request.GET.get("status", "ALL")
+    q = request.GET.get("q", "").strip()
 
     employees = Employee.objects.all().order_by("employee_id")
 
     if status_filter != "ALL":
         employees = employees.filter(
             employment_status=status_filter
+        )
+
+    if q:
+        employees = employees.filter(
+            Q(employee_id__icontains=q) |
+            Q(first_name__icontains=q) |
+            Q(middle_initial__icontains=q) |
+            Q(last_name__icontains=q) |
+            Q(position__icontains=q) |
+            Q(contact_number__icontains=q)
         )
 
     employees = employees.annotate(
@@ -83,11 +93,12 @@ def employees_page(request):
             / active_rates.count()
         )
     else:
-        average_rate = 0
+        average_rate = Decimal("0.00")
 
     context = {
         "employees": employees,
         "status_filter": status_filter,
+        "q": q,
         "total_employees": total_employees,
         "active_employees": active_employees,
         "resigned_employees": resigned_employees,
@@ -102,8 +113,8 @@ def employees_page(request):
         context
     )
 
-def view_employee_page_view(request, employee_id):
 
+def view_employee_page_view(request, employee_id):
     employee = get_object_or_404(
         Employee,
         id=employee_id
@@ -112,7 +123,7 @@ def view_employee_page_view(request, employee_id):
     attendances = employee.attendances.all().order_by("-date")[:10]
     payrolls = employee.payrolls.all().order_by("-start_date")[:10]
 
-    total_charges = 0
+    total_charges = Decimal("0.00")
 
     for payroll in payrolls:
         total_charges += (

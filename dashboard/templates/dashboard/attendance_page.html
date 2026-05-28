@@ -50,10 +50,16 @@
                 <p>Daily attendance monitoring</p>
             </div>
 
-            <div class="attendance-modern-search">
+            <form method="get" class="attendance-modern-search">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" placeholder="Search employee...">
-            </div>
+
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ q }}"
+                    placeholder="Search employee..."
+                >
+            </form>
 
             <a href="{% url 'admin:logout' %}" class="modern-logout">
                 <i class="fa-solid fa-right-from-bracket"></i>
@@ -176,34 +182,47 @@
             <div class="attendance-card-header">
                 <div>
                     <h2>Past Attendances</h2>
-                    <p>Download previous attendance reports</p>
+                    <p>Previous attendance records</p>
                 </div>
             </div>
 
             <div class="past-attendance-list">
-                <div class="past-attendance-row">
-                    <div>
-                        <strong>May 8 to May 15, 2026</strong>
-                        <span>Weekly attendance report</span>
+
+                {% for record in past_attendances %}
+
+                    <div class="past-attendance-row">
+                        <div>
+                            <strong>
+                                {{ record.employee.employee_id }} -
+                                {{ record.employee.last_name }},
+                                {{ record.employee.first_name }}
+                            </strong>
+
+                            <span>
+                                {{ record.date|date:"F d, Y" }}
+
+                                {% if record.time_in %}
+                                    | Time In: {{ record.time_in|date:"g:i A" }}
+                                {% endif %}
+
+                                {% if record.time_out %}
+                                    | Time Out: {{ record.time_out|date:"g:i A" }}
+                                {% endif %}
+                            </span>
+                        </div>
                     </div>
 
-                    <button type="button">
-                        <i class="fa-solid fa-download"></i>
-                        Download PDF
-                    </button>
-                </div>
+                {% empty %}
 
-                <div class="past-attendance-row">
-                    <div>
-                        <strong>May 16 to May 22, 2026</strong>
-                        <span>Weekly attendance report</span>
+                    <div class="past-attendance-row">
+                        <div>
+                            <strong>No past attendances found</strong>
+                            <span>Previous attendance records will appear here once available.</span>
+                        </div>
                     </div>
 
-                    <button type="button">
-                        <i class="fa-solid fa-download"></i>
-                        Download PDF
-                    </button>
-                </div>
+                {% endfor %}
+
             </div>
         </section>
 

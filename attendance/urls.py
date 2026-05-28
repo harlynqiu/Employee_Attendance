@@ -6,6 +6,7 @@ from .views import (
     time_in_view,
     time_out_view,
     attendance_list_view,
+    attendance_page,
     employee_attendance_view,
     employee_weekly_attendance_view,
     employee_monthly_attendance_view,
@@ -18,74 +19,80 @@ from .views import (
 
 urlpatterns = [
     path(
-        'scanner/',
+        "page/",
+        attendance_page,
+        name="attendance-page"
+    ),
+
+    path(
+        "scanner/",
         scanner_page,
-        name='scanner-page'
+        name="scanner-page"
     ),
 
     path(
-        'scan/',
+        "scan/",
         scan_attendance,
-        name='scan-attendance'
+        name="scan-attendance"
     ),
 
     path(
-        'time-in/',
+        "time-in/",
         time_in_view,
-        name='time-in'
+        name="time-in"
     ),
 
     path(
-        'time-out/',
+        "time-out/",
         time_out_view,
-        name='time-out'
+        name="time-out"
     ),
 
     path(
-        '',
+        "",
         attendance_list_view,
-        name='attendance-list'
+        name="attendance-list"
     ),
 
     path(
-        'employee/<str:employee_id>/',
+        "employee/<str:employee_id>/",
         employee_attendance_view,
-        name='employee-attendance'
+        name="employee-attendance"
     ),
 
     path(
-        'employee/<str:employee_id>/weekly/',
+        "employee/<str:employee_id>/weekly/",
         employee_weekly_attendance_view,
-        name='employee-weekly-attendance'
+        name="employee-weekly-attendance"
     ),
 
     path(
-        'employee/<str:employee_id>/monthly/',
+        "employee/<str:employee_id>/monthly/",
         employee_monthly_attendance_view,
-        name='employee-monthly-attendance'
+        name="employee-monthly-attendance"
     ),
 
     path(
-        'employee/<str:employee_id>/by-month/',
+        "employee/<str:employee_id>/by-month/",
         employee_attendance_by_month_view,
-        name='employee-attendance-by-month'
+        name="employee-attendance-by-month"
     ),
 
     path(
-        'employee/<str:employee_id>/by-range/',
+        "employee/<str:employee_id>/by-range/",
         employee_attendance_by_range_view,
-        name='employee-attendance-by-range'
+        name="employee-attendance-by-range"
     ),
 
     path(
-        'employee/<str:employee_id>/summary/by-month/',
+        "employee/<str:employee_id>/summary/by-month/",
         employee_summary_by_month_view,
-        name='employee-summary-by-month'
+        name="employee-summary-by-month"
     ),
 
     path(
-        'employee/<str:employee_id>/summary/by-range/',
+        "employee/<str:employee_id>/summary/by-range/",
         employee_summary_by_range_view,
-        name='employee-summary-by-range'
+        name="employee-summary-by-range"
     ),
 ]
