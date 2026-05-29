@@ -5,6 +5,7 @@ from django.db.models import Sum, Q
 from .models import Payroll
 from employees.models import Employee
 from attendance.models import Attendance
+from django.db import transaction
 
 # =========================================
 # PAYROLL DASHBOARD PAGE
@@ -85,6 +86,63 @@ def payroll_page(request):
         context
     )
 
+def generate_payroll(request):
+
+    start_date = request.GET.get("start_date")
+    end_date = request.GET.get("end_date")
+
+    if not start_date or not end_date:
+
+        messages.error(
+            request,
+            "Please select Start Date and End Date."
+        )
+
+        return redirect("payroll-page")
+
+    employees = Employee.objects.filter(
+        employment_status="ACTIVE"
+    )
+
+    created_count = 0
+
+    with transaction.atomic():
+
+        for employee in employees:
+
+            exists = Payroll.objects.filter(
+                employee=employee,
+                start_date=start_date,
+                end_date=end_date
+            ).exists()
+
+            if exists:
+                continue
+
+            attendance_exists = Attendance.objects.filter(
+                employee=employee,
+                date__range=[start_date, end_date]
+            ).exists()
+
+            if not attendance_exists:
+                continue
+
+            Payroll.objects.create(
+                employee=employee,
+                start_date=start_date,
+                end_date=end_date
+            )
+
+            created_count += 1
+
+    messages.success(
+        request,
+        f"{created_count} payroll records generated successfully."
+    )
+
+    return redirect(
+        f"/payroll-page/?start_date={start_date}&end_date={end_date}"
+    )
 
 # =========================================
 # ADD PAYROLL PAGE

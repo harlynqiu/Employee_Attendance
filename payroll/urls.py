@@ -6,4 +6,9 @@ urlpatterns = [
     path("add/", views.add_payroll, name="add-payroll"),
     path("view/<int:payroll_id>/", views.view_payroll, name="view-payroll"),
     path("edit/<int:payroll_id>/", views.edit_payroll, name="edit-payroll"),
+    path(
+    "generate-payroll/",
+    views.generate_payroll,
+    name="generate-payroll"
+),
 ]

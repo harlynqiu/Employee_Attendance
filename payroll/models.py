@@ -290,10 +290,12 @@ class Payroll(models.Model):
             )
         )
 
-        benefits = (
-            self.employee.benefits
-            or Decimal('0.00')
-        )
+        absent_count = attendance.filter(status='ABSENT').count()
+
+        if absent_count > 0:
+            benefits = Decimal('105.00') * Decimal(absent_count)
+        else:
+            benefits = Decimal('0.00')
 
         allowance = (
             self.allowance

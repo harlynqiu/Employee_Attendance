@@ -401,13 +401,40 @@
 
             </div>
 
-            <button type="submit" class="filter-btn">
+            <a href="#"
+            class="btn btn-primary"
+            onclick="generatePayroll()">
+                Generate Payroll
+            </a>
 
-                <i class="fa-solid fa-filter"></i>
+            <script>
 
-                Filter Payroll
+                function generatePayroll() {
 
-            </button>
+                    const startDate =
+                        document.querySelector(
+                            '[name="start_date"]'
+                        ).value;
+
+                    const endDate =
+                        document.querySelector(
+                            '[name="end_date"]'
+                        ).value;
+
+                    if (!startDate || !endDate) {
+
+                        alert(
+                            "Please select Start Date and End Date."
+                        );
+
+                        return;
+                    }
+
+                    window.location.href =
+                        `/generate-payroll/?start_date=${startDate}&end_date=${endDate}`;
+                }
+
+                </script>
 
         </form>
 
