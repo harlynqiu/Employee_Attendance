@@ -556,7 +556,7 @@ body{
                         </div>
                     </div>
 
-                    <a href="/attendance-page/">
+                    <a href="/past-attendances/">  
                         View Details
                         <i class="fa-solid fa-chevron-right"></i>
                     </a>
@@ -686,7 +686,7 @@ body{
                         </div>
                     </div>
 
-                    <a href="/attendance-page/">
+                    <a href="/past-attendances/">
                         View All
                         <i class="fa-solid fa-chevron-right"></i>
                     </a>
@@ -700,7 +700,10 @@ body{
 
                             {% for week in weekly_attendance_groups %}
 
-                            <div class="modern-past-row">
+                            <a href="/past-attendances/?week_start={{ week.start_date|date:'Y-m-d' }}&week_end={{ week.end_date|date:'Y-m-d' }}"
+                            class="modern-past-row"
+                            style="display:block; text-decoration:none; color:inherit;">
+
                                 <strong>
                                     {{ week.start_date|date:"F d" }}
                                     to
@@ -710,7 +713,8 @@ body{
                                 <span>
                                     {{ week.total_records }} attendance records
                                 </span>
-                            </div>
+
+                            </a>
 
                             {% endfor %}
 

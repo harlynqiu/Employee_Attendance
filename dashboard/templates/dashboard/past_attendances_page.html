@@ -1,0 +1,316 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Past Attendances</title>
+
+    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .past-filter-card {
+            background: #ffffff;
+            border: 1px solid #dbe4f0;
+            border-radius: 18px;
+            padding: 20px;
+            margin: 22px 0;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+        }
+
+        .past-filter-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .past-filter-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: #eaf2ff;
+            color: #0047b3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .past-filter-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #0047b3;
+        }
+
+        .past-filter-header p {
+            margin: 3px 0 0;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .past-filter-form {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr 1fr auto auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .past-filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .past-filter-field label {
+            font-size: 12px;
+            font-weight: 800;
+            color: #334155;
+            text-transform: uppercase;
+        }
+
+        .past-filter-field input {
+            height: 44px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 0 13px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .past-filter-field input:focus {
+            border-color: #0047b3;
+            box-shadow: 0 0 0 3px rgba(0, 71, 179, 0.12);
+        }
+
+        .past-filter-btn,
+        .past-clear-btn {
+            height: 44px;
+            border: none;
+            border-radius: 12px;
+            padding: 0 16px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .past-filter-btn {
+            background: #0047b3;
+            color: #ffffff;
+        }
+
+        .past-clear-btn {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .past-filter-btn:hover {
+            background: #003b94;
+        }
+
+        .past-clear-btn:hover {
+            background: #e2e8f0;
+        }
+
+        @media (max-width: 1200px) {
+            .past-filter-form {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .past-filter-form {
+                grid-template-columns: 1fr;
+            }
+
+            .past-filter-btn,
+            .past-clear-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="modern-page">
+
+    <aside class="modern-sidebar">
+        <div class="modern-logo">
+            HCQ <br> MARKETING
+        </div>
+
+        <nav class="modern-menu">
+            <a href="/dashboard/">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/attendance-page/" class="active">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Attendance</span>
+            </a>
+
+            <a href="/employees-page/">
+                <i class="fa-solid fa-user"></i>
+                <span>Employees</span>
+            </a>
+
+            <a href="/payroll-page/">
+                <i class="fa-regular fa-file-lines"></i>
+                <span>Payroll</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="modern-content">
+
+        <div class="attendance-modern-header">
+            <div>
+                <h1>PAST ATTENDANCES</h1>
+                <p>Complete previous attendance records</p>
+            </div>
+
+            <a href="/attendance-page/" class="modern-logout">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+        </div>
+
+        <section class="past-filter-card">
+            <div class="past-filter-header">
+                <div class="past-filter-icon">
+                    <i class="fa-solid fa-filter"></i>
+                </div>
+
+                <div>
+                    <h2>Filter Records</h2>
+                    <p>Search by employee, specific date, or selected week range.</p>
+                </div>
+            </div>
+
+            <form method="get" class="past-filter-form">
+
+                <div class="past-filter-field">
+                    <label>Search Employee</label>
+                    <input type="text" name="q" value="{{ q }}" placeholder="ID, first name, or last name">
+                </div>
+
+                <div class="past-filter-field">
+                    <label>Specific Date</label>
+                    <input type="date" name="date" value="{{ selected_date }}">
+                </div>
+
+                <div class="past-filter-field">
+                    <label>Week Start</label>
+                    <input type="date" name="week_start" value="{{ week_start }}">
+                </div>
+
+                <div class="past-filter-field">
+                    <label>Week End</label>
+                    <input type="date" name="week_end" value="{{ week_end }}">
+                </div>
+
+                <button type="submit" class="past-filter-btn">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    Filter
+                </button>
+
+                <a href="/past-attendances/" class="past-clear-btn">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Clear
+                </a>
+
+            </form>
+        </section>
+
+        <section class="attendance-table-card">
+            <div class="attendance-card-header">
+                <div>
+                    <h2>All Past Attendance Records</h2>
+                    <p>Sorted by latest date</p>
+                </div>
+            </div>
+
+            <table class="modern-attendance-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>ID</th>
+                        <th>Employee Name</th>
+                        <th>Time In</th>
+                        <th>Time Out</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for record in past_attendances %}
+                    <tr>
+                        <td>{{ record.date|date:"M d, Y" }}</td>
+
+                        <td>
+                            <span class="attendance-id-badge">
+                                {{ record.employee.employee_id }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <strong>
+                                {{ record.employee.last_name }},
+                                {{ record.employee.first_name }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {% if record.time_in %}
+                                <span class="time-badge in">
+                                    {{ record.time_in|date:"g:i A" }}
+                                </span>
+                            {% else %}
+                                <span class="time-badge empty">--</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if record.time_out %}
+                                <span class="time-badge out">
+                                    {{ record.time_out|date:"g:i A" }}
+                                </span>
+                            {% else %}
+                                <span class="time-badge empty">--</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <span class="status-badge active">
+                                {{ record.status|title }}
+                            </span>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="modern-empty-state">
+                            <i class="fa-regular fa-calendar-xmark"></i>
+                            <h3>No past attendance records found.</h3>
+                            <p>Try changing the selected date, week, or employee search.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

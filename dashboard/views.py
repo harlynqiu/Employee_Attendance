@@ -4,6 +4,7 @@ from django.utils import timezone
 from employees.models import Employee
 from attendance.models import Attendance
 from payroll.models import Payroll
+from datetime import datetime
 
 
 def dashboard_view(request):
@@ -169,17 +170,89 @@ def attendance_page_view(request):
     now = timezone.localtime()
     today = now.date()
 
+    employees = Employee.objects.filter(
+        employment_status="ACTIVE"
+    ).order_by("employee_id")
+
+    if request.method == "POST":
+
+        employee_id = request.POST.get("employee")
+        date_value = request.POST.get("date")
+        time_in_value = request.POST.get("time_in")
+        time_out_value = request.POST.get("time_out")
+        status = request.POST.get("status", "present")
+        remarks = request.POST.get("remarks", "")
+
+        employee = get_object_or_404(Employee, id=employee_id)
+
+        attendance_date = datetime.strptime(
+            date_value,
+            "%Y-%m-%d"
+        ).date()
+
+        time_in = None
+        time_out = None
+
+        if time_in_value:
+            time_in = datetime.strptime(
+                f"{date_value} {time_in_value}",
+                "%Y-%m-%d %H:%M"
+            )
+            time_in = timezone.make_aware(time_in)
+
+        if time_out_value:
+            time_out = datetime.strptime(
+                f"{date_value} {time_out_value}",
+                "%Y-%m-%d %H:%M"
+            )
+            time_out = timezone.make_aware(time_out)
+
+        attendance, created = Attendance.objects.get_or_create(
+            employee=employee,
+            date=attendance_date
+        )
+
+        attendance.status = status
+        attendance.time_in = time_in
+        attendance.time_out = time_out
+
+        if hasattr(attendance, "remarks"):
+            attendance.remarks = remarks
+
+        attendance.save()
+
+        return redirect("/attendance-page/")
+
+    q = request.GET.get("q", "").strip()
+
     attendance_records = Attendance.objects.filter(
         date=today
-    ).select_related(
-        "employee"
-    ).order_by(
+    ).select_related("employee").order_by(
         "employee__employee_id"
     )
 
+    if q:
+        attendance_records = attendance_records.filter(
+            employee__employee_id__icontains=q
+        ) | attendance_records.filter(
+            employee__first_name__icontains=q
+        ) | attendance_records.filter(
+            employee__last_name__icontains=q
+        )
+
+    past_attendances = Attendance.objects.filter(
+        date__lt=today
+    ).select_related("employee").order_by(
+        "-date",
+        "employee__employee_id"
+    )[:30]
+
     context = {
-        "current_date": now.strftime("%B %d, %Y"),
+        "current_date": today,
         "attendance_records": attendance_records,
+        "past_attendances": past_attendances,
+        "employees": employees,
+        "q": q,
     }
 
     return render(
@@ -467,5 +540,55 @@ def charges_page_view(request):
         "dashboard/charges_page.html",
         {
             "charges": charges,
+        }
+    )
+
+# =========================================
+# PAST ATTENDANCES
+# =========================================
+
+
+def past_attendances_page_view(request):
+
+    q = request.GET.get("q", "").strip()
+    selected_date = request.GET.get("date", "").strip()
+    week_start = request.GET.get("week_start", "").strip()
+    week_end = request.GET.get("week_end", "").strip()
+
+    past_attendances = Attendance.objects.select_related(
+        "employee"
+    ).order_by(
+        "-date",
+        "employee__employee_id"
+    )
+
+    if selected_date:
+        past_attendances = past_attendances.filter(
+            date=selected_date
+        )
+
+    if week_start and week_end:
+        past_attendances = past_attendances.filter(
+            date__range=[week_start, week_end]
+        )
+
+    if q:
+        past_attendances = past_attendances.filter(
+            employee__employee_id__icontains=q
+        ) | past_attendances.filter(
+            employee__first_name__icontains=q
+        ) | past_attendances.filter(
+            employee__last_name__icontains=q
+        )
+
+    return render(
+        request,
+        "dashboard/past_attendances_page.html",
+        {
+            "past_attendances": past_attendances,
+            "q": q,
+            "selected_date": selected_date,
+            "week_start": week_start,
+            "week_end": week_end,
         }
     )
