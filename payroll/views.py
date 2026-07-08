@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Sum, Q
+from decimal import Decimal
 
 from .models import Payroll
 from employees.models import Employee
@@ -252,36 +253,55 @@ def view_payroll(request, payroll_id):
 # =========================================
 
 def edit_payroll(request, payroll_id):
+    payroll = get_object_or_404(Payroll, id=payroll_id)
 
-    payroll = get_object_or_404(
-        Payroll,
-        id=payroll_id
-    )
+    attendance_records = Attendance.objects.filter(
+        employee=payroll.employee,
+        date__range=[payroll.start_date, payroll.end_date]
+    ).order_by("date")
+
+    work_type_choices = Attendance._meta.get_field("work_type").choices
 
     if request.method == "POST":
 
-        payroll.allowance = request.POST.get("allowance") or 0
-        payroll.cash_advance = request.POST.get("cash_advance") or 0
-        payroll.charges = request.POST.get("charges") or 0
-        payroll.rent = request.POST.get("rent") or 0
-        payroll.remarks = request.POST.get("remarks")
+        for record in attendance_records:
+            record.transportation_fee_applicable = (
+                request.POST.get(f"transportation_fee_applicable_{record.id}") == "on"
+            )
+
+            record.delivery_allowance_applicable = (
+                request.POST.get(f"delivery_allowance_applicable_{record.id}") == "on"
+            )
+
+            record.work_type = request.POST.get(
+                f"work_type_{record.id}",
+                record.work_type
+            )
+
+            record.work_location = request.POST.get(
+                f"work_location_{record.id}",
+                ""
+            )
+
+            record.remarks = request.POST.get(
+                f"attendance_remarks_{record.id}",
+                ""
+            )
+
+            record.save()
+
+        payroll.allowance = Decimal(request.POST.get("allowance") or 0)
+        payroll.cash_advance = Decimal(request.POST.get("cash_advance") or 0)
+        payroll.charges = Decimal(request.POST.get("charges") or 0)
+        payroll.rent = Decimal(request.POST.get("rent") or 0)
+        payroll.remarks = request.POST.get("remarks", "")
 
         payroll.save()
 
-        messages.success(
-            request,
-            "Payroll updated successfully."
-        )
+        return redirect("view-payroll", payroll.id)
 
-        return redirect(
-            "view-payroll",
-            payroll_id=payroll.id
-        )
-
-    return render(
-        request,
-        "admin/payroll/edit_payroll.html",
-        {
-            "payroll": payroll
-        }
-    )
+    return render(request, "admin/payroll/edit_payroll.html", {
+        "payroll": payroll,
+        "attendance_records": attendance_records,
+        "work_type_choices": work_type_choices,
+    })

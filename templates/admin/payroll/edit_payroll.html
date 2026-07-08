@@ -93,6 +93,13 @@
             color:#61708d;
         }
 
+        .employee-meta h3{
+            margin:6px 0 0;
+            color:#061b49;
+            font-size:17px;
+            font-weight:900;
+        }
+
         .status-badge{
             display:inline-block;
             background:#dff8e9;
@@ -167,7 +174,8 @@
         }
 
         .form-group input,
-        .form-group textarea{
+        .form-group textarea,
+        .form-group select{
             width:100%;
             border:1px solid #dfe7f3;
             border-radius:14px;
@@ -180,13 +188,14 @@
         }
 
         .form-group input:focus,
-        .form-group textarea:focus{
+        .form-group textarea:focus,
+        .form-group select:focus{
             border-color:#0758d6;
             box-shadow:0 0 0 4px rgba(7,88,214,0.08);
         }
 
         .form-group textarea{
-            min-height:150px;
+            min-height:110px;
             resize:vertical;
         }
 
@@ -201,6 +210,86 @@
             padding:16px 18px;
             font-weight:800;
             margin-bottom:22px;
+        }
+
+        .attendance-card{
+            grid-column:1 / -1;
+            background:#f8fbff;
+            border:1px solid #dfe7f3;
+            border-radius:20px;
+            padding:20px;
+        }
+
+        .attendance-top{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:16px;
+            padding-bottom:16px;
+            margin-bottom:18px;
+            border-bottom:1px solid #dfe7f3;
+        }
+
+        .attendance-date{
+            margin:0;
+            color:#061b49;
+            font-size:20px;
+            font-weight:900;
+        }
+
+        .attendance-time{
+            margin:6px 0 0;
+            color:#61708d;
+            font-weight:800;
+        }
+
+        .attendance-status{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            background:#eef5ff;
+            color:#0758d6;
+            font-size:13px;
+            font-weight:900;
+            padding:9px 13px;
+            border-radius:12px;
+            white-space:nowrap;
+        }
+
+        .attendance-fields{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:18px;
+        }
+
+        .check-box{
+            background:white;
+            border:1px solid #dfe7f3;
+            border-radius:16px;
+            padding:16px;
+        }
+
+        .check-label{
+            display:flex;
+            flex-direction:row;
+            align-items:center;
+            gap:12px;
+            color:#061b49;
+            font-weight:900;
+            cursor:pointer;
+        }
+
+        .check-label input{
+            width:18px;
+            height:18px;
+            accent-color:#0758d6;
+        }
+
+        .manual-title{
+            grid-column:1 / -1;
+            margin-top:10px;
+            padding-top:20px;
+            border-top:1px solid #dfe7f3;
         }
 
         .button-row{
@@ -236,11 +325,13 @@
         @media(max-width:1300px){
             .employee-card,
             .readonly-grid,
-            .form-grid{
+            .form-grid,
+            .attendance-fields{
                 grid-template-columns:1fr;
             }
 
-            .edit-header{
+            .edit-header,
+            .attendance-top{
                 flex-direction:column;
                 align-items:flex-start;
             }
@@ -305,7 +396,7 @@
                 <h1 class="edit-title">EDIT PAYROLL</h1>
 
                 <p class="edit-subtitle">
-                    Update manual payroll adjustments and remarks.
+                    Update payroll adjustments and attendance options without using the admin page.
                 </p>
             </div>
         </div>
@@ -366,13 +457,13 @@
                 </div>
 
                 <div class="readonly-item">
-                    <span>Overtime Pay</span>
-                    <h3>₱ {{ payroll.overtime_pay|floatformat:2|intcomma }}</h3>
+                    <span>Transportation</span>
+                    <h3>₱ {{ payroll.transportation_fee|floatformat:2|intcomma }}</h3>
                 </div>
 
                 <div class="readonly-item">
-                    <span>Payable Hours</span>
-                    <h3>{{ payroll.total_payable_hours|floatformat:2 }} hrs</h3>
+                    <span>Delivery Allowance</span>
+                    <h3>₱ {{ payroll.delivery_allowance|floatformat:2|intcomma }}</h3>
                 </div>
 
             </div>
@@ -383,15 +474,112 @@
 
             {% csrf_token %}
 
-            <h3 class="section-title">Manual Adjustments</h3>
+            <h3 class="section-title">Attendance Adjustments</h3>
 
             <div class="form-note">
                 <i class="fa-solid fa-circle-info"></i>
-                Base salary, overtime, transportation fee, and delivery allowance are computed automatically from attendance.
-                You only need to edit manual amounts below.
+                These options are saved to the employee's attendance records. After saving, payroll will recompute automatically.
             </div>
 
             <div class="form-grid">
+
+                {% for record in attendance_records %}
+                <div class="attendance-card">
+
+                    <div class="attendance-top">
+                        <div>
+                            <p class="attendance-date">
+                                {{ record.date }}
+                            </p>
+
+                            <p class="attendance-time">
+                                Time In:
+                                {{ record.time_in|default:"—" }}
+                                &nbsp; | &nbsp;
+                                Time Out:
+                                {{ record.time_out|default:"—" }}
+                            </p>
+                        </div>
+
+                        <span class="attendance-status">
+                            <i class="fa-solid fa-circle-check"></i>
+                            {{ record.status }}
+                        </span>
+                    </div>
+
+                    <div class="attendance-fields">
+
+                        <div class="check-box">
+                            <label class="check-label">
+                                <input
+                                    type="checkbox"
+                                    name="transportation_fee_applicable_{{ record.id }}"
+                                    {% if record.transportation_fee_applicable %}checked{% endif %}
+                                >
+                                Transportation fee applicable
+                            </label>
+                        </div>
+
+                        <div class="check-box">
+                            <label class="check-label">
+                                <input
+                                    type="checkbox"
+                                    name="delivery_allowance_applicable_{{ record.id }}"
+                                    {% if record.delivery_allowance_applicable %}checked{% endif %}
+                                >
+                                Delivery allowance applicable
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Work Type</label>
+                            <select name="work_type_{{ record.id }}">
+                                <option value="office" {% if record.work_type == "office" %}selected{% endif %}>
+                                    Office
+                                </option>
+
+                                <option value="deliver" {% if record.work_type == "deliver" %}selected{% endif %}>
+                                    Delivery
+                                </option>
+
+                                <option value="booking" {% if record.work_type == "booking" %}selected{% endif %}>
+                                    Booking
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Work Location</label>
+                            <input
+                                type="text"
+                                name="work_location_{{ record.id }}"
+                                value="{{ record.work_location|default:'' }}"
+                                placeholder="Example: Office, Digos, Kidapawan, Tagum"
+                            >
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Attendance Remarks</label>
+                            <textarea
+                                name="attendance_remarks_{{ record.id }}"
+                                placeholder="Enter attendance remarks..."
+                            >{{ record.remarks|default:'' }}</textarea>
+                        </div>
+
+                    </div>
+
+                </div>
+                {% empty %}
+
+                <div class="attendance-card">
+                    <strong>No attendance records found for this payroll period.</strong>
+                </div>
+
+                {% endfor %}
+
+                <div class="manual-title">
+                    <h3 class="section-title">Manual Payroll Adjustments</h3>
+                </div>
 
                 <div class="form-group">
                     <label>Allowance</label>
@@ -438,11 +626,11 @@
                 </div>
 
                 <div class="form-group full-width">
-                    <label>Remarks</label>
+                    <label>Payroll Remarks</label>
                     <textarea
                         name="remarks"
-                        placeholder="Enter remarks here..."
-                    >{% if payroll.remarks %}{{ payroll.remarks }}{% endif %}</textarea>
+                        placeholder="Enter payroll remarks here..."
+                    >{{ payroll.remarks|default:'' }}</textarea>
                 </div>
 
             </div>
