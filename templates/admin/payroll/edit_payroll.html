@@ -625,6 +625,17 @@
                     >
                 </div>
 
+                <div class="form-group">
+                    <label>Benefits</label>
+                    <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        name="benefits"
+                        value="{{ payroll.benefits|floatformat:2 }}"
+                    >
+                </div>
+
                 <div class="form-group full-width">
                     <label>Payroll Remarks</label>
                     <textarea

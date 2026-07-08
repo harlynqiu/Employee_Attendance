@@ -295,7 +295,8 @@ def edit_payroll(request, payroll_id):
         payroll.charges = Decimal(request.POST.get("charges") or 0)
         payroll.rent = Decimal(request.POST.get("rent") or 0)
         payroll.remarks = request.POST.get("remarks", "")
-
+        payroll.benefits = Decimal(request.POST.get("benefits") or 0)
+        
         payroll.save()
 
         return redirect("view-payroll", payroll.id)

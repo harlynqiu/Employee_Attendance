@@ -409,32 +409,29 @@
 
             <script>
 
-                function generatePayroll() {
+            function generatePayroll() {
 
-                    const startDate =
-                        document.querySelector(
-                            '[name="start_date"]'
-                        ).value;
+                const startDate = document.querySelector(
+                    '[name="start_date"]'
+                ).value;
 
-                    const endDate =
-                        document.querySelector(
-                            '[name="end_date"]'
-                        ).value;
+                const endDate = document.querySelector(
+                    '[name="end_date"]'
+                ).value;
 
-                    if (!startDate || !endDate) {
-
-                        alert(
-                            "Please select Start Date and End Date."
-                        );
-
-                        return;
-                    }
-
-                    window.location.href =
-                        `/generate-payroll/?start_date=${startDate}&end_date=${endDate}`;
+                if (!startDate || !endDate) {
+                    alert("Please select Start Date and End Date.");
+                    return;
                 }
 
-                </script>
+                window.location.href =
+                    "{% url 'generate-payroll' %}?start_date=" +
+                    encodeURIComponent(startDate) +
+                    "&end_date=" +
+                    encodeURIComponent(endDate);
+            }
+
+            </script>
 
         </form>
 

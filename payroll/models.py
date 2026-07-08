@@ -12,6 +12,7 @@ from attendance.models import Attendance
 TRANSPORTATION_FEE_PER_DAY = Decimal('15.00')
 DRIVER_DELIVER_ALLOWANCE = Decimal('200.00')
 HELPER_DELIVER_ALLOWANCE = Decimal('150.00')
+ABSENT_DEDUCTION_PER_DAY = Decimal('105.00')
 
 
 class PayrollAdjustment(models.Model):
@@ -29,11 +30,8 @@ class PayrollAdjustment(models.Model):
     )
 
     date = models.DateField(default=timezone.localdate)
-
     adjustment_type = models.CharField(max_length=20, choices=ADJUSTMENT_TYPE)
-
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-
     description = models.CharField(max_length=255, blank=True, null=True)
 
     is_deducted = models.BooleanField(
@@ -63,45 +61,18 @@ class Payroll(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
 
-    total_payable_hours = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0
-    )
+    total_payable_hours = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_late_minutes = models.PositiveIntegerField(default=0)
+    total_undertime_minutes = models.PositiveIntegerField(default=0)
 
-    total_late_minutes = models.PositiveIntegerField(
-        default=0
-    )
+    base_salary = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    overtime_pay = models.DecimalField(max_digits=12, decimal_places=0, default=0)
+    transportation_fee = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    delivery_allowance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
-    total_undertime_minutes = models.PositiveIntegerField(
-        default=0
-    )
+    benefits = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    base_salary = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        default=0
-    )
-
-    overtime_pay = models.DecimalField(
-        max_digits=12,
-        decimal_places=0,
-        default=0
-    )
-
-    transportation_fee = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        default=0
-    )
-
-    delivery_allowance = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        default=0
-    )
-
-    benefits = models.DecimalField(
+    absent_deduction = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         default=0
@@ -115,41 +86,15 @@ class Payroll(models.Model):
         help_text='Manual allowance for this payroll period.'
     )
 
-    cash_advance = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0,
-        blank=True
-    )
+    cash_advance = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
+    charges = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
+    rent = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
 
-    charges = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0,
-        blank=True
-    )
+    remarks = models.TextField(blank=True, null=True)
 
-    rent = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0,
-        blank=True
-    )
+    total_salary = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
-    remarks = models.TextField(
-        blank=True,
-        null=True
-    )
-
-    total_salary = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        default=0
-    )
-
-    created_at = models.DateTimeField(
-        auto_now_add=True
-    )
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = [
@@ -172,63 +117,41 @@ class Payroll(models.Model):
     def clean(self):
         if self.end_date < self.start_date:
             raise ValidationError({
-                'end_date':
-                'End date cannot be earlier than start date.'
+                'end_date': 'End date cannot be earlier than start date.'
             })
 
     def compute_delivery_allowance(self, attendance_records):
-
         total = Decimal('0.00')
 
         for record in attendance_records:
-
             if not record.delivery_allowance_applicable:
                 continue
 
-            position = (
-                record.employee.position
-                .lower()
-                .strip()
-            )
+            position = record.employee.position.lower().strip()
 
             if position == 'driver':
                 total += DRIVER_DELIVER_ALLOWANCE
-
             elif position == 'helper':
                 total += HELPER_DELIVER_ALLOWANCE
 
         return self.money(total)
 
     def compute_overtime_pay(self, attendance_records):
-
         total = Decimal('0.00')
 
-        daily_rate = (
-            self.employee.rate
-            or Decimal('0.00')
-        )
+        daily_rate = self.employee.rate or Decimal('0.00')
 
         overtime_rate_per_minute = (
-            daily_rate
-            / Decimal('8.00')
-            / Decimal('60.00')
+            daily_rate / Decimal('8.00') / Decimal('60.00')
         )
 
         for record in attendance_records:
-
-            overtime_minutes = Decimal(
-                record.overtime_minutes or 0
-            )
-
-            total += (
-                overtime_rate_per_minute
-                * overtime_minutes
-            )
+            overtime_minutes = Decimal(record.overtime_minutes or 0)
+            total += overtime_rate_per_minute * overtime_minutes
 
         return self.whole_number(total)
 
     def save(self, *args, **kwargs):
-
         self.full_clean()
 
         attendance = Attendance.objects.filter(
@@ -251,71 +174,36 @@ class Payroll(models.Model):
             total=Sum('undertime_minutes')
         )['total'] or 0
 
-        daily_rate = (
-            self.employee.rate
-            or Decimal('0.00')
-        )
+        daily_rate = self.employee.rate or Decimal('0.00')
+        hourly_rate = daily_rate / Decimal('8.00')
 
-        hourly_rate = (
-            daily_rate
-            / Decimal('8.00')
-        )
+        base_salary = total_hours * hourly_rate
 
-        base_salary = (
-            total_hours
-            * hourly_rate
-        )
-
-        overtime_pay = self.compute_overtime_pay(
-            attendance
-        )
-
-        # FORCE WHOLE NUMBER ROUNDING
-        overtime_pay = self.whole_number(
-            overtime_pay
-        )
+        overtime_pay = self.compute_overtime_pay(attendance)
+        overtime_pay = self.whole_number(overtime_pay)
 
         transportation_days = attendance.filter(
             transportation_fee_applicable=True
         ).count()
 
         transportation_fee = (
-            Decimal(transportation_days)
-            * TRANSPORTATION_FEE_PER_DAY
+            Decimal(transportation_days) * TRANSPORTATION_FEE_PER_DAY
         )
 
-        delivery_allowance = (
-            self.compute_delivery_allowance(
-                attendance
-            )
+        delivery_allowance = self.compute_delivery_allowance(attendance)
+
+        benefits = self.employee.benefits or Decimal('0.00')
+
+        absent_count = attendance.filter(status='absent').count()
+
+        absent_deduction = (
+            Decimal(absent_count) * ABSENT_DEDUCTION_PER_DAY
         )
 
-        absent_count = attendance.filter(status='ABSENT').count()
-
-        if absent_count > 0:
-            benefits = Decimal('105.00') * Decimal(absent_count)
-        else:
-            benefits = Decimal('0.00')
-
-        allowance = (
-            self.allowance
-            or Decimal('0.00')
-        )
-
-        cash_advance = (
-            self.cash_advance
-            or Decimal('0.00')
-        )
-
-        charges = (
-            self.charges
-            or Decimal('0.00')
-        )
-
-        rent = (
-            self.rent
-            or Decimal('0.00')
-        )
+        allowance = self.allowance or Decimal('0.00')
+        cash_advance = self.cash_advance or Decimal('0.00')
+        charges = self.charges or Decimal('0.00')
+        rent = self.rent or Decimal('0.00')
 
         total_salary = (
             base_salary
@@ -324,62 +212,30 @@ class Payroll(models.Model):
             + delivery_allowance
             + allowance
             - benefits
+            - absent_deduction
             - cash_advance
             - charges
             - rent
         )
 
-        self.total_payable_hours = self.money(
-            total_hours
-        )
+        self.total_payable_hours = self.money(total_hours)
+        self.total_late_minutes = total_late_minutes
+        self.total_undertime_minutes = total_undertime_minutes
 
-        self.total_late_minutes = (
-            total_late_minutes
-        )
+        self.base_salary = self.money(base_salary)
+        self.overtime_pay = self.whole_number(overtime_pay)
+        self.transportation_fee = self.money(transportation_fee)
+        self.delivery_allowance = self.money(delivery_allowance)
 
-        self.total_undertime_minutes = (
-            total_undertime_minutes
-        )
+        self.benefits = self.money(benefits)
+        self.absent_deduction = self.money(absent_deduction)
 
-        self.base_salary = self.money(
-            base_salary
-        )
+        self.allowance = self.money(allowance)
+        self.cash_advance = self.money(cash_advance)
+        self.charges = self.money(charges)
+        self.rent = self.money(rent)
 
-        self.overtime_pay = self.whole_number(
-            overtime_pay
-        )
-
-        self.transportation_fee = self.money(
-            transportation_fee
-        )
-
-        self.delivery_allowance = self.money(
-            delivery_allowance
-        )
-
-        self.benefits = self.money(
-            benefits
-        )
-
-        self.allowance = self.money(
-            allowance
-        )
-
-        self.cash_advance = self.money(
-            cash_advance
-        )
-
-        self.charges = self.money(
-            charges
-        )
-
-        self.rent = self.money(
-            rent
-        )
-
-        self.total_salary = self.money(
-            total_salary
-        )
+        self.total_salary = self.money(total_salary)
 
         super().save(*args, **kwargs)
 
