@@ -118,19 +118,26 @@ class Attendance(models.Model):
     @property
     def time_in_display(self):
         if self.time_in:
-            return timezone.localtime(self.time_in).strftime('%I:%M %p')
+            return timezone.localtime(
+                self.time_in
+            ).strftime('%I:%M %p')
+
         return '-'
 
     @property
     def time_out_display(self):
         if self.time_out:
-            return timezone.localtime(self.time_out).strftime('%I:%M %p')
+            return timezone.localtime(
+                self.time_out
+            ).strftime('%I:%M %p')
+
         return '-'
 
     @property
     def date_display(self):
         if self.date:
             return self.date.strftime('%b %d, %Y')
+
         return '-'
 
     @property
@@ -201,57 +208,94 @@ class Attendance(models.Model):
 
         elif self.time_in and self.time_out:
 
-            local_in = timezone.localtime(self.time_in)
-            local_out = timezone.localtime(self.time_out)
-
-            work_date = local_in.date()
-            current_timezone = timezone.get_current_timezone()
-
-            official_start = timezone.make_aware(
-                datetime.combine(work_date, time(8, 0)),
-                current_timezone
+            local_in = timezone.localtime(
+                self.time_in
             )
 
-            grace_end = timezone.make_aware(
-                datetime.combine(work_date, time(8, 5)),
+            local_out = timezone.localtime(
+                self.time_out
+            )
+
+            work_date = local_in.date()
+
+            current_timezone = (
+                timezone.get_current_timezone()
+            )
+
+            official_start = timezone.make_aware(
+                datetime.combine(
+                    work_date,
+                    time(8, 0)
+                ),
                 current_timezone
             )
 
             official_end = timezone.make_aware(
-                datetime.combine(work_date, time(17, 0)),
+                datetime.combine(
+                    work_date,
+                    time(17, 0)
+                ),
                 current_timezone
             )
 
             lunch_start = timezone.make_aware(
-                datetime.combine(work_date, time(12, 0)),
+                datetime.combine(
+                    work_date,
+                    time(12, 0)
+                ),
                 current_timezone
             )
 
             lunch_end = timezone.make_aware(
-                datetime.combine(work_date, time(13, 0)),
+                datetime.combine(
+                    work_date,
+                    time(13, 0)
+                ),
                 current_timezone
             )
 
-            if local_in <= grace_end:
+            # =========================================
+            # LATE CALCULATION
+            # No grace period
+            # Work officially starts at 8:00 AM
+            # =========================================
+
+            if local_in <= official_start:
+
                 credited_in = official_start
                 self.late_minutes = 0
+
             else:
+
                 credited_in = local_in
+
                 self.late_minutes = round(
-                    (local_in - grace_end).total_seconds() / 60
+                    (
+                        local_in -
+                        official_start
+                    ).total_seconds() / 60
                 )
+
+            # =========================================
+            # OVERTIME CALCULATION
+            # =========================================
 
             if (
                 self.overtime_applicable
                 and local_out > official_end
             ):
+
                 self.overtime_minutes = round(
-                    (local_out - official_end).total_seconds() / 60
+                    (
+                        local_out -
+                        official_end
+                    ).total_seconds() / 60
                 )
 
                 credited_out = official_end
 
             else:
+
                 self.overtime_minutes = 0
 
                 credited_out = min(
@@ -259,19 +303,42 @@ class Attendance(models.Model):
                     official_end
                 )
 
+            # =========================================
+            # UNDERTIME CALCULATION
+            # =========================================
+
             if local_out < official_end:
+
                 self.undertime_minutes = round(
-                    (official_end - local_out).total_seconds() / 60
+                    (
+                        official_end -
+                        local_out
+                    ).total_seconds() / 60
                 )
+
             else:
+
                 self.undertime_minutes = 0
 
+            # =========================================
+            # WORKED HOURS
+            # =========================================
+
             if credited_out > credited_in:
+
                 worked_seconds = (
-                    credited_out - credited_in
+                    credited_out -
+                    credited_in
                 ).total_seconds()
+
             else:
+
                 worked_seconds = 0
+
+            # =========================================
+            # LUNCH BREAK DEDUCTION
+            # 12:00 PM to 1:00 PM
+            # =========================================
 
             lunch_overlap_start = max(
                 credited_in,
@@ -286,21 +353,34 @@ class Attendance(models.Model):
             lunch_seconds = 0
 
             if lunch_overlap_end > lunch_overlap_start:
+
                 lunch_seconds = (
-                    lunch_overlap_end - lunch_overlap_start
+                    lunch_overlap_end -
+                    lunch_overlap_start
                 ).total_seconds()
 
             payable_seconds = max(
-                worked_seconds - lunch_seconds,
+                worked_seconds -
+                lunch_seconds,
                 0
             )
 
             self.worked_hours = Decimal(
-                str(round(worked_seconds / 3600, 2))
+                str(
+                    round(
+                        worked_seconds / 3600,
+                        2
+                    )
+                )
             )
 
             self.payable_hours = Decimal(
-                str(round(payable_seconds / 3600, 2))
+                str(
+                    round(
+                        payable_seconds / 3600,
+                        2
+                    )
+                )
             )
 
         else:
