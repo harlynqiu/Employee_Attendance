@@ -4,6 +4,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Employee</title>
 
     <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
@@ -11,47 +12,742 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
-
-        #photoPreview,
-        .avatar img{
-            width:100%;
-            height:100%;
-            object-fit:cover;
-            border-radius:50%;
+        * {
+            box-sizing: border-box;
         }
 
-        .status-select{
-            font-weight:900;
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            background: #f4f7fb;
+            color: #102a56;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
-        .remarks-box{
-            width:100%;
-            min-height:110px;
-            resize:none;
-            border:1px solid #dfe7f3;
-            border-radius:12px;
-            padding:14px;
-            background:#fbfdff;
-            color:#061b49;
-            font-size:14px;
-            font-family:Arial, sans-serif;
+        body {
+            overflow-x: hidden;
         }
 
-        .remarks-label{
-            display:flex;
-            align-items:center;
-            gap:8px;
-            margin-bottom:8px;
-            font-weight:900;
-            color:#061b49;
+        .employee-page {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
         }
 
-        .remarks-label i{
-            color:#d92d2d;
+        /* SIDEBAR */
+
+        .employee-sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 100;
+            width: 220px;
+            padding: 32px 18px;
+            overflow-y: auto;
+            color: #ffffff;
+            background: linear-gradient(180deg, #0865db 0%, #064caf 100%);
         }
 
+        .employee-logo {
+            margin: 0 10px 40px;
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 900;
+            line-height: 0.95;
+            letter-spacing: 0.4px;
+        }
+
+        .employee-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .employee-menu a {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            width: 100%;
+            min-height: 46px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+        .employee-menu a:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .employee-menu a.active {
+            color: #0759c5;
+            background: #ffffff;
+            box-shadow: 0 8px 18px rgba(0, 25, 76, 0.16);
+        }
+
+        .employee-menu i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* MAIN */
+
+        .employee-main {
+            width: calc(100% - 220px);
+            min-width: 0;
+            margin-left: 220px;
+            padding: 28px 34px 40px;
+        }
+
+        .employee-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 22px;
+        }
+
+        .employee-header h1 {
+            margin: 0 0 7px;
+            color: #08295c;
+            font-size: 30px;
+            line-height: 1.1;
+            font-weight: 900;
+        }
+
+        .employee-header p {
+            margin: 0;
+            color: #71819c;
+            font-size: 12px;
+        }
+
+        .employee-header p a {
+            color: #71819c;
+            text-decoration: none;
+        }
+
+        .employee-header p span {
+            margin: 0 7px;
+            color: #a7b2c3;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 42px;
+            padding: 10px 16px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 800;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .save-header-button {
+            border: 1px solid #0862d6;
+            color: #ffffff;
+            background: #0862d6;
+            box-shadow: 0 7px 15px rgba(8, 98, 214, 0.2);
+        }
+
+        .cancel-header-button {
+            border: 1px solid #cbd6e4;
+            color: #17345e;
+            background: #ffffff;
+        }
+
+        .logout-button {
+            width: 42px;
+            padding: 0;
+            border: 1px solid #d9e2ef;
+            color: #0863d7;
+            background: #ffffff;
+        }
+
+        /* GRID */
+
+        .employee-grid {
+            display: grid;
+            grid-template-columns:
+                minmax(170px, 0.58fr)
+                minmax(440px, 1.7fr)
+                minmax(300px, 1fr);
+            gap: 18px;
+            align-items: stretch;
+            width: 100%;
+        }
+
+        .employee-card {
+            min-width: 0;
+            padding: 18px;
+            border: 1px solid #dfe6ef;
+            border-radius: 14px;
+            background: #ffffff;
+            box-shadow: 0 7px 20px rgba(20, 52, 97, 0.06);
+        }
+
+        .photo-card {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .personal-card {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .emergency-card {
+            grid-column: 3;
+            grid-row: 1;
+        }
+
+        .education-card {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .reference-card {
+            grid-column: 2 / span 2;
+            grid-row: 2;
+        }
+
+        .history-card {
+            grid-column: 1 / span 2;
+            grid-row: 3;
+        }
+
+        .work-card {
+            grid-column: 3;
+            grid-row: 3;
+        }
+
+        .government-card {
+            grid-column: 1 / span 2;
+            grid-row: 4;
+        }
+
+        .remarks-card {
+            grid-column: 3;
+            grid-row: 4;
+        }
+
+        /* CARD TITLES */
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #dce5f0;
+        }
+
+        .card-title i {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            color: #0761d4;
+            background: #edf4ff;
+            font-size: 13px;
+        }
+
+        .card-title h3 {
+            margin: 0;
+            color: #0757be;
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        /* PHOTO */
+
+        .photo-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .employee-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 112px;
+            height: 112px;
+            margin: 3px auto 18px;
+            overflow: hidden;
+            border-radius: 50%;
+            color: #a5b0c2;
+            background: #e9edf3;
+            font-size: 48px;
+        }
+
+        .employee-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-button,
+        .document-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            min-height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .upload-button {
+            border: 1px solid #0862d6;
+            color: #ffffff;
+            background: #0862d6;
+        }
+
+        .document-button {
+            margin-top: 14px;
+            border: 1px solid #9bbbe7;
+            color: #0862d6;
+            background: #ffffff;
+        }
+
+        .file-help {
+            margin: 8px 0 0;
+            color: #8591a4;
+            font-size: 10px;
+        }
+
+        /* FIELDS */
+
+        .form-grid {
+            display: grid;
+            gap: 12px 16px;
+            min-width: 0;
+        }
+
+        .form-grid.two-columns {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .field-group {
+            min-width: 0;
+        }
+
+        .field-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #142f5c;
+            font-size: 10px;
+            line-height: 1.25;
+            font-weight: 800;
+        }
+
+        .field-group input,
+        .field-group select,
+        .field-group textarea,
+        .reference-grid input,
+        .history-grid input,
+        .education-row input,
+        .government-row input {
+            display: block;
+            width: 100%;
+            min-width: 0;
+            height: 35px;
+            padding: 8px 10px;
+            border: 1px solid #cfd9e7;
+            border-radius: 7px;
+            outline: none;
+            color: #1b355f;
+            background: #ffffff;
+            font-family: inherit;
+            font-size: 11px;
+            transition: 0.18s ease;
+        }
+
+        .field-group textarea {
+            height: 130px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .field-group input:focus,
+        .field-group select:focus,
+        .field-group textarea:focus,
+        .reference-grid input:focus,
+        .history-grid input:focus,
+        .education-row input:focus,
+        .government-row input:focus {
+            border-color: #1473e6;
+            box-shadow: 0 0 0 3px rgba(20, 115, 230, 0.11);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #9ba7b9;
+        }
+
+        /* EDUCATION */
+
+        .education-list {
+            display: grid;
+            gap: 11px;
+        }
+
+        .education-row {
+            display: grid;
+            grid-template-columns: 74px minmax(0, 1fr);
+            gap: 7px;
+            align-items: center;
+        }
+
+        .education-row label {
+            color: #17345e;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .education-row .year-field {
+            grid-column: 2;
+        }
+
+        /* REFERENCES */
+
+        .reference-headings,
+        .reference-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .reference-headings {
+            margin-bottom: 7px;
+        }
+
+        .reference-headings span,
+        .history-headings span {
+            color: #17345e;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .reference-grid {
+            row-gap: 10px;
+        }
+
+        /* HISTORY */
+
+        .history-headings,
+        .history-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr 1fr 0.42fr;
+            gap: 9px;
+        }
+
+        .history-headings {
+            margin-bottom: 7px;
+        }
+
+        .history-grid {
+            row-gap: 10px;
+        }
+
+        /* GOVERNMENT */
+
+        .government-list {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 12px;
+            align-items: start;
+        }
+
+        .government-item {
+            min-width: 0;
+        }
+
+        .government-item label.document-title {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-bottom: 7px;
+            color: #17345e;
+            font-size: 10px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .government-item label.document-title i {
+            width: 14px;
+            color: #0862d6;
+            text-align: center;
+        }
+
+        .government-item input[type="text"] {
+            display: block;
+            width: 100%;
+            height: 35px;
+            min-width: 0;
+            margin-bottom: 7px;
+            padding: 8px 10px;
+            border: 1px solid #cfd9e7;
+            border-radius: 7px;
+            outline: none;
+            color: #1b355f;
+            background: #ffffff;
+            font-family: inherit;
+            font-size: 11px;
+        }
+
+        .government-item input[type="text"]:focus {
+            border-color: #1473e6;
+            box-shadow: 0 0 0 3px rgba(20, 115, 230, 0.11);
+        }
+
+        .file-upload-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            width: 100%;
+            min-height: 35px;
+            padding: 8px 10px;
+            border: 1px solid #9bbbe7;
+            border-radius: 7px;
+            color: #0862d6;
+            background: #ffffff;
+            font-size: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.18s ease;
+        }
+
+        .file-upload-control:hover {
+            border-color: #0862d6;
+            background: #f2f7ff;
+        }
+
+        .selected-file-name {
+            display: block;
+            width: 100%;
+            margin-top: 5px;
+            overflow: hidden;
+            color: #75849b;
+            font-size: 9px;
+            text-align: center;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* FOOTER ACTIONS */
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .footer-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 40px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .footer-cancel {
+            border: 1px solid #cbd6e4;
+            color: #17345e;
+            background: #ffffff;
+        }
+
+        .footer-save {
+            border: 1px solid #0862d6;
+            color: #ffffff;
+            background: #0862d6;
+            box-shadow: 0 7px 15px rgba(8, 98, 214, 0.2);
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1280px) {
+            .employee-grid {
+                grid-template-columns:
+                    180px
+                    minmax(400px, 1.5fr)
+                    minmax(280px, 1fr);
+            }
+
+            .employee-main {
+                padding: 26px 24px 36px;
+            }
+
+            .government-list {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 1080px) {
+            .employee-sidebar {
+                width: 190px;
+            }
+
+            .employee-main {
+                width: calc(100% - 190px);
+                margin-left: 190px;
+            }
+
+            .employee-grid {
+                grid-template-columns: 190px minmax(0, 1fr);
+            }
+
+            .photo-card {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .personal-card {
+                grid-column: 2;
+                grid-row: 1;
+            }
+
+            .emergency-card {
+                grid-column: 1 / span 2;
+                grid-row: 2;
+            }
+
+            .education-card {
+                grid-column: 1;
+                grid-row: 3;
+            }
+
+            .reference-card {
+                grid-column: 2;
+                grid-row: 3;
+            }
+
+            .history-card {
+                grid-column: 1 / span 2;
+                grid-row: 4;
+            }
+
+            .work-card {
+                grid-column: 1 / span 2;
+                grid-row: 5;
+            }
+
+            .government-card {
+                grid-column: 1 / span 2;
+                grid-row: 6;
+            }
+
+            .remarks-card {
+                grid-column: 1 / span 2;
+                grid-row: 7;
+            }
+
+            .government-list {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            .employee-page {
+                display: block;
+            }
+
+            .employee-sidebar {
+                position: relative;
+                width: 100%;
+                min-height: auto;
+                padding: 18px;
+            }
+
+            .employee-logo {
+                margin: 0 0 18px;
+                font-size: 20px;
+            }
+
+            .employee-menu {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .employee-main {
+                width: 100%;
+                margin-left: 0;
+                padding: 20px 14px 30px;
+            }
+
+            .employee-header {
+                flex-direction: column;
+            }
+
+            .header-actions {
+                flex-wrap: wrap;
+                width: 100%;
+            }
+
+            .employee-grid {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .form-grid.two-columns,
+            .reference-headings,
+            .reference-grid,
+            .history-headings,
+            .history-grid,
+            .government-list {
+                grid-template-columns: 1fr;
+            }
+
+            .reference-headings,
+            .history-headings {
+                display: none;
+            }
+
+            .government-label {
+                min-height: auto;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .footer-button,
+            .header-button {
+                width: 100%;
+            }
+
+            .logout-button {
+                width: 42px;
+            }
+        }
     </style>
-
 </head>
 
 <body>
@@ -59,13 +755,11 @@
 <div class="employee-page">
 
     <aside class="employee-sidebar">
-
         <div class="employee-logo">
-            HCQ <br> MARKETING
+            HCQ<br>MARKETING
         </div>
 
         <nav class="employee-menu">
-
             <a href="/dashboard/">
                 <i class="fa-solid fa-house"></i>
                 <span>Dashboard</span>
@@ -77,7 +771,7 @@
             </a>
 
             <a href="/employees-page/" class="active">
-                <i class="fa-regular fa-user"></i>
+                <i class="fa-solid fa-user"></i>
                 <span>Employees</span>
             </a>
 
@@ -85,25 +779,20 @@
                 <i class="fa-regular fa-file-lines"></i>
                 <span>Payroll</span>
             </a>
-
         </nav>
-
     </aside>
 
-    <main class="employee-content">
+    <main class="employee-main">
 
         <form method="POST" enctype="multipart/form-data">
-
             {% csrf_token %}
 
-            <div class="employee-header">
-
+            <header class="employee-header">
                 <div>
-
                     <h1>
-                        Edit:
-                        {{ employee.last_name }},
-                        {{ employee.first_name }}
+                        EDIT:
+                        {{ employee.last_name|upper }},
+                        {{ employee.first_name|upper }}
                     </h1>
 
                     <p>
@@ -111,423 +800,838 @@
                         <span>›</span>
                         Edit Employee
                     </p>
-
                 </div>
 
-                <div class="profile-header-actions">
-
-                    <button type="submit" class="save-employee-btn">
-
+                <div class="header-actions">
+                    <button type="submit"
+                            class="header-button save-header-button">
                         <i class="fa-solid fa-floppy-disk"></i>
-
                         Save Changes
-
                     </button>
 
                     <a href="/employees-page/{{ employee.id }}/"
-                       class="cancel-edit-btn">
-
+                       class="header-button cancel-header-button">
                         <i class="fa-solid fa-arrow-left"></i>
-
                         Cancel
-
                     </a>
 
                     <a href="{% url 'admin:logout' %}"
-                       class="logout-btn">
-
+                       class="header-button logout-button"
+                       title="Log out">
                         <i class="fa-solid fa-right-from-bracket"></i>
-
                     </a>
-
                 </div>
-
-            </div>
+            </header>
 
             <div class="employee-grid">
 
-                <!-- PHOTO CARD -->
-
-                <section class="profile-card photo-card">
-
-                    <div class="avatar-wrap">
-
-                        <div class="avatar">
-
-                            {% if employee.photo %}
-
-                                <img src="{{ employee.photo.url }}"
-                                     alt="Employee Photo"
-                                     id="photoPreview">
-
-                            {% else %}
-
-                                <i class="fa-solid fa-user"
-                                   id="defaultPhotoIcon"></i>
-
-                                <img
-                                    src=""
-                                    alt="Employee Photo"
-                                    id="photoPreview"
-                                    style="display:none;"
-                                >
-
-                            {% endif %}
-
-                        </div>
-
-                        <button
-                            class="camera-btn"
-                            type="button"
-                            onclick="document.getElementById('photoInput').click();"
-                        >
-
-                            <i class="fa-solid fa-camera"></i>
-
-                        </button>
-
-                        <input
-                            type="file"
-                            id="photoInput"
-                            name="photo"
-                            accept="image/jpeg,image/png,image/jpg"
-                            style="display:none;"
-                            onchange="previewPhoto(event)"
-                        >
-
+                <!-- PHOTO -->
+                <section class="employee-card photo-card">
+                    <div class="employee-avatar" id="avatarPreview">
+                        {% if employee.photo %}
+                            <img src="{{ employee.photo.url }}"
+                                 alt="Employee photo"
+                                 id="photoPreview">
+                        {% else %}
+                            <i class="fa-solid fa-user"
+                               id="defaultPhotoIcon"></i>
+                        {% endif %}
                     </div>
 
-                    <p class="upload-title">
-                        Update Photo
-                    </p>
+                    <label class="upload-button">
+                        <i class="fa-solid fa-camera"></i>
+                        Update Image
+                        <input
+                            id="photoInput"
+                            type="file"
+                            name="photo"
+                            accept=".jpg,.jpeg,.png"
+                            hidden
+                        >
+                    </label>
 
-                    <p class="upload-subtitle">
-                        JPG, PNG up to 2MB
-                    </p>
+                    <p class="file-help">JPG or PNG, up to 2 MB</p>
 
+                    <label class="document-button">
+                        <i class="fa-regular fa-file-arrow-up"></i>
+                        Update Documents
+                        <input
+                            type="file"
+                            name="resume"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                            hidden
+                        >
+                    </label>
                 </section>
 
                 <!-- PERSONAL INFORMATION -->
-
-                <section class="profile-card personal-card">
-
+                <section class="employee-card personal-card">
                     <div class="card-title">
-
-                        <div class="title-icon">
-                            <i class="fa-regular fa-user"></i>
-                        </div>
-
+                        <i class="fa-regular fa-user"></i>
                         <h3>PERSONAL INFORMATION</h3>
-
                     </div>
 
-                    <div class="profile-divider"></div>
-
-                    <div class="personal-grid">
-
-                        <div class="field-row">
-                            <label>First Name</label>
-                            <input type="text"
-                                   name="first_name"
-                                   value="{{ employee.first_name|default:'' }}">
+                    <div class="form-grid two-columns">
+                        <div class="field-group">
+                            <label for="first_name">First Name</label>
+                            <input
+                                id="first_name"
+                                type="text"
+                                name="first_name"
+                                maxlength="100"
+                                value="{{ employee.first_name|default:'' }}"
+                                required
+                            >
                         </div>
 
-                        <div class="field-row">
-                            <label>Address</label>
-                            <input type="text"
-                                   name="address"
-                                   value="{{ employee.address|default:'' }}">
+                        <div class="field-group">
+                            <label for="address">Address</label>
+                            <input
+                                id="address"
+                                type="text"
+                                name="address"
+                                maxlength="255"
+                                value="{{ employee.address|default:'' }}"
+                            >
                         </div>
 
-                        <div class="field-row">
-                            <label>Middle Initial</label>
-                            <input type="text"
-                                   name="middle_initial"
-                                   value="{{ employee.middle_initial|default:'' }}">
+                        <div class="field-group">
+                            <label for="middle_initial">Middle Initial</label>
+                            <input
+                                id="middle_initial"
+                                type="text"
+                                name="middle_initial"
+                                maxlength="50"
+                                value="{{ employee.middle_initial|default:'' }}"
+                            >
                         </div>
 
-                        <div class="field-row">
-                            <label>Contact No.</label>
-                            <input type="text"
-                                   name="contact_number"
-                                   value="{{ employee.contact_number|default:'' }}">
+                        <div class="field-group">
+                            <label for="contact_number">Contact No.</label>
+                            <input
+                                id="contact_number"
+                                type="text"
+                                name="contact_number"
+                                maxlength="20"
+                                value="{{ employee.contact_number|default:'' }}"
+                            >
                         </div>
 
-                        <div class="field-row">
-                            <label>Last Name</label>
-                            <input type="text"
-                                   name="last_name"
-                                   value="{{ employee.last_name|default:'' }}">
+                        <div class="field-group">
+                            <label for="last_name">Last Name</label>
+                            <input
+                                id="last_name"
+                                type="text"
+                                name="last_name"
+                                maxlength="100"
+                                value="{{ employee.last_name|default:'' }}"
+                                required
+                            >
                         </div>
 
-                        <div class="field-row">
-                            <label>Spouse Name</label>
-                            <input type="text"
-                                   name="spouse_name"
-                                   value="{{ employee.spouse_name|default:'' }}">
+                        <div class="field-group">
+                            <label for="spouse_name">Spouse Name</label>
+                            <input
+                                id="spouse_name"
+                                type="text"
+                                name="spouse_name"
+                                maxlength="100"
+                                value="{{ employee.spouse_name|default:'' }}"
+                            >
                         </div>
 
-                        <div class="field-row">
-                            <label>Birthday</label>
-                            <input type="date"
-                                   name="date_of_birth"
-                                   value="{{ employee.date_of_birth|date:'Y-m-d' }}">
+                        <div class="field-group">
+                            <label for="date_of_birth">Birthday</label>
+                            <input
+                                id="date_of_birth"
+                                type="date"
+                                name="date_of_birth"
+                                value="{{ employee.date_of_birth|date:'Y-m-d' }}"
+                            >
                         </div>
 
-                        <div class="field-row">
-                            <label>Spouse Contact No.</label>
-                            <input type="text"
-                                   name="spouse_contact_number"
-                                   value="{{ employee.spouse_contact_number|default:'' }}">
+                        <div class="field-group">
+                            <label for="spouse_contact_number">
+                                Spouse Contact No.
+                            </label>
+                            <input
+                                id="spouse_contact_number"
+                                type="text"
+                                name="spouse_contact_number"
+                                maxlength="20"
+                                value="{{ employee.spouse_contact_number|default:'' }}"
+                            >
                         </div>
 
-                        <div class="field-row">
-                            <label>Citizenship</label>
-                            <input type="text"
-                                   name="citizenship"
-                                   value="{{ employee.citizenship|default:'' }}">
+                        <div class="field-group">
+                            <label for="citizenship">Citizenship</label>
+                            <input
+                                id="citizenship"
+                                type="text"
+                                name="citizenship"
+                                maxlength="100"
+                                value="{{ employee.citizenship|default:'' }}"
+                            >
                         </div>
 
+                        <div class="field-group">
+                            <label for="blood_type">Blood Type</label>
+                            <select id="blood_type" name="blood_type">
+                                <option value="">Select blood type</option>
+                                <option value="A+"
+                                    {% if employee.blood_type == "A+" %}selected{% endif %}>
+                                    A+
+                                </option>
+                                <option value="A-"
+                                    {% if employee.blood_type == "A-" %}selected{% endif %}>
+                                    A-
+                                </option>
+                                <option value="B+"
+                                    {% if employee.blood_type == "B+" %}selected{% endif %}>
+                                    B+
+                                </option>
+                                <option value="B-"
+                                    {% if employee.blood_type == "B-" %}selected{% endif %}>
+                                    B-
+                                </option>
+                                <option value="AB+"
+                                    {% if employee.blood_type == "AB+" %}selected{% endif %}>
+                                    AB+
+                                </option>
+                                <option value="AB-"
+                                    {% if employee.blood_type == "AB-" %}selected{% endif %}>
+                                    AB-
+                                </option>
+                                <option value="O+"
+                                    {% if employee.blood_type == "O+" %}selected{% endif %}>
+                                    O+
+                                </option>
+                                <option value="O-"
+                                    {% if employee.blood_type == "O-" %}selected{% endif %}>
+                                    O-
+                                </option>
+                            </select>
+                        </div>
                     </div>
-
                 </section>
 
-                <!-- WORK POSITION -->
-
-                <section class="profile-card work-card">
-
+                <!-- EMERGENCY INFORMATION -->
+                <section class="employee-card emergency-card">
                     <div class="card-title">
-
-                        <div class="title-icon">
-                            <i class="fa-solid fa-briefcase"></i>
-                        </div>
-
-                        <h3>WORK POSITION</h3>
-
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <h3>EMERGENCY INFORMATION</h3>
                     </div>
 
-                    <div class="profile-divider"></div>
+                    <div class="form-grid two-columns">
+                        <div class="field-group">
+                            <label for="emergency_contact_name">
+                                Emergency Contact Person
+                            </label>
+                            <input
+                                id="emergency_contact_name"
+                                type="text"
+                                name="emergency_contact_name"
+                                maxlength="100"
+                                value="{{ employee.emergency_contact_name|default:'' }}"
+                            >
+                        </div>
 
-                    <div class="small-field-row">
+                        <div class="field-group">
+                            <label for="emergency_relationship">
+                                Relationship
+                            </label>
+                            <input
+                                id="emergency_relationship"
+                                type="text"
+                                name="emergency_relationship"
+                                maxlength="50"
+                                value="{{ employee.emergency_relationship|default:'' }}"
+                            >
+                        </div>
 
-                        <label>Position</label>
+                        <div class="field-group">
+                            <label for="emergency_contact_number">
+                                Contact Number
+                            </label>
+                            <input
+                                id="emergency_contact_number"
+                                type="text"
+                                name="emergency_contact_number"
+                                maxlength="20"
+                                value="{{ employee.emergency_contact_number|default:'' }}"
+                            >
+                        </div>
+
+                        <div class="field-group">
+                            <label for="emergency_address">Address</label>
+                            <input
+                                id="emergency_address"
+                                type="text"
+                                name="emergency_address"
+                                maxlength="255"
+                                value="{{ employee.emergency_address|default:'' }}"
+                            >
+                        </div>
+                    </div>
+                </section>
+
+                <!-- EDUCATIONAL INFORMATION -->
+                <section class="employee-card education-card">
+                    <div class="card-title">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <h3>EDUCATIONAL INFORMATION</h3>
+                    </div>
+
+                    <div class="education-list">
+                        <div class="education-row">
+                            <label for="elementary">Elementary</label>
+                            <input
+                                id="elementary"
+                                type="text"
+                                name="elementary"
+                                value="{{ employee.elementary|default:'' }}"
+                                placeholder="School name"
+                            >
+                            <input
+                                class="year-field"
+                                type="text"
+                                name="elementary_year"
+                                value="{{ employee.elementary_year|default:'' }}"
+                                placeholder="Year attended"
+                            >
+                        </div>
+
+                        <div class="education-row">
+                            <label for="high_school">High School</label>
+                            <input
+                                id="high_school"
+                                type="text"
+                                name="high_school"
+                                value="{{ employee.high_school|default:'' }}"
+                                placeholder="School name"
+                            >
+                            <input
+                                class="year-field"
+                                type="text"
+                                name="high_school_year"
+                                value="{{ employee.high_school_year|default:'' }}"
+                                placeholder="Year attended"
+                            >
+                        </div>
+
+                        <div class="education-row">
+                            <label for="college">College</label>
+                            <input
+                                id="college"
+                                type="text"
+                                name="college"
+                                value="{{ employee.college|default:'' }}"
+                                placeholder="School name"
+                            >
+                            <input
+                                class="year-field"
+                                type="text"
+                                name="college_year"
+                                value="{{ employee.college_year|default:'' }}"
+                                placeholder="Year attended"
+                            >
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CHARACTER REFERENCE -->
+                <section class="employee-card reference-card">
+                    <div class="card-title">
+                        <i class="fa-solid fa-address-book"></i>
+                        <h3>CHARACTER REFERENCE</h3>
+                    </div>
+
+                    <div class="reference-headings">
+                        <span>Name</span>
+                        <span>Occupation</span>
+                        <span>Contact Number</span>
+                    </div>
+
+                    <div class="reference-grid">
+                        <input
+                            type="text"
+                            name="reference_name_1"
+                            value="{{ employee.reference_name_1|default:'' }}"
+                            placeholder="Full name"
+                        >
+                        <input
+                            type="text"
+                            name="reference_occupation_1"
+                            value="{{ employee.reference_occupation_1|default:'' }}"
+                            placeholder="Occupation"
+                        >
+                        <input
+                            type="text"
+                            name="reference_contact_1"
+                            value="{{ employee.reference_contact_1|default:'' }}"
+                            placeholder="Contact number"
+                        >
 
                         <input
                             type="text"
-                            name="position"
-                            value="{{ employee.position|default:'' }}"
+                            name="reference_name_2"
+                            value="{{ employee.reference_name_2|default:'' }}"
+                            placeholder="Full name"
+                        >
+                        <input
+                            type="text"
+                            name="reference_occupation_2"
+                            value="{{ employee.reference_occupation_2|default:'' }}"
+                            placeholder="Occupation"
+                        >
+                        <input
+                            type="text"
+                            name="reference_contact_2"
+                            value="{{ employee.reference_contact_2|default:'' }}"
+                            placeholder="Contact number"
                         >
 
+                        <input
+                            type="text"
+                            name="reference_name_3"
+                            value="{{ employee.reference_name_3|default:'' }}"
+                            placeholder="Full name"
+                        >
+                        <input
+                            type="text"
+                            name="reference_occupation_3"
+                            value="{{ employee.reference_occupation_3|default:'' }}"
+                            placeholder="Occupation"
+                        >
+                        <input
+                            type="text"
+                            name="reference_contact_3"
+                            value="{{ employee.reference_contact_3|default:'' }}"
+                            placeholder="Contact number"
+                        >
+                    </div>
+                </section>
+
+                <!-- EMPLOYMENT HISTORY -->
+                <section class="employee-card history-card">
+                    <div class="card-title">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <h3>EMPLOYMENT HISTORY</h3>
                     </div>
 
-                    <div class="small-field-row">
+                    <div class="history-headings">
+                        <span>Name of Company</span>
+                        <span>Address</span>
+                        <span>Occupation</span>
+                        <span>Years</span>
+                    </div>
 
-                        <label>Employment Status</label>
-
-                        <select
-                            name="employment_status"
-                            class="status-select"
+                    <div class="history-grid">
+                        <input
+                            type="text"
+                            name="company_1"
+                            value="{{ employee.company_1|default:'' }}"
+                            placeholder="Company name"
+                        >
+                        <input
+                            type="text"
+                            name="company_address_1"
+                            value="{{ employee.company_address_1|default:'' }}"
+                            placeholder="Company address"
+                        >
+                        <input
+                            type="text"
+                            name="occupation_1"
+                            value="{{ employee.occupation_1|default:'' }}"
+                            placeholder="Position"
+                        >
+                        <input
+                            type="text"
+                            name="years_1"
+                            value="{{ employee.years_1|default:'' }}"
+                            placeholder="e.g. 2"
                         >
 
-                            <option value="ACTIVE"
-                            {% if employee.employment_status == "ACTIVE" %}
-                            selected
-                            {% endif %}>
-                                Active
-                            </option>
+                        <input
+                            type="text"
+                            name="company_2"
+                            value="{{ employee.company_2|default:'' }}"
+                            placeholder="Company name"
+                        >
+                        <input
+                            type="text"
+                            name="company_address_2"
+                            value="{{ employee.company_address_2|default:'' }}"
+                            placeholder="Company address"
+                        >
+                        <input
+                            type="text"
+                            name="occupation_2"
+                            value="{{ employee.occupation_2|default:'' }}"
+                            placeholder="Position"
+                        >
+                        <input
+                            type="text"
+                            name="years_2"
+                            value="{{ employee.years_2|default:'' }}"
+                            placeholder="e.g. 2"
+                        >
 
-                            <option value="RESIGNED"
-                            {% if employee.employment_status == "RESIGNED" %}
-                            selected
-                            {% endif %}>
-                                Resigned
-                            </option>
+                        <input
+                            type="text"
+                            name="company_3"
+                            value="{{ employee.company_3|default:'' }}"
+                            placeholder="Company name"
+                        >
+                        <input
+                            type="text"
+                            name="company_address_3"
+                            value="{{ employee.company_address_3|default:'' }}"
+                            placeholder="Company address"
+                        >
+                        <input
+                            type="text"
+                            name="occupation_3"
+                            value="{{ employee.occupation_3|default:'' }}"
+                            placeholder="Position"
+                        >
+                        <input
+                            type="text"
+                            name="years_3"
+                            value="{{ employee.years_3|default:'' }}"
+                            placeholder="e.g. 2"
+                        >
+                    </div>
+                </section>
 
-                            <option value="MIA"
-                            {% if employee.employment_status == "MIA" %}
-                            selected
-                            {% endif %}>
-                                MIA
-                            </option>
-
-                            <option value="TERMINATED"
-                            {% if employee.employment_status == "TERMINATED" %}
-                            selected
-                            {% endif %}>
-                                Terminated
-                            </option>
-
-                        </select>
-
+                <!-- WORK POSITION -->
+                <section class="employee-card work-card">
+                    <div class="card-title">
+                        <i class="fa-solid fa-id-card"></i>
+                        <h3>WORK POSITION</h3>
                     </div>
 
-                    <div class="small-field-row">
-
-                        <div class="remarks-label">
-
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-
-                            <label>Employment Remarks</label>
-
+                    <div class="form-grid two-columns">
+                        <div class="field-group">
+                            <label for="position">Position</label>
+                            <input
+                                id="position"
+                                type="text"
+                                name="position"
+                                value="{{ employee.position|default:'' }}"
+                            >
                         </div>
 
-                        <textarea
-                            name="employment_remarks"
-                            class="remarks-box"
-                            placeholder="Reason for resignation, termination, MIA, suspension, etc."
-                        >{{ employee.employment_remarks|default:'' }}</textarea>
+                        <div class="field-group">
+                            <label for="salary_type">Salary Type</label>
+                            <select id="salary_type" name="salary_type">
+                                <option value="daily"
+                                    {% if employee.salary_type == "daily" %}selected{% endif %}>
+                                    Daily
+                                </option>
+                                <option value="hourly"
+                                    {% if employee.salary_type == "hourly" %}selected{% endif %}>
+                                    Hourly
+                                </option>
+                            </select>
+                        </div>
 
+                        <div class="field-group">
+                            <label for="rate">Salary Rate</label>
+                            <input
+                                id="rate"
+                                type="number"
+                                name="rate"
+                                min="0"
+                                step="0.01"
+                                value="{{ employee.rate|default:'' }}"
+                            >
+                        </div>
+
+                        <div class="field-group">
+                            <label for="employment_status">
+                                Employment Status
+                            </label>
+                            <select
+                                id="employment_status"
+                                name="employment_status"
+                            >
+                                <option value="ACTIVE"
+                                    {% if employee.employment_status == "ACTIVE" %}selected{% endif %}>
+                                    Active
+                                </option>
+                                <option value="RESIGNED"
+                                    {% if employee.employment_status == "RESIGNED" %}selected{% endif %}>
+                                    Resigned
+                                </option>
+                                <option value="MIA"
+                                    {% if employee.employment_status == "MIA" %}selected{% endif %}>
+                                    MIA
+                                </option>
+                                <option value="TERMINATED"
+                                    {% if employee.employment_status == "TERMINATED" %}selected{% endif %}>
+                                    Terminated
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="date_started">Date Started</label>
+                            <input
+                                id="date_started"
+                                type="date"
+                                name="date_started"
+                                value="{{ employee.date_started|date:'Y-m-d' }}"
+                            >
+                        </div>
                     </div>
-
-                    <div class="small-field-row">
-
-                        <label>Salary Rate</label>
-
-                        <input
-                            type="number"
-                            step="0.01"
-                            name="rate"
-                            value="{{ employee.rate }}"
-                        >
-
-                    </div>
-
-                    <div class="small-field-row">
-
-                        <label>Date Started</label>
-
-                        <input
-                            type="date"
-                            name="date_started"
-                            value="{{ employee.date_started|date:'Y-m-d' }}"
-                        >
-
-                    </div>
-
                 </section>
 
                 <!-- GOVERNMENT DOCUMENTS -->
-
-                <section class="profile-card government-card">
-
+                <section class="employee-card government-card">
                     <div class="card-title">
-
-                        <div class="title-icon">
-                            <i class="fa-solid fa-shield-halved"></i>
-                        </div>
-
+                        <i class="fa-solid fa-building-columns"></i>
                         <h3>GOVERNMENT DOCUMENTS</h3>
-
                     </div>
 
-                    <div class="profile-divider"></div>
+                    <div class="government-list">
 
-                    <div class="gov-row">
+                        <div class="government-item">
+                            <label class="document-title" for="sss_number">
+                                <i class="fa-solid fa-users"></i>
+                                SSS Number
+                            </label>
 
-                        <div>
-                            <i class="fa-solid fa-users"></i>
-                            <label>SSS</label>
+                            <input
+                                id="sss_number"
+                                type="text"
+                                name="sss_number"
+                                value="{{ employee.sss_number|default:'' }}"
+                                placeholder="SSS number"
+                            >
+
+                            <label class="file-upload-control">
+                                <i class="fa-solid fa-upload"></i>
+                                Upload
+                                <input
+                                    type="file"
+                                    name="sss_file"
+                                    hidden
+                                    onchange="showFileName(this, 'sssFileName')"
+                                >
+                            </label>
+
+                            <span id="sssFileName"
+                                  class="selected-file-name"></span>
                         </div>
 
-                        <input type="text"
-                               name="sss_number"
-                               value="{{ employee.sss_number|default:'' }}">
+                        <div class="government-item">
+                            <label class="document-title" for="philhealth_number">
+                                <i class="fa-solid fa-heart-pulse"></i>
+                                PhilHealth Number
+                            </label>
 
-                        <input type="file"
-                               name="sss_file"
-                               id="sssFile"
-                               style="display:none;">
+                            <input
+                                id="philhealth_number"
+                                type="text"
+                                name="philhealth_number"
+                                value="{{ employee.philhealth_number|default:'' }}"
+                                placeholder="PhilHealth number"
+                            >
 
-                        <button type="button"
-                                onclick="document.getElementById('sssFile').click();">
+                            <label class="file-upload-control">
+                                <i class="fa-solid fa-upload"></i>
+                                Upload
+                                <input
+                                    type="file"
+                                    name="philhealth_file"
+                                    hidden
+                                    onchange="showFileName(this, 'philhealthFileName')"
+                                >
+                            </label>
 
-                            Upload
-
-                        </button>
-
-                    </div>
-
-                    <div class="gov-row">
-
-                        <div>
-                            <i class="fa-solid fa-heart-pulse"></i>
-                            <label>PhilHealth</label>
+                            <span id="philhealthFileName"
+                                  class="selected-file-name"></span>
                         </div>
 
-                        <input type="text"
-                               name="philhealth_number"
-                               value="{{ employee.philhealth_number|default:'' }}">
+                        <div class="government-item">
+                            <label class="document-title" for="tin_number">
+                                <i class="fa-solid fa-receipt"></i>
+                                TIN Number
+                            </label>
 
-                        <input type="file"
-                               name="philhealth_file"
-                               id="philhealthFile"
-                               style="display:none;">
+                            <input
+                                id="tin_number"
+                                type="text"
+                                name="tin_number"
+                                value="{{ employee.tin_number|default:'' }}"
+                                placeholder="TIN number"
+                            >
 
-                        <button type="button"
-                                onclick="document.getElementById('philhealthFile').click();">
+                            <label class="file-upload-control">
+                                <i class="fa-solid fa-upload"></i>
+                                Upload
+                                <input
+                                    type="file"
+                                    name="tin_file"
+                                    hidden
+                                    onchange="showFileName(this, 'tinFileName')"
+                                >
+                            </label>
 
-                            Upload
-
-                        </button>
-
-                    </div>
-
-                    <div class="gov-row">
-
-                        <div>
-                            <i class="fa-solid fa-shield"></i>
-                            <label>NBI Clearance</label>
+                            <span id="tinFileName"
+                                  class="selected-file-name"></span>
                         </div>
 
-                        <input type="text"
-                               name="nbi_clearance_number"
-                               value="{{ employee.nbi_clearance_number|default:'' }}">
+                        <div class="government-item">
+                            <label class="document-title" for="pagibig_number">
+                                <i class="fa-solid fa-house"></i>
+                                Pag-IBIG Number
+                            </label>
 
-                        <input type="file"
-                               name="nbi_clearance_file"
-                               id="nbiFile"
-                               style="display:none;">
+                            <input
+                                id="pagibig_number"
+                                type="text"
+                                name="pagibig_number"
+                                value="{{ employee.pagibig_number|default:'' }}"
+                                placeholder="Pag-IBIG number"
+                            >
 
-                        <button type="button"
-                                onclick="document.getElementById('nbiFile').click();">
+                            <label class="file-upload-control">
+                                <i class="fa-solid fa-upload"></i>
+                                Upload
+                                <input
+                                    type="file"
+                                    name="pagibig_file"
+                                    hidden
+                                    onchange="showFileName(this, 'pagibigFileName')"
+                                >
+                            </label>
 
-                            Upload
+                            <span id="pagibigFileName"
+                                  class="selected-file-name"></span>
+                        </div>
 
-                        </button>
+                        <div class="government-item">
+                            <label class="document-title" for="nbi_clearance_number">
+                                <i class="fa-solid fa-shield"></i>
+                                NBI Clearance
+                            </label>
+
+                            <input
+                                id="nbi_clearance_number"
+                                type="text"
+                                name="nbi_clearance_number"
+                                value="{{ employee.nbi_clearance_number|default:'' }}"
+                                placeholder="NBI clearance number"
+                            >
+
+                            <label class="file-upload-control">
+                                <i class="fa-solid fa-upload"></i>
+                                Upload
+                                <input
+                                    type="file"
+                                    name="nbi_clearance_file"
+                                    hidden
+                                    onchange="showFileName(this, 'nbiFileName')"
+                                >
+                            </label>
+
+                            <span id="nbiFileName"
+                                  class="selected-file-name"></span>
+                        </div>
 
                     </div>
-
                 </section>
 
+                <!-- EMPLOYMENT REMARKS -->
+                <section class="employee-card remarks-card">
+                    <div class="card-title">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <h3>EMPLOYMENT REMARKS</h3>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="employment_remarks">
+                            Reason for resignation, termination, MIA, or other
+                            employment-related notes
+                        </label>
+
+                        <textarea
+                            id="employment_remarks"
+                            name="employment_remarks"
+                            placeholder="Enter employment remarks here..."
+                        >{{ employee.employment_remarks|default:'' }}</textarea>
+                    </div>
+                </section>
+
+            </div>
+
+            <div class="form-actions">
+                <a href="/employees-page/{{ employee.id }}/"
+                   class="footer-button footer-cancel">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="footer-button footer-save">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save Changes
+                </button>
             </div>
 
         </form>
 
     </main>
-
 </div>
 
 <script>
+    const photoInput = document.getElementById("photoInput");
+    const avatarPreview = document.getElementById("avatarPreview");
 
-function previewPhoto(event){
+    if (photoInput && avatarPreview) {
+        photoInput.addEventListener("change", function () {
+            const selectedFile = this.files && this.files[0];
 
-    const file = event.target.files[0];
+            if (!selectedFile) {
+                return;
+            }
 
-    if(!file) return;
+            if (!selectedFile.type.startsWith("image/")) {
+                alert("Please select a valid image file.");
+                this.value = "";
+                return;
+            }
 
-    const preview = document.getElementById('photoPreview');
-    const icon = document.getElementById('defaultPhotoIcon');
+            const reader = new FileReader();
 
-    preview.src = URL.createObjectURL(file);
+            reader.onload = function (event) {
+                avatarPreview.innerHTML = "";
 
-    preview.style.display = 'block';
+                const image = document.createElement("img");
+                image.src = event.target.result;
+                image.alt = "Employee photo preview";
 
-    if(icon){
-        icon.style.display = 'none';
+                avatarPreview.appendChild(image);
+            };
+
+            reader.readAsDataURL(selectedFile);
+        });
     }
 
-}
+    function showFileName(input, targetId) {
+        const target = document.getElementById(targetId);
 
+        if (!target) {
+            return;
+        }
+
+        if (input.files && input.files.length > 0) {
+            target.textContent = input.files[0].name;
+        } else {
+            target.textContent = "";
+        }
+    }
 </script>
 
 </body>

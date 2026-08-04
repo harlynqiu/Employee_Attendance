@@ -4,22 +4,626 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Employee</title>
 
     <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            background: #f4f7fb;
+            color: #102a56;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .employee-page {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .employee-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            width: 220px;
+            padding: 32px 18px;
+            overflow-y: auto;
+            color: #ffffff;
+            background: linear-gradient(180deg, #0865db 0%, #064caf 100%);
+        }
+
+        .employee-logo {
+            margin: 0 10px 40px;
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 900;
+            line-height: 0.95;
+            letter-spacing: 0.4px;
+        }
+
+        .employee-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .employee-menu a {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            width: 100%;
+            min-height: 46px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+        .employee-menu a:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .employee-menu a.active {
+            color: #0759c5;
+            background: #ffffff;
+            box-shadow: 0 8px 18px rgba(0, 25, 76, 0.16);
+        }
+
+        .employee-menu i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* MAIN CONTENT */
+
+        .employee-main {
+            width: calc(100% - 220px);
+            min-width: 0;
+            margin-left: 220px;
+            padding: 28px 34px 40px;
+        }
+
+        .employee-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 22px;
+        }
+
+        .employee-header h1 {
+            margin: 0 0 7px;
+            color: #08295c;
+            font-size: 30px;
+            line-height: 1.1;
+            font-weight: 900;
+            letter-spacing: 0.2px;
+        }
+
+        .employee-header p {
+            margin: 0;
+            color: #71819c;
+            font-size: 12px;
+        }
+
+        .employee-header p span {
+            margin: 0 7px;
+            color: #a7b2c3;
+        }
+
+        .employee-logout {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            width: 42px;
+            height: 42px;
+            border: 1px solid #d9e2ef;
+            border-radius: 10px;
+            color: #0863d7;
+            background: #ffffff;
+            text-decoration: none;
+            box-shadow: 0 5px 14px rgba(20, 52, 97, 0.06);
+        }
+
+        /* FORM LAYOUT */
+
+        .employee-form {
+            width: 100%;
+        }
+
+        .employee-grid {
+            display: grid;
+            grid-template-columns: minmax(170px, 0.58fr) minmax(440px, 1.7fr) minmax(300px, 1fr);
+            gap: 18px;
+            align-items: stretch;
+            width: 100%;
+        }
+
+        .employee-card {
+            min-width: 0;
+            padding: 18px;
+            border: 1px solid #dfe6ef;
+            border-radius: 14px;
+            background: #ffffff;
+            box-shadow: 0 7px 20px rgba(20, 52, 97, 0.06);
+        }
+
+        .photo-card {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .personal-card {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .emergency-card {
+            grid-column: 3;
+            grid-row: 1;
+        }
+
+        .education-card {
+            grid-column: 1 / span 1;
+            grid-row: 2;
+        }
+
+        .reference-card {
+            grid-column: 2 / span 2;
+            grid-row: 2;
+        }
+
+        .history-card {
+            grid-column: 1 / span 2;
+            grid-row: 3;
+        }
+
+        .work-card {
+            grid-column: 3;
+            grid-row: 3;
+        }
+
+        .government-card {
+            grid-column: 1 / span 2;
+            grid-row: 4;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #dce5f0;
+        }
+
+        .card-title i {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            color: #0761d4;
+            background: #edf4ff;
+            font-size: 13px;
+        }
+
+        .card-title h3 {
+            margin: 0;
+            color: #0757be;
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 0.1px;
+        }
+
+        /* PHOTO */
+
+        .photo-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            text-align: center;
+        }
+
+        .employee-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 112px;
+            height: 112px;
+            margin: 3px auto 18px;
+            overflow: hidden;
+            border-radius: 50%;
+            color: #a5b0c2;
+            background: #e9edf3;
+            font-size: 48px;
+        }
+
+        .employee-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-button,
+        .document-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            min-height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .upload-button {
+            border: 1px solid #0862d6;
+            color: #ffffff;
+            background: #0862d6;
+        }
+
+        .document-button {
+            margin-top: 14px;
+            border: 1px solid #9bbbe7;
+            color: #0862d6;
+            background: #ffffff;
+        }
+
+        .file-help {
+            margin: 8px 0 0;
+            color: #8591a4;
+            font-size: 10px;
+        }
+
+        /* INPUTS */
+
+        .form-grid {
+            display: grid;
+            gap: 12px 16px;
+            min-width: 0;
+        }
+
+        .form-grid.two-columns {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .form-grid.four-columns {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .field-group {
+            min-width: 0;
+        }
+
+        .field-group label,
+        .table-label {
+            display: block;
+            margin-bottom: 6px;
+            color: #142f5c;
+            font-size: 10px;
+            line-height: 1.25;
+            font-weight: 800;
+        }
+
+        .field-group input,
+        .field-group select,
+        .reference-grid input,
+        .history-grid input,
+        .education-row input {
+            display: block;
+            width: 100%;
+            min-width: 0;
+            height: 35px;
+            padding: 8px 10px;
+            border: 1px solid #cfd9e7;
+            border-radius: 7px;
+            outline: none;
+            color: #1b355f;
+            background: #ffffff;
+            font-family: inherit;
+            font-size: 11px;
+            transition: 0.18s ease;
+        }
+
+        .field-group input:focus,
+        .field-group select:focus,
+        .reference-grid input:focus,
+        .history-grid input:focus,
+        .education-row input:focus {
+            border-color: #1473e6;
+            box-shadow: 0 0 0 3px rgba(20, 115, 230, 0.11);
+        }
+
+        input::placeholder {
+            color: #9ba7b9;
+        }
+
+        /* EDUCATION */
+
+        .education-list {
+            display: grid;
+            gap: 11px;
+        }
+
+        .education-row {
+            display: grid;
+            grid-template-columns: 74px minmax(0, 1fr);
+            gap: 7px;
+            align-items: center;
+        }
+
+        .education-row .year-field {
+            grid-column: 2;
+        }
+
+        .education-row label {
+            color: #17345e;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .education-row .year-label {
+            display: none;
+        }
+
+        /* REFERENCES */
+
+        .reference-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .reference-headings {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 7px;
+        }
+
+        .reference-headings span {
+            color: #17345e;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        /* HISTORY */
+
+        .history-headings,
+        .history-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr 1fr 0.42fr;
+            gap: 9px;
+        }
+
+        .history-headings {
+            margin-bottom: 7px;
+        }
+
+        .history-headings span {
+            color: #17345e;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .history-grid {
+            row-gap: 10px;
+        }
+
+        /* GOVERNMENT */
+
+        .government-card .form-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        /* BUTTONS */
+
+        .form-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .cancel-button,
+        .save-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .cancel-button {
+            border: 1px solid #cbd6e4;
+            color: #17345e;
+            background: #ffffff;
+        }
+
+        .save-button {
+            gap: 8px;
+            border: 1px solid #0862d6;
+            color: #ffffff;
+            background: #0862d6;
+            box-shadow: 0 7px 15px rgba(8, 98, 214, 0.2);
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1280px) {
+            .employee-grid {
+                grid-template-columns: 180px minmax(400px, 1.5fr) minmax(280px, 1fr);
+            }
+
+            .employee-main {
+                padding: 26px 24px 36px;
+            }
+        }
+
+        @media (max-width: 1080px) {
+            .employee-sidebar {
+                width: 190px;
+            }
+
+            .employee-main {
+                width: calc(100% - 190px);
+                margin-left: 190px;
+            }
+
+            .employee-grid {
+                grid-template-columns: 190px minmax(0, 1fr);
+            }
+
+            .photo-card {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .personal-card {
+                grid-column: 2;
+                grid-row: 1;
+            }
+
+            .emergency-card {
+                grid-column: 1 / span 2;
+                grid-row: 2;
+            }
+
+            .education-card {
+                grid-column: 1;
+                grid-row: 3;
+            }
+
+            .reference-card {
+                grid-column: 2;
+                grid-row: 3;
+            }
+
+            .history-card {
+                grid-column: 1 / span 2;
+                grid-row: 4;
+            }
+
+            .work-card {
+                grid-column: 1 / span 2;
+                grid-row: 5;
+            }
+
+            .government-card {
+                grid-column: 1 / span 2;
+                grid-row: 6;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .employee-sidebar {
+                position: relative;
+                width: 100%;
+                min-height: auto;
+                padding: 18px;
+            }
+
+            .employee-page {
+                display: block;
+            }
+
+            .employee-logo {
+                margin: 0 0 18px;
+                font-size: 20px;
+            }
+
+            .employee-menu {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .employee-main {
+                width: 100%;
+                margin-left: 0;
+                padding: 20px 14px 30px;
+            }
+
+            .employee-grid {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .form-grid.two-columns,
+            .form-grid.four-columns,
+            .government-card .form-grid,
+            .reference-headings,
+            .reference-grid,
+            .history-headings,
+            .history-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .reference-headings,
+            .history-headings {
+                display: none;
+            }
+
+            .employee-header h1 {
+                font-size: 25px;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+
+            .cancel-button,
+            .save-button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="modern-page">
+<div class="employee-page">
 
-    <aside class="modern-sidebar">
-        <div class="modern-logo">
-            HCQ <br> MARKETING
+    <aside class="employee-sidebar">
+        <div class="employee-logo">
+            HCQ<br>MARKETING
         </div>
 
-        <nav class="modern-menu">
+        <nav class="employee-menu">
             <a href="/dashboard/">
                 <i class="fa-solid fa-house"></i>
                 <span>Dashboard</span>
@@ -35,233 +639,571 @@
                 <span>Employees</span>
             </a>
 
-            <a href="/admin/payroll/">
+            <a href="/payroll-page/">
                 <i class="fa-regular fa-file-lines"></i>
                 <span>Payroll</span>
             </a>
         </nav>
     </aside>
 
-    <main class="modern-content">
+    <main class="employee-main">
 
-        <div class="new-modern-header">
+        <header class="employee-header">
             <div>
                 <h1>NEW EMPLOYEE</h1>
                 <p>Employees <span>›</span> Add Employee</p>
             </div>
 
-            <a href="{% url 'admin:logout' %}" class="modern-logout">
+            <a href="{% url 'admin:logout' %}"
+               class="employee-logout"
+               title="Log out">
                 <i class="fa-solid fa-right-from-bracket"></i>
             </a>
-        </div>
+        </header>
 
-        <form class="modern-employee-form" method="POST" enctype="multipart/form-data">
+        <form class="employee-form"
+              method="POST"
+              enctype="multipart/form-data">
+
             {% csrf_token %}
 
-            <div class="new-employee-layout">
+            <div class="employee-grid">
 
-                <section class="new-photo-card">
-                    <div class="new-avatar">
+                <!-- PHOTO AND DOCUMENTS -->
+                <section class="employee-card photo-card">
+                    <div class="employee-avatar" id="avatarPreview">
                         <i class="fa-solid fa-user"></i>
                     </div>
 
-                    <label class="photo-upload-btn">
+                    <label class="upload-button">
                         <i class="fa-solid fa-camera"></i>
                         Upload Image
-                        <input type="file" name="photo" hidden>
+                        <input
+                            id="photoInput"
+                            type="file"
+                            name="photo"
+                            accept=".jpg,.jpeg,.png"
+                            hidden
+                        >
                     </label>
 
-                    <p>JPG, PNG up to 2MB</p>
+                    <p class="file-help">JPG or PNG, up to 2 MB</p>
 
-                    <label class="document-upload-btn">
+                    <label class="document-button">
                         <i class="fa-regular fa-file-arrow-up"></i>
                         Upload Documents
-                        <input type="file" name="resume" hidden>
+                        <input
+                            type="file"
+                            name="resume"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                            hidden
+                        >
                     </label>
                 </section>
 
-                <section class="new-form-card personal-new-card">
-                    <div class="new-card-title">
+                <!-- PERSONAL INFORMATION -->
+                <section class="employee-card personal-card">
+                    <div class="card-title">
                         <i class="fa-regular fa-user"></i>
                         <h3>PERSONAL INFORMATION</h3>
                     </div>
 
-                    <div class="new-form-grid two-cols">
-                        <div class="input-group">
-                            <label>First Name</label>
+                    <div class="form-grid two-columns">
+                        <div class="field-group">
+                            <label for="first_name">First Name</label>
                             <input
+                                id="first_name"
                                 type="text"
                                 name="first_name"
                                 maxlength="100"
+                                required
                             >
                         </div>
 
-                        <div class="input-group">
-                            <label>Address</label>
+                        <div class="field-group">
+                            <label for="address">Address</label>
                             <input
+                                id="address"
                                 type="text"
                                 name="address"
                                 maxlength="255"
                             >
                         </div>
 
-                        <div class="input-group">
-                            <label>Middle Initial</label>
-                            <input type="text"
+                        <div class="field-group">
+                            <label for="middle_initial">Middle Initial</label>
+                            <input
+                                id="middle_initial"
+                                type="text"
                                 name="middle_initial"
                                 maxlength="50"
-                                placeholder="Middle Name / Initial"
+                                placeholder="Middle name or initial"
                             >
                         </div>
 
-                        <div class="input-group">
-                            <label>Contact No.</label>
+                        <div class="field-group">
+                            <label for="contact_number">Contact No.</label>
                             <input
+                                id="contact_number"
                                 type="text"
                                 name="contact_number"
                                 maxlength="20"
                             >
                         </div>
 
-                        <div class="input-group">
-                            <label>Last Name</label>
+                        <div class="field-group">
+                            <label for="last_name">Last Name</label>
                             <input
+                                id="last_name"
                                 type="text"
                                 name="last_name"
                                 maxlength="100"
+                                required
                             >
                         </div>
 
-                        <div class="input-group">
-                            <label>Spouse Name</label>
+                        <div class="field-group">
+                            <label for="spouse_name">Spouse Name</label>
                             <input
+                                id="spouse_name"
                                 type="text"
                                 name="spouse_name"
                                 maxlength="100"
                             >
                         </div>
 
-                        <div class="input-group">
-                            <label>Birthday</label>
-                            <input type="date" name="date_of_birth">
+                        <div class="field-group">
+                            <label for="date_of_birth">Birthday</label>
+                            <input
+                                id="date_of_birth"
+                                type="date"
+                                name="date_of_birth"
+                            >
                         </div>
 
-                        <div class="input-group">
-                            <label>Spouse Contact No.</label>
+                        <div class="field-group">
+                            <label for="spouse_contact_number">Spouse Contact No.</label>
                             <input
+                                id="spouse_contact_number"
                                 type="text"
                                 name="spouse_contact_number"
                                 maxlength="20"
                             >
                         </div>
 
-                        <div class="input-group">
-                            <label>Citizenship</label>
-                            <input type="text" name="citizenship">
+                        <div class="field-group">
+                            <label for="citizenship">Citizenship</label>
+                            <input
+                                id="citizenship"
+                                type="text"
+                                name="citizenship"
+                                maxlength="100"
+                            >
+                        </div>
+
+                        <div class="field-group">
+                            <label for="blood_type">Blood Type</label>
+                            <select id="blood_type" name="blood_type">
+                                <option value="">Select blood type</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
                         </div>
                     </div>
                 </section>
 
-                <section class="new-form-card education-card">
-                    <div class="new-card-title">
+                <!-- EMERGENCY INFORMATION -->
+                <section class="employee-card emergency-card">
+                    <div class="card-title">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <h3>EMERGENCY INFORMATION</h3>
+                    </div>
+
+                    <div class="form-grid two-columns">
+                        <div class="field-group">
+                            <label for="emergency_contact_name">
+                                Emergency Contact Person
+                            </label>
+                            <input
+                                id="emergency_contact_name"
+                                type="text"
+                                name="emergency_contact_name"
+                                maxlength="100"
+                            >
+                        </div>
+
+                        <div class="field-group">
+                            <label for="emergency_relationship">Relationship</label>
+                            <input
+                                id="emergency_relationship"
+                                type="text"
+                                name="emergency_relationship"
+                                maxlength="50"
+                            >
+                        </div>
+
+                        <div class="field-group">
+                            <label for="emergency_contact_number">Contact Number</label>
+                            <input
+                                id="emergency_contact_number"
+                                type="text"
+                                name="emergency_contact_number"
+                                maxlength="20"
+                            >
+                        </div>
+
+                        <div class="field-group">
+                            <label for="emergency_address">Address</label>
+                            <input
+                                id="emergency_address"
+                                type="text"
+                                name="emergency_address"
+                                maxlength="255"
+                            >
+                        </div>
+                    </div>
+                </section>
+
+                <!-- EDUCATIONAL INFORMATION -->
+                <section class="employee-card education-card">
+                    <div class="card-title">
                         <i class="fa-solid fa-graduation-cap"></i>
                         <h3>EDUCATIONAL INFORMATION</h3>
                     </div>
 
-                    <div class="education-row">
-                        <label>Elementary</label>
-                        <input type="text" name="elementary">
-                        <label>Year Attended</label>
-                        <input type="text" name="elementary_year">
-                    </div>
+                    <div class="education-list">
+                        <div class="education-row">
+                            <label for="elementary">Elementary</label>
+                            <input
+                                id="elementary"
+                                type="text"
+                                name="elementary"
+                                placeholder="School name"
+                            >
+                            <label class="year-label" for="elementary_year">
+                                Year Attended
+                            </label>
+                            <input
+                                class="year-field"
+                                id="elementary_year"
+                                type="text"
+                                name="elementary_year"
+                                placeholder="Year attended"
+                            >
+                        </div>
 
-                    <div class="education-row">
-                        <label>High School</label>
-                        <input type="text" name="high_school">
-                        <label>Year Attended</label>
-                        <input type="text" name="high_school_year">
-                    </div>
+                        <div class="education-row">
+                            <label for="high_school">High School</label>
+                            <input
+                                id="high_school"
+                                type="text"
+                                name="high_school"
+                                placeholder="School name"
+                            >
+                            <label class="year-label" for="high_school_year">
+                                Year Attended
+                            </label>
+                            <input
+                                class="year-field"
+                                id="high_school_year"
+                                type="text"
+                                name="high_school_year"
+                                placeholder="Year attended"
+                            >
+                        </div>
 
-                    <div class="education-row">
-                        <label>College</label>
-                        <input type="text" name="college">
-                        <label>Year Attended</label>
-                        <input type="text" name="college_year">
+                        <div class="education-row">
+                            <label for="college">College</label>
+                            <input
+                                id="college"
+                                type="text"
+                                name="college"
+                                placeholder="School name"
+                            >
+                            <label class="year-label" for="college_year">
+                                Year Attended
+                            </label>
+                            <input
+                                class="year-field"
+                                id="college_year"
+                                type="text"
+                                name="college_year"
+                                placeholder="Year attended"
+                            >
+                        </div>
                     </div>
                 </section>
 
-                <section class="new-form-card reference-card">
-                    <div class="new-card-title">
+                <!-- CHARACTER REFERENCES -->
+                <section class="employee-card reference-card">
+                    <div class="card-title">
                         <i class="fa-solid fa-address-book"></i>
                         <h3>CHARACTER REFERENCE</h3>
                     </div>
 
-                    <div class="reference-modern-grid">
-                        <input type="text" name="reference_name_1" placeholder="Name">
-                        <input type="text" name="reference_occupation_1" placeholder="Occupation">
-                        <input type="text" name="reference_contact_1" placeholder="Contact Number">
+                    <div class="reference-headings">
+                        <span>Name</span>
+                        <span>Occupation</span>
+                        <span>Contact Number</span>
+                    </div>
 
-                        <input type="text" name="reference_name_2" placeholder="Name">
-                        <input type="text" name="reference_occupation_2" placeholder="Occupation">
-                        <input type="text" name="reference_contact_2" placeholder="Contact Number">
+                    <div class="reference-grid">
+                        <input
+                            type="text"
+                            name="reference_name_1"
+                            placeholder="Full name"
+                        >
+                        <input
+                            type="text"
+                            name="reference_occupation_1"
+                            placeholder="Occupation"
+                        >
+                        <input
+                            type="text"
+                            name="reference_contact_1"
+                            placeholder="Contact number"
+                        >
 
-                        <input type="text" name="reference_name_3" placeholder="Name">
-                        <input type="text" name="reference_occupation_3" placeholder="Occupation">
-                        <input type="text" name="reference_contact_3" placeholder="Contact Number">
+                        <input
+                            type="text"
+                            name="reference_name_2"
+                            placeholder="Full name"
+                        >
+                        <input
+                            type="text"
+                            name="reference_occupation_2"
+                            placeholder="Occupation"
+                        >
+                        <input
+                            type="text"
+                            name="reference_contact_2"
+                            placeholder="Contact number"
+                        >
+
+                        <input
+                            type="text"
+                            name="reference_name_3"
+                            placeholder="Full name"
+                        >
+                        <input
+                            type="text"
+                            name="reference_occupation_3"
+                            placeholder="Occupation"
+                        >
+                        <input
+                            type="text"
+                            name="reference_contact_3"
+                            placeholder="Contact number"
+                        >
                     </div>
                 </section>
 
-                <section class="new-form-card history-card">
-                    <div class="new-card-title">
+                <!-- EMPLOYMENT HISTORY -->
+                <section class="employee-card history-card">
+                    <div class="card-title">
                         <i class="fa-solid fa-briefcase"></i>
                         <h3>EMPLOYMENT HISTORY</h3>
                     </div>
 
-                    <div class="history-modern-grid">
-                        <input type="text" name="company_1" placeholder="Name of Company">
-                        <input type="text" name="company_address_1" placeholder="Address">
-                        <input type="text" name="occupation_1" placeholder="Occupation">
-                        <input type="text" name="years_1" placeholder="Years">
+                    <div class="history-headings">
+                        <span>Name of Company</span>
+                        <span>Address</span>
+                        <span>Occupation</span>
+                        <span>Years</span>
+                    </div>
 
-                        <input type="text" name="company_2" placeholder="Name of Company">
-                        <input type="text" name="company_address_2" placeholder="Address">
-                        <input type="text" name="occupation_2" placeholder="Occupation">
-                        <input type="text" name="years_2" placeholder="Years">
+                    <div class="history-grid">
+                        <input
+                            type="text"
+                            name="company_1"
+                            placeholder="Company name"
+                        >
+                        <input
+                            type="text"
+                            name="company_address_1"
+                            placeholder="Company address"
+                        >
+                        <input
+                            type="text"
+                            name="occupation_1"
+                            placeholder="Position"
+                        >
+                        <input
+                            type="text"
+                            name="years_1"
+                            placeholder="e.g. 2"
+                        >
 
-                        <input type="text" name="company_3" placeholder="Name of Company">
-                        <input type="text" name="company_address_3" placeholder="Address">
-                        <input type="text" name="occupation_3" placeholder="Occupation">
-                        <input type="text" name="years_3" placeholder="Years">
+                        <input
+                            type="text"
+                            name="company_2"
+                            placeholder="Company name"
+                        >
+                        <input
+                            type="text"
+                            name="company_address_2"
+                            placeholder="Company address"
+                        >
+                        <input
+                            type="text"
+                            name="occupation_2"
+                            placeholder="Position"
+                        >
+                        <input
+                            type="text"
+                            name="years_2"
+                            placeholder="e.g. 2"
+                        >
+
+                        <input
+                            type="text"
+                            name="company_3"
+                            placeholder="Company name"
+                        >
+                        <input
+                            type="text"
+                            name="company_address_3"
+                            placeholder="Company address"
+                        >
+                        <input
+                            type="text"
+                            name="occupation_3"
+                            placeholder="Position"
+                        >
+                        <input
+                            type="text"
+                            name="years_3"
+                            placeholder="e.g. 2"
+                        >
                     </div>
                 </section>
 
-                <section class="new-form-card work-new-card">
-                    <div class="new-card-title">
+                <!-- WORK POSITION -->
+                <section class="employee-card work-card">
+                    <div class="card-title">
                         <i class="fa-solid fa-id-card"></i>
                         <h3>WORK POSITION</h3>
                     </div>
 
-                    <div class="input-group">
-                        <label>Position</label>
-                        <input type="text" name="position">
+                    <div class="form-grid two-columns">
+                        <div class="field-group">
+                            <label for="position">Position</label>
+                            <input
+                                id="position"
+                                type="text"
+                                name="position"
+                                maxlength="100"
+                            >
+                        </div>
+
+                        <div class="field-group">
+                            <label for="salary_type">Salary Type</label>
+                            <select id="salary_type" name="salary_type">
+                                <option value="daily">Daily</option>
+                                <option value="hourly">Hourly</option>
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="rate">Salary Rate</label>
+                            <input
+                                id="rate"
+                                type="number"
+                                name="rate"
+                                min="0"
+                                step="0.01"
+                            >
+                        </div>
+
+                        <div class="field-group">
+                            <label for="employment_status">Employment Status</label>
+                            <select id="employment_status" name="employment_status">
+                                <option value="ACTIVE">Active</option>
+                                <option value="RESIGNED">Resigned</option>
+                                <option value="MIA">MIA</option>
+                                <option value="TERMINATED">Terminated</option>
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="date_started">Date Started</label>
+                            <input
+                                id="date_started"
+                                type="date"
+                                name="date_started"
+                            >
+                        </div>
+                    </div>
+                </section>
+
+                <!-- GOVERNMENT DOCUMENTS -->
+                <section class="employee-card government-card">
+                    <div class="card-title">
+                        <i class="fa-solid fa-building-columns"></i>
+                        <h3>GOVERNMENT DOCUMENTS</h3>
                     </div>
 
-                    <div class="input-group">
-                        <label>Salary Rate</label>
-                        <input type="number" name="rate">
-                    </div>
+                    <div class="form-grid">
+                        <div class="field-group">
+                            <label for="sss_no">SSS Number</label>
+                            <input
+                                id="sss_no"
+                                type="text"
+                                name="sss_no"
+                                maxlength="30"
+                                placeholder="SSS number"
+                            >
+                        </div>
 
-                    <div class="input-group">
-                        <label>Date Started</label>
-                        <input type="date" name="date_started">
+                        <div class="field-group">
+                            <label for="philhealth_no">PhilHealth Number</label>
+                            <input
+                                id="philhealth_no"
+                                type="text"
+                                name="philhealth_no"
+                                maxlength="30"
+                                placeholder="PhilHealth number"
+                            >
+                        </div>
+
+                        <div class="field-group">
+                            <label for="tin_no">TIN Number</label>
+                            <input
+                                id="tin_no"
+                                type="text"
+                                name="tin_no"
+                                maxlength="30"
+                                placeholder="TIN number"
+                            >
+                        </div>
+
+                        <div class="field-group">
+                            <label for="pagibig_no">Pag-IBIG Number</label>
+                            <input
+                                id="pagibig_no"
+                                type="text"
+                                name="pagibig_no"
+                                maxlength="30"
+                                placeholder="Pag-IBIG number"
+                            >
+                        </div>
                     </div>
                 </section>
 
             </div>
 
-            <div class="new-form-actions">
-                <a href="/employees-page/" class="cancel-btn">Cancel</a>
-                <button type="submit">
+            <div class="form-actions">
+                <a href="/employees-page/" class="cancel-button">
+                    Cancel
+                </a>
+
+                <button type="submit" class="save-button">
                     <i class="fa-solid fa-floppy-disk"></i>
                     Save Employee
                 </button>
@@ -270,8 +1212,42 @@
         </form>
 
     </main>
-
 </div>
+
+<script>
+    const photoInput = document.getElementById("photoInput");
+    const avatarPreview = document.getElementById("avatarPreview");
+
+    if (photoInput && avatarPreview) {
+        photoInput.addEventListener("change", function () {
+            const selectedFile = this.files && this.files[0];
+
+            if (!selectedFile) {
+                return;
+            }
+
+            if (!selectedFile.type.startsWith("image/")) {
+                alert("Please select a valid image file.");
+                this.value = "";
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                avatarPreview.innerHTML = "";
+
+                const image = document.createElement("img");
+                image.src = event.target.result;
+                image.alt = "Employee photo preview";
+
+                avatarPreview.appendChild(image);
+            };
+
+            reader.readAsDataURL(selectedFile);
+        });
+    }
+</script>
 
 </body>
 </html>

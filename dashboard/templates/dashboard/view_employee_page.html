@@ -1,4 +1,3 @@
-```html
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -8,1116 +7,1496 @@
 
 <title>{{ employee.last_name }}, {{ employee.first_name }}</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    background:#f4f7fb;
-    font-family:'Segoe UI',sans-serif;
-    color:#061b49;
-}
-
-/* PAGE */
-
-.page{
-    display:flex;
-    min-height:100vh;
-}
-
-/* SIDEBAR */
-
-.sidebar{
-    width:250px;
-    background:#0d47c7;
-    color:white;
-    position:fixed;
-    top:0;
-    left:0;
-    bottom:0;
-    padding:35px 22px;
-    overflow-y:auto;
-}
-
-.logo{
-    font-size:34px;
-    font-weight:900;
-    line-height:1;
-    margin-bottom:55px;
-}
-
-.menu{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-}
-
-.menu a{
-    text-decoration:none;
-    color:white;
-    display:flex;
-    align-items:center;
-    gap:14px;
-    padding:15px 18px;
-    border-radius:14px;
-    font-weight:800;
-    transition:.2s;
-}
-
-.menu a:hover,
-.menu a.active{
-    background:rgba(255,255,255,.15);
-}
-
-/* CONTENT */
-
-.content{
-    margin-left:250px;
-    width:calc(100% - 250px);
-    padding:35px;
-}
-
-/* TOPBAR */
-
-.topbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:28px;
-}
-
-.topbar h1{
-    font-size:34px;
-    font-weight:900;
-    margin-bottom:8px;
-}
-
-.breadcrumb{
-    color:#74829b;
-    font-weight:700;
-}
-
-.breadcrumb a{
-    color:#0d47c7;
-    text-decoration:none;
-}
-
-.top-actions{
-    display:flex;
-    gap:12px;
-}
-
-.edit-btn{
-    background:#0d47c7;
-    color:white;
-    text-decoration:none;
-    padding:15px 24px;
-    border-radius:14px;
-    font-weight:900;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    box-shadow:0 10px 25px rgba(13,71,199,.15);
-}
-
-.logout-btn{
-    width:54px;
-    height:54px;
-    border-radius:14px;
-    background:white;
-    color:#0d47c7;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-decoration:none;
-    font-size:20px;
-}
-
-/* GRID */
-
-.grid{
-    display:grid;
-    grid-template-columns:320px 1fr 1fr;
-    gap:22px;
-    align-items:stretch;
-}
-
-/* CARD */
-
-.card{
-    background:white;
-    border-radius:24px;
-    padding:24px;
-    box-shadow:0 8px 28px rgba(15,35,95,.05);
-    display:flex;
-    flex-direction:column;
-    height:100%;
-}
-
-/* SAME HEIGHTS */
-
-.profile-card,
-.personal-card,
-.work-card{
-    min-height:420px;
-}
-
-.payroll-card,
-.view-card,
-.government-card{
-    min-height:430px;
-}
-
-.full-width{
-    grid-column:1 / -1;
-}
-
-/* CARD TITLE */
-
-.card-title{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:22px;
-}
-
-.card-icon{
-    width:46px;
-    height:46px;
-    border-radius:14px;
-    background:#eef4ff;
-    color:#0d47c7;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:18px;
-}
-
-.card-title h3{
-    font-size:20px;
-    font-weight:900;
-}
-
-/* PROFILE */
-
-.profile-card{
-    text-align:center;
-}
-
-.avatar{
-    width:170px;
-    height:170px;
-    border-radius:50%;
-    overflow:hidden;
-    margin:auto;
-    background:#eef4ff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:60px;
-    color:#0d47c7;
-}
-
-.avatar img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
-
-.employee-id{
-    margin-top:24px;
-    font-size:34px;
-    font-weight:900;
-    color:#0d47c7;
-}
-
-.employee-role{
-    color:#6f809e;
-    margin-top:6px;
-    font-weight:700;
-}
-
-.status{
-    margin-top:24px;
-    display:inline-flex;
-    align-items:center;
-    gap:10px;
-    padding:12px 22px;
-    border-radius:50px;
-    font-weight:900;
-}
-
-.status span{
-    width:10px;
-    height:10px;
-    border-radius:50%;
-}
-
-.status-active{
-    background:#e6f8ed;
-    color:#17a34a;
-}
-
-.status-active span{
-    background:#17a34a;
-}
-
-.status-resigned{
-    background:#fff4d8;
-    color:#d98b00;
-}
-
-.status-resigned span{
-    background:#d98b00;
-}
-
-.status-mia{
-    background:#ffe4e4;
-    color:#d92d2d;
-}
-
-.status-mia span{
-    background:#d92d2d;
-}
-
-.status-terminated{
-    background:#1f2937;
-    color:white;
-}
-
-.status-terminated span{
-    background:white;
-}
-
-/* INFO */
-
-.info-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:20px;
-}
-
-.info-box{
-    padding-bottom:16px;
-    border-bottom:1px solid #edf2f8;
-}
-
-.info-label{
-    font-size:12px;
-    color:#7a879f;
-    font-weight:900;
-    margin-bottom:8px;
-    text-transform:uppercase;
-}
-
-.info-value{
-    font-size:17px;
-    font-weight:800;
-}
-
-/* TABS */
-
-.info-tabs{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:14px;
-    margin-bottom:20px;
-}
-
-.info-tab{
-    border:2px solid #edf2f8;
-    border-radius:18px;
-    padding:18px 12px;
-    text-align:center;
-    cursor:pointer;
-    background:white;
-    transition:.2s;
-}
-
-.info-tab.active{
-    background:#f7faff;
-    border-color:#0d47c7;
-}
-
-.info-tab:hover{
-    border-color:#0d47c7;
-}
-
-.info-tab i{
-    font-size:26px;
-    color:#0d47c7;
-    margin-bottom:12px;
-}
-
-.info-tab p{
-    font-size:14px;
-    font-weight:900;
-}
-
-.info-content{
-    display:none;
-    background:#f8fbff;
-    border-radius:18px;
-    padding:22px;
-    line-height:2;
-    font-weight:700;
-    flex:1;
-}
-
-.info-content.active{
-    display:block;
-}
-
-/* TABLE */
-
-.table-wrapper{
-    width:100%;
-    overflow-x:auto;
-    flex:1;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-th{
-    background:#f7faff;
-    padding:16px;
-    text-align:left;
-    color:#74829b;
-    font-size:13px;
-    font-weight:900;
-}
-
-td{
-    padding:16px;
-    border-top:1px solid #edf2f8;
-    font-size:14px;
-    font-weight:700;
-}
-
-/* DOCUMENTS */
-
-.doc-row{
-    display:grid;
-    grid-template-columns:1fr 1fr 90px;
-    gap:14px;
-    align-items:center;
-    padding:16px 0;
-    border-bottom:1px solid #edf2f8;
-}
-
-.doc-row:last-child{
-    border-bottom:none;
-}
-
-.doc-left{
-    display:flex;
-    align-items:center;
-    gap:14px;
-}
-
-.doc-icon{
-    width:42px;
-    height:42px;
-    border-radius:12px;
-    background:#eef4ff;
-    color:#0d47c7;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
-.doc-name{
-    font-weight:900;
-}
-
-.doc-number{
-    color:#7c8ba5;
-    font-weight:700;
-}
-
-.doc-view{
-    color:#0d47c7;
-    text-decoration:none;
-    font-weight:900;
-}
-
-/* SUMMARY */
-
-.summary-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:16px;
-}
-
-.summary-box{
-    background:#f8fbff;
-    border-radius:18px;
-    padding:22px;
-    text-align:center;
-}
-
-.summary-box p{
-    color:#71809c;
-    font-weight:900;
-    font-size:13px;
-}
-
-.summary-box h2{
-    margin-top:12px;
-    font-size:28px;
-    color:#0d47c7;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:1400px){
-
-    .grid{
-        grid-template-columns:1fr;
+    * {
+        box-sizing: border-box;
     }
 
-    .profile-card,
-    .personal-card,
-    .work-card,
-    .payroll-card,
-    .view-card,
-    .government-card{
-        min-height:auto;
+    html,
+    body {
+        margin: 0;
+        min-height: 100%;
+        background: #f4f7fb;
+        color: #102a56;
+        font-family: Arial, Helvetica, sans-serif;
     }
 
-}
-
-@media(max-width:900px){
-
-    .sidebar{
-        display:none;
+    body {
+        overflow-x: hidden;
     }
 
-    .content{
-        margin-left:0;
-        width:100%;
-        padding:20px;
+    .employee-page {
+        display: flex;
+        width: 100%;
+        min-height: 100vh;
     }
 
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:20px;
+    /* SIDEBAR */
+
+    .employee-sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        z-index: 100;
+        width: 220px;
+        padding: 32px 18px;
+        overflow-y: auto;
+        color: #ffffff;
+        background: linear-gradient(180deg, #0865db 0%, #064caf 100%);
     }
 
-    .info-grid,
-    .info-tabs,
-    .summary-grid,
-    .doc-row{
-        grid-template-columns:1fr;
+    .employee-logo {
+        margin: 0 10px 40px;
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 900;
+        line-height: 0.95;
+        letter-spacing: 0.4px;
     }
 
-}
+    .employee-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
 
+    .employee-menu a {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        width: 100%;
+        min-height: 46px;
+        padding: 12px 16px;
+        border-radius: 10px;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+    .employee-menu a:hover {
+        background: rgba(255, 255, 255, 0.14);
+    }
+
+    .employee-menu a.active {
+        color: #0759c5;
+        background: #ffffff;
+        box-shadow: 0 8px 18px rgba(0, 25, 76, 0.16);
+    }
+
+    .employee-menu i {
+        width: 18px;
+        text-align: center;
+    }
+
+    /* MAIN */
+
+    .employee-main {
+        width: calc(100% - 220px);
+        min-width: 0;
+        margin-left: 220px;
+        padding: 28px 34px 40px;
+    }
+
+    .employee-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 22px;
+    }
+
+    .employee-header h1 {
+        margin: 0 0 7px;
+        color: #08295c;
+        font-size: 30px;
+        line-height: 1.1;
+        font-weight: 900;
+    }
+
+    .employee-header p {
+        margin: 0;
+        color: #71819c;
+        font-size: 12px;
+    }
+
+    .employee-header p a {
+        color: #71819c;
+        text-decoration: none;
+    }
+
+    .employee-header p span {
+        margin: 0 7px;
+        color: #a7b2c3;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .header-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 10px 16px;
+        border-radius: 9px;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+    .edit-button {
+        border: 1px solid #0862d6;
+        color: #ffffff;
+        background: #0862d6;
+        box-shadow: 0 7px 15px rgba(8, 98, 214, 0.2);
+    }
+
+    .logout-button {
+        width: 42px;
+        padding: 0;
+        border: 1px solid #d9e2ef;
+        color: #0863d7;
+        background: #ffffff;
+    }
+
+    /* GRID */
+
+    .employee-grid {
+        display: grid;
+        grid-template-columns:
+            minmax(170px, 0.58fr)
+            minmax(440px, 1.7fr)
+            minmax(300px, 1fr);
+        gap: 18px;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .employee-card {
+        min-width: 0;
+        padding: 18px;
+        border: 1px solid #dfe6ef;
+        border-radius: 14px;
+        background: #ffffff;
+        box-shadow: 0 7px 20px rgba(20, 52, 97, 0.06);
+    }
+
+    .profile-card {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .personal-card {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .emergency-card {
+        grid-column: 3;
+        grid-row: 1;
+    }
+
+    .education-card {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .reference-card {
+        grid-column: 2 / span 2;
+        grid-row: 2;
+    }
+
+    .history-card {
+        grid-column: 1 / span 2;
+        grid-row: 3;
+    }
+
+    .work-card {
+        grid-column: 3;
+        grid-row: 3;
+    }
+
+    .government-card {
+        grid-column: 1 / span 2;
+        grid-row: 4;
+    }
+
+    .remarks-card {
+        grid-column: 3;
+        grid-row: 4;
+    }
+
+    .payroll-card {
+        grid-column: 1 / span 2;
+        grid-row: 5;
+    }
+
+    .summary-card {
+        grid-column: 3;
+        grid-row: 5;
+    }
+
+    .attendance-card {
+        grid-column: 1 / -1;
+        grid-row: 6;
+    }
+
+    /* TITLES */
+
+    .card-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #dce5f0;
+    }
+
+    .card-title i {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        color: #0761d4;
+        background: #edf4ff;
+        font-size: 13px;
+    }
+
+    .card-title h3 {
+        margin: 0;
+        color: #0757be;
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    /* PROFILE */
+
+    .profile-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .employee-avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 112px;
+        height: 112px;
+        margin: 3px auto 16px;
+        overflow: hidden;
+        border-radius: 50%;
+        color: #a5b0c2;
+        background: #e9edf3;
+        font-size: 48px;
+    }
+
+    .employee-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .employee-id {
+        margin: 2px 0 5px;
+        color: #0757be;
+        font-size: 21px;
+        font-weight: 900;
+    }
+
+    .employee-role {
+        color: #74829b;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 16px;
+        padding: 8px 13px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+    .status-badge span {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .status-active {
+        color: #168a43;
+        background: #e8f8ee;
+    }
+
+    .status-active span {
+        background: #168a43;
+    }
+
+    .status-resigned {
+        color: #c47a00;
+        background: #fff4d8;
+    }
+
+    .status-resigned span {
+        background: #c47a00;
+    }
+
+    .status-mia {
+        color: #d92d2d;
+        background: #ffe8e8;
+    }
+
+    .status-mia span {
+        background: #d92d2d;
+    }
+
+    .status-terminated {
+        color: #ffffff;
+        background: #263242;
+    }
+
+    .status-terminated span {
+        background: #ffffff;
+    }
+
+    /* INFORMATION */
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 16px;
+    }
+
+    .info-item {
+        min-width: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #edf2f8;
+    }
+
+    .info-label {
+        margin-bottom: 5px;
+        color: #78869d;
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: 0.2px;
+        text-transform: uppercase;
+    }
+
+    .info-value {
+        overflow-wrap: anywhere;
+        color: #18345f;
+        font-size: 11px;
+        line-height: 1.45;
+        font-weight: 800;
+    }
+
+    /* EDUCATION */
+
+    .education-list {
+        display: grid;
+        gap: 10px;
+    }
+
+    .education-item {
+        padding-bottom: 10px;
+        border-bottom: 1px solid #edf2f8;
+    }
+
+    .education-item:last-child {
+        border-bottom: 0;
+    }
+
+    .education-name {
+        margin-bottom: 4px;
+        color: #17345e;
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+    .education-school,
+    .education-year {
+        color: #64748b;
+        font-size: 10px;
+        line-height: 1.5;
+        font-weight: 700;
+    }
+
+    /* REFERENCES AND HISTORY */
+
+    .data-headings,
+    .data-row {
+        display: grid;
+        gap: 9px;
+    }
+
+    .reference-headings,
+    .reference-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .history-headings,
+    .history-row {
+        grid-template-columns: 1.15fr 1fr 1fr 0.42fr;
+    }
+
+    .data-headings {
+        margin-bottom: 7px;
+    }
+
+    .data-headings span {
+        color: #17345e;
+        font-size: 9px;
+        font-weight: 900;
+    }
+
+    .data-row {
+        margin-bottom: 8px;
+    }
+
+    .data-cell {
+        min-width: 0;
+        padding: 8px 9px;
+        overflow: hidden;
+        border: 1px solid #dce5ef;
+        border-radius: 7px;
+        color: #415774;
+        background: #fbfdff;
+        font-size: 10px;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* GOVERNMENT DOCUMENTS */
+
+    .government-list {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .government-item {
+        min-width: 0;
+    }
+
+    .government-item-title {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 7px;
+        color: #17345e;
+        font-size: 10px;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .government-item-title i {
+        width: 14px;
+        color: #0862d6;
+        text-align: center;
+    }
+
+    .government-number {
+        width: 100%;
+        min-height: 35px;
+        padding: 9px 10px;
+        overflow: hidden;
+        border: 1px solid #cfd9e7;
+        border-radius: 7px;
+        color: #415774;
+        background: #fbfdff;
+        font-size: 10px;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .document-action {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        width: 100%;
+        min-height: 35px;
+        margin-top: 7px;
+        padding: 8px 10px;
+        border: 1px solid #9bbbe7;
+        border-radius: 7px;
+        color: #0862d6;
+        background: #ffffff;
+        font-size: 10px;
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+    .document-action.disabled {
+        color: #8b98aa;
+        border-color: #d7e0eb;
+        background: #f7f9fc;
+        cursor: default;
+    }
+
+    /* REMARKS */
+
+    .remarks-text {
+        min-height: 125px;
+        padding: 12px;
+        border: 1px solid #dce5ef;
+        border-radius: 8px;
+        color: #415774;
+        background: #fbfdff;
+        font-size: 10px;
+        line-height: 1.6;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    /* TABLES */
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        padding: 11px 12px;
+        color: #74829b;
+        background: #f7faff;
+        font-size: 10px;
+        font-weight: 900;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    td {
+        padding: 11px 12px;
+        border-top: 1px solid #edf2f8;
+        color: #415774;
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .empty-row {
+        color: #8491a4;
+        text-align: center;
+    }
+
+    /* SUMMARY */
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 11px;
+    }
+
+    .summary-box {
+        padding: 15px;
+        border-radius: 10px;
+        background: #f7faff;
+        text-align: center;
+    }
+
+    .summary-box p {
+        margin: 0;
+        color: #71809c;
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+    .summary-box h2 {
+        margin: 7px 0 0;
+        color: #0d58c4;
+        font-size: 22px;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1280px) {
+        .employee-grid {
+            grid-template-columns:
+                180px
+                minmax(400px, 1.5fr)
+                minmax(280px, 1fr);
+        }
+
+        .employee-main {
+            padding: 26px 24px 36px;
+        }
+
+        .government-list {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 1080px) {
+        .employee-sidebar {
+            width: 190px;
+        }
+
+        .employee-main {
+            width: calc(100% - 190px);
+            margin-left: 190px;
+        }
+
+        .employee-grid {
+            grid-template-columns: 190px minmax(0, 1fr);
+        }
+
+        .profile-card {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .personal-card {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .emergency-card {
+            grid-column: 1 / span 2;
+            grid-row: 2;
+        }
+
+        .education-card {
+            grid-column: 1;
+            grid-row: 3;
+        }
+
+        .reference-card {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        .history-card {
+            grid-column: 1 / span 2;
+            grid-row: 4;
+        }
+
+        .work-card {
+            grid-column: 1 / span 2;
+            grid-row: 5;
+        }
+
+        .government-card {
+            grid-column: 1 / span 2;
+            grid-row: 6;
+        }
+
+        .remarks-card {
+            grid-column: 1 / span 2;
+            grid-row: 7;
+        }
+
+        .payroll-card {
+            grid-column: 1 / span 2;
+            grid-row: 8;
+        }
+
+        .summary-card {
+            grid-column: 1 / span 2;
+            grid-row: 9;
+        }
+
+        .attendance-card {
+            grid-column: 1 / span 2;
+            grid-row: 10;
+        }
+
+        .government-list {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .summary-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 760px) {
+        .employee-page {
+            display: block;
+        }
+
+        .employee-sidebar {
+            position: relative;
+            width: 100%;
+            min-height: auto;
+            padding: 18px;
+        }
+
+        .employee-logo {
+            margin: 0 0 18px;
+            font-size: 20px;
+        }
+
+        .employee-menu {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .employee-main {
+            width: 100%;
+            margin-left: 0;
+            padding: 20px 14px 30px;
+        }
+
+        .employee-header {
+            flex-direction: column;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+        .header-button {
+            flex: 1;
+        }
+
+        .logout-button {
+            flex: 0 0 42px;
+        }
+
+        .employee-grid {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-grid,
+        .reference-headings,
+        .reference-row,
+        .history-headings,
+        .history-row,
+        .government-list,
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .reference-headings,
+        .history-headings {
+            display: none;
+        }
+
+        .data-cell {
+            white-space: normal;
+        }
+    }
 </style>
 </head>
 
 <body>
 
-<div class="page">
+<div class="employee-page">
 
-<!-- SIDEBAR -->
-
-<aside class="sidebar">
-
-    <div class="logo">
-        HCQ<br>MARKETING
-    </div>
-
-    <div class="menu">
-
-        <a href="/dashboard/">
-            <i class="fa-solid fa-house"></i>
-            Dashboard
-        </a>
-
-        <a href="/attendance-page/">
-            <i class="fa-solid fa-calendar-check"></i>
-            Attendance
-        </a>
-
-        <a href="/employees-page/" class="active">
-            <i class="fa-solid fa-users"></i>
-            Employees
-        </a>
-
-        <a href="/payroll-page/">
-            <i class="fa-solid fa-money-bill-wave"></i>
-            Payroll
-        </a>
-
-    </div>
-
-</aside>
-
-<!-- CONTENT -->
-
-<main class="content">
-
-<div class="topbar">
-
-    <div>
-
-        <h1>
-            {{ employee.last_name }}, {{ employee.first_name }}
-        </h1>
-
-        <div class="breadcrumb">
-            <a href="/employees-page/">Employees</a>
-            › Employee Profile
+    <aside class="employee-sidebar">
+        <div class="employee-logo">
+            HCQ<br>MARKETING
         </div>
 
-    </div>
+        <nav class="employee-menu">
+            <a href="/dashboard/">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+            </a>
 
-    <div class="top-actions">
+            <a href="/attendance-page/">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Attendance</span>
+            </a>
 
-        <a href="/employees-page/edit/{{ employee.id }}/" class="edit-btn">
-            <i class="fa-solid fa-pen"></i>
-            Edit Employee
-        </a>
+            <a href="/employees-page/" class="active">
+                <i class="fa-solid fa-user"></i>
+                <span>Employees</span>
+            </a>
 
-        <a href="{% url 'admin:logout' %}" class="logout-btn">
-            <i class="fa-solid fa-right-from-bracket"></i>
-        </a>
+            <a href="/payroll-page/">
+                <i class="fa-regular fa-file-lines"></i>
+                <span>Payroll</span>
+            </a>
+        </nav>
+    </aside>
 
-    </div>
+    <main class="employee-main">
 
+        <header class="employee-header">
+            <div>
+                <h1>
+                    {{ employee.last_name|upper }},
+                    {{ employee.first_name|upper }}
+                </h1>
+
+                <p>
+                    <a href="/employees-page/">Employees</a>
+                    <span>›</span>
+                    Employee Profile
+                </p>
+            </div>
+
+            <div class="header-actions">
+                <a href="/employees-page/edit/{{ employee.id }}/"
+                   class="header-button edit-button">
+                    <i class="fa-solid fa-pen"></i>
+                    Edit Employee
+                </a>
+
+                <a href="{% url 'admin:logout' %}"
+                   class="header-button logout-button"
+                   title="Log out">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+            </div>
+        </header>
+
+        <div class="employee-grid">
+
+            <!-- PROFILE -->
+            <section class="employee-card profile-card">
+                <div class="employee-avatar">
+                    {% if employee.photo %}
+                        <img src="{{ employee.photo.url }}"
+                             alt="Employee photo">
+                    {% else %}
+                        <i class="fa-solid fa-user"></i>
+                    {% endif %}
+                </div>
+
+                <div class="employee-id">
+                    {{ employee.employee_id }}
+                </div>
+
+                <div class="employee-role">
+                    {{ employee.position|default:"Employee" }}
+                </div>
+
+                <div class="
+                    status-badge
+                    {% if employee.employment_status == 'ACTIVE' %}
+                        status-active
+                    {% elif employee.employment_status == 'RESIGNED' %}
+                        status-resigned
+                    {% elif employee.employment_status == 'MIA' %}
+                        status-mia
+                    {% elif employee.employment_status == 'TERMINATED' %}
+                        status-terminated
+                    {% else %}
+                        status-active
+                    {% endif %}
+                ">
+                    <span></span>
+                    {{ employee.get_employment_status_display|default:"Active" }}
+                </div>
+            </section>
+
+            <!-- PERSONAL INFORMATION -->
+            <section class="employee-card personal-card">
+                <div class="card-title">
+                    <i class="fa-regular fa-user"></i>
+                    <h3>PERSONAL INFORMATION</h3>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">First Name</div>
+                        <div class="info-value">
+                            {{ employee.first_name|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Address</div>
+                        <div class="info-value">
+                            {{ employee.address|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Middle Initial</div>
+                        <div class="info-value">
+                            {{ employee.middle_initial|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Contact Number</div>
+                        <div class="info-value">
+                            {{ employee.contact_number|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Last Name</div>
+                        <div class="info-value">
+                            {{ employee.last_name|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Spouse Name</div>
+                        <div class="info-value">
+                            {{ employee.spouse_name|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Birthday</div>
+                        <div class="info-value">
+                            {{ employee.date_of_birth|date:'F d, Y'|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Spouse Contact</div>
+                        <div class="info-value">
+                            {{ employee.spouse_contact_number|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Citizenship</div>
+                        <div class="info-value">
+                            {{ employee.citizenship|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Blood Type</div>
+                        <div class="info-value">
+                            {{ employee.blood_type|default:"-" }}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EMERGENCY INFORMATION -->
+            <section class="employee-card emergency-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <h3>EMERGENCY INFORMATION</h3>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Emergency Contact Person</div>
+                        <div class="info-value">
+                            {{ employee.emergency_contact_name|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Relationship</div>
+                        <div class="info-value">
+                            {{ employee.emergency_relationship|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Contact Number</div>
+                        <div class="info-value">
+                            {{ employee.emergency_contact_number|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Address</div>
+                        <div class="info-value">
+                            {{ employee.emergency_address|default:"-" }}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EDUCATIONAL INFORMATION -->
+            <section class="employee-card education-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <h3>EDUCATIONAL INFORMATION</h3>
+                </div>
+
+                <div class="education-list">
+                    <div class="education-item">
+                        <div class="education-name">Elementary</div>
+                        <div class="education-school">
+                            {{ employee.elementary|default:"No data" }}
+                        </div>
+                        <div class="education-year">
+                            {{ employee.elementary_year|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="education-item">
+                        <div class="education-name">High School</div>
+                        <div class="education-school">
+                            {{ employee.high_school|default:"No data" }}
+                        </div>
+                        <div class="education-year">
+                            {{ employee.high_school_year|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="education-item">
+                        <div class="education-name">College</div>
+                        <div class="education-school">
+                            {{ employee.college|default:"No data" }}
+                        </div>
+                        <div class="education-year">
+                            {{ employee.college_year|default:"-" }}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CHARACTER REFERENCES -->
+            <section class="employee-card reference-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-address-book"></i>
+                    <h3>CHARACTER REFERENCES</h3>
+                </div>
+
+                <div class="data-headings reference-headings">
+                    <span>Name</span>
+                    <span>Occupation</span>
+                    <span>Contact Number</span>
+                </div>
+
+                <div class="data-row reference-row">
+                    <div class="data-cell">
+                        {{ employee.reference_name_1|default:"-" }}
+                    </div>
+                    <div class="data-cell">
+                        {{ employee.reference_occupation_1|default:"-" }}
+                    </div>
+                    <div class="data-cell">
+                        {{ employee.reference_contact_1|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="data-row reference-row">
+                    <div class="data-cell">
+                        {{ employee.reference_name_2|default:"-" }}
+                    </div>
+                    <div class="data-cell">
+                        {{ employee.reference_occupation_2|default:"-" }}
+                    </div>
+                    <div class="data-cell">
+                        {{ employee.reference_contact_2|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="data-row reference-row">
+                    <div class="data-cell">
+                        {{ employee.reference_name_3|default:"-" }}
+                    </div>
+                    <div class="data-cell">
+                        {{ employee.reference_occupation_3|default:"-" }}
+                    </div>
+                    <div class="data-cell">
+                        {{ employee.reference_contact_3|default:"-" }}
+                    </div>
+                </div>
+            </section>
+
+            <!-- EMPLOYMENT HISTORY -->
+            <section class="employee-card history-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <h3>EMPLOYMENT HISTORY</h3>
+                </div>
+
+                <div class="data-headings history-headings">
+                    <span>Name of Company</span>
+                    <span>Address</span>
+                    <span>Occupation</span>
+                    <span>Years</span>
+                </div>
+
+                <div class="data-row history-row">
+                    <div class="data-cell">
+                        {{ employee.company_1|default:"-" }}
+                    </div>
+                    <div class="data-cell">
+                        {{ employee.company_address_1|default:"-" }}
+                    </div>
+                    <div class="data-cell">
+                        {{ employee.occupation_1|default:"-" }}
+                    </div>
+                    <div class="data-cell">
+                        {{ employee.years_1|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="data-row history-row">
+                    <div class="data-cell">
+                        {{ employee.company_2|default:"-" }}
+                    </div>
+                    <div class="data-cell">
+                        {{ employee.company_address_2|default:"-" }}
+                    </div>
+                    <div class="data-cell">
+                        {{ employee.occupation_2|default:"-" }}
+                    </div>
+                    <div class="data-cell">
+                        {{ employee.years_2|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="data-row history-row">
+                    <div class="data-cell">
+                        {{ employee.company_3|default:"-" }}
+                    </div>
+                    <div class="data-cell">
+                        {{ employee.company_address_3|default:"-" }}
+                    </div>
+                    <div class="data-cell">
+                        {{ employee.occupation_3|default:"-" }}
+                    </div>
+                    <div class="data-cell">
+                        {{ employee.years_3|default:"-" }}
+                    </div>
+                </div>
+            </section>
+
+            <!-- WORK INFORMATION -->
+            <section class="employee-card work-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-id-card"></i>
+                    <h3>WORK INFORMATION</h3>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Position</div>
+                        <div class="info-value">
+                            {{ employee.position|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Employment Status</div>
+                        <div class="info-value">
+                            {{ employee.get_employment_status_display|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Salary Type</div>
+                        <div class="info-value">
+                            {{ employee.get_salary_type_display|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Salary Rate</div>
+                        <div class="info-value">
+                            ₱{{ employee.rate|default:"0.00" }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Date Started</div>
+                        <div class="info-value">
+                            {{ employee.date_started|date:'F d, Y'|default:"-" }}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- GOVERNMENT DOCUMENTS -->
+            <section class="employee-card government-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-building-columns"></i>
+                    <h3>GOVERNMENT DOCUMENTS</h3>
+                </div>
+
+                <div class="government-list">
+
+                    <div class="government-item">
+                        <div class="government-item-title">
+                            <i class="fa-solid fa-users"></i>
+                            SSS Number
+                        </div>
+
+                        <div class="government-number">
+                            {{ employee.sss_number|default:"No data" }}
+                        </div>
+
+                        {% if employee.sss_file %}
+                            <a href="{{ employee.sss_file.url }}"
+                               target="_blank"
+                               class="document-action">
+                                <i class="fa-solid fa-eye"></i>
+                                View File
+                            </a>
+                        {% else %}
+                            <span class="document-action disabled">
+                                No File
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="government-item">
+                        <div class="government-item-title">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                            PhilHealth Number
+                        </div>
+
+                        <div class="government-number">
+                            {{ employee.philhealth_number|default:"No data" }}
+                        </div>
+
+                        {% if employee.philhealth_file %}
+                            <a href="{{ employee.philhealth_file.url }}"
+                               target="_blank"
+                               class="document-action">
+                                <i class="fa-solid fa-eye"></i>
+                                View File
+                            </a>
+                        {% else %}
+                            <span class="document-action disabled">
+                                No File
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="government-item">
+                        <div class="government-item-title">
+                            <i class="fa-solid fa-receipt"></i>
+                            TIN Number
+                        </div>
+
+                        <div class="government-number">
+                            {{ employee.tin_number|default:"No data" }}
+                        </div>
+
+                        {% if employee.tin_file %}
+                            <a href="{{ employee.tin_file.url }}"
+                               target="_blank"
+                               class="document-action">
+                                <i class="fa-solid fa-eye"></i>
+                                View File
+                            </a>
+                        {% else %}
+                            <span class="document-action disabled">
+                                No File
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="government-item">
+                        <div class="government-item-title">
+                            <i class="fa-solid fa-house"></i>
+                            Pag-IBIG Number
+                        </div>
+
+                        <div class="government-number">
+                            {{ employee.pagibig_number|default:"No data" }}
+                        </div>
+
+                        {% if employee.pagibig_file %}
+                            <a href="{{ employee.pagibig_file.url }}"
+                               target="_blank"
+                               class="document-action">
+                                <i class="fa-solid fa-eye"></i>
+                                View File
+                            </a>
+                        {% else %}
+                            <span class="document-action disabled">
+                                No File
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="government-item">
+                        <div class="government-item-title">
+                            <i class="fa-solid fa-shield"></i>
+                            NBI Clearance
+                        </div>
+
+                        <div class="government-number">
+                            {{ employee.nbi_clearance_number|default:"No data" }}
+                        </div>
+
+                        {% if employee.nbi_clearance_file %}
+                            <a href="{{ employee.nbi_clearance_file.url }}"
+                               target="_blank"
+                               class="document-action">
+                                <i class="fa-solid fa-eye"></i>
+                                View File
+                            </a>
+                        {% else %}
+                            <span class="document-action disabled">
+                                No File
+                            </span>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- EMPLOYMENT REMARKS -->
+            <section class="employee-card remarks-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <h3>EMPLOYMENT REMARKS</h3>
+                </div>
+
+                <div class="remarks-text">
+                    {{ employee.employment_remarks|default:"No employment remarks." }}
+                </div>
+            </section>
+
+            <!-- PAYROLL HISTORY -->
+            <section class="employee-card payroll-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-wallet"></i>
+                    <h3>PAYROLL & CHARGES HISTORY</h3>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Period</th>
+                                <th>Total Salary</th>
+                                <th>Benefits</th>
+                                <th>Charges</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for payroll in payrolls %}
+                                <tr>
+                                    <td>
+                                        {{ payroll.start_date|date:"M d, Y" }}
+                                        –
+                                        {{ payroll.end_date|date:"M d, Y" }}
+                                    </td>
+                                    <td>
+                                        ₱{{ payroll.total_salary|floatformat:0 }}
+                                    </td>
+                                    <td>
+                                        ₱{{ payroll.benefits|floatformat:0 }}
+                                    </td>
+                                    <td>
+                                        ₱{{ payroll.charges|floatformat:0 }}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4" class="empty-row">
+                                        No payroll records found.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SUMMARY -->
+            <section class="employee-card summary-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-chart-simple"></i>
+                    <h3>EMPLOYEE RECORD SUMMARY</h3>
+                </div>
+
+                <div class="summary-grid">
+                    <div class="summary-box">
+                        <p>Total Attendances</p>
+                        <h2>{{ attendance_count|default:"0" }}</h2>
+                    </div>
+
+                    <div class="summary-box">
+                        <p>Total Payrolls</p>
+                        <h2>{{ payroll_count|default:"0" }}</h2>
+                    </div>
+
+                    <div class="summary-box">
+                        <p>Total Charges</p>
+                        <h2>
+                            ₱{{ total_charges|floatformat:0|default:"0" }}
+                        </h2>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ATTENDANCE HISTORY -->
+            <section class="employee-card attendance-card">
+                <div class="card-title">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <h3>PAST ATTENDANCES</h3>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Time In</th>
+                                <th>Time Out</th>
+                                <th>Payable Hours</th>
+                                <th>Late</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for attendance in attendances %}
+                                <tr>
+                                    <td>
+                                        {{ attendance.date|date:"M d, Y" }}
+                                    </td>
+                                    <td>
+                                        {{ attendance.get_status_display }}
+                                    </td>
+                                    <td>
+                                        {{ attendance.time_in_display|default:"-" }}
+                                    </td>
+                                    <td>
+                                        {{ attendance.time_out_display|default:"-" }}
+                                    </td>
+                                    <td>
+                                        {{ attendance.payable_hours|default:"0.00" }}
+                                    </td>
+                                    <td>
+                                        {{ attendance.late_minutes|default:"0" }} mins
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="empty-row">
+                                        No attendance records found.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
 </div>
-
-<!-- GRID -->
-
-<div class="grid">
-
-<!-- PROFILE -->
-
-<section class="card profile-card">
-
-    <div class="avatar">
-
-        {% if employee.photo %}
-            <img src="{{ employee.photo.url }}">
-        {% else %}
-            <i class="fa-solid fa-user"></i>
-        {% endif %}
-
-    </div>
-
-    <div class="employee-id">
-        {{ employee.employee_id }}
-    </div>
-
-    <div class="employee-role">
-        {{ employee.position|default:"Employee" }}
-    </div>
-
-    <div class="
-        status
-        {% if employee.employment_status == 'ACTIVE' %}
-            status-active
-        {% elif employee.employment_status == 'RESIGNED' %}
-            status-resigned
-        {% elif employee.employment_status == 'MIA' %}
-            status-mia
-        {% elif employee.employment_status == 'TERMINATED' %}
-            status-terminated
-        {% else %}
-            status-active
-        {% endif %}
-    ">
-        <span></span>
-        {{ employee.get_employment_status_display|default:"Active" }}
-    </div>
-
-</section>
-
-<!-- PERSONAL -->
-
-<section class="card personal-card">
-
-    <div class="card-title">
-        <div class="card-icon">
-            <i class="fa-solid fa-user"></i>
-        </div>
-
-        <h3>Personal Information</h3>
-    </div>
-
-    <div class="info-grid">
-
-        <div class="info-box">
-            <div class="info-label">First Name</div>
-            <div class="info-value">{{ employee.first_name|default:"-" }}</div>
-        </div>
-
-        <div class="info-box">
-            <div class="info-label">Last Name</div>
-            <div class="info-value">{{ employee.last_name|default:"-" }}</div>
-        </div>
-
-        <div class="info-box">
-            <div class="info-label">Middle Initial</div>
-            <div class="info-value">{{ employee.middle_initial|default:"-" }}</div>
-        </div>
-
-        <div class="info-box">
-            <div class="info-label">Address</div>
-            <div class="info-value">{{ employee.address|default:"-" }}</div>
-        </div>
-
-        <div class="info-box">
-            <div class="info-label">Contact Number</div>
-            <div class="info-value">{{ employee.contact_number|default:"-" }}</div>
-        </div>
-
-        <div class="info-box">
-            <div class="info-label">Birthday</div>
-            <div class="info-value">{{ employee.date_of_birth|date:'F d, Y'|default:"-" }}</div>
-        </div>
-
-        <div class="info-box">
-            <div class="info-label">Spouse Name</div>
-            <div class="info-value">{{ employee.spouse_name|default:"-" }}</div>
-        </div>
-
-        <div class="info-box">
-            <div class="info-label">Spouse Contact</div>
-            <div class="info-value">{{ employee.spouse_contact_number|default:"-" }}</div>
-        </div>
-
-        <div class="info-box">
-            <div class="info-label">Citizenship</div>
-            <div class="info-value">{{ employee.citizenship|default:"Filipino" }}</div>
-        </div>
-
-    </div>
-
-</section>
-
-<!-- WORK -->
-
-<section class="card work-card">
-
-    <div class="card-title">
-        <div class="card-icon">
-            <i class="fa-solid fa-briefcase"></i>
-        </div>
-
-        <h3>Work Information</h3>
-    </div>
-
-    <div class="info-grid">
-
-        <div class="info-box">
-            <div class="info-label">Position</div>
-            <div class="info-value">{{ employee.position|default:"-" }}</div>
-        </div>
-
-        <div class="info-box">
-            <div class="info-label">Salary Rate</div>
-            <div class="info-value">₱{{ employee.rate|default:"0.00" }}</div>
-        </div>
-
-        <div class="info-box">
-            <div class="info-label">Date Started</div>
-            <div class="info-value">{{ employee.date_started|date:'F d, Y'|default:"-" }}</div>
-        </div>
-
-        <div class="info-box">
-            <div class="info-label">Employment Status</div>
-            <div class="info-value">{{ employee.get_employment_status_display|default:"Active" }}</div>
-        </div>
-
-        <div class="info-box">
-            <div class="info-label">Status Remarks</div>
-            <div class="info-value">{{ employee.employment_remarks|default:"-" }}</div>
-        </div>
-
-    </div>
-
-</section>
-
-<!-- PAYROLL -->
-
-<section class="card payroll-card">
-
-    <div class="card-title">
-        <div class="card-icon">
-            <i class="fa-solid fa-wallet"></i>
-        </div>
-
-        <h3>Payroll & Charges History</h3>
-    </div>
-
-    <div class="table-wrapper">
-
-        <table>
-
-            <thead>
-                <tr>
-                    <th>Period</th>
-                    <th>Salary</th>
-                    <th>Benefits</th>
-                    <th>Charges</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                {% for payroll in payrolls %}
-                <tr>
-                    <td>{{ payroll.start_date|date:"M d" }}</td>
-                    <td>₱{{ payroll.total_salary|floatformat:0 }}</td>
-                    <td>₱{{ payroll.benefits|floatformat:0 }}</td>
-                    <td>₱{{ payroll.charges|floatformat:0 }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4">
-                        No payroll records found.
-                    </td>
-                </tr>
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</section>
-
-<!-- VIEW -->
-
-<section class="card view-card">
-
-    <div class="card-title">
-        <div class="card-icon">
-            <i class="fa-solid fa-eye"></i>
-        </div>
-
-        <h3>View Information</h3>
-    </div>
-
-    <div class="info-tabs">
-
-        <div class="info-tab active" onclick="showInfo('education', this)">
-            <i class="fa-solid fa-graduation-cap"></i>
-            <p>Educational</p>
-        </div>
-
-        <div class="info-tab" onclick="showInfo('experience', this)">
-            <i class="fa-solid fa-briefcase"></i>
-            <p>Experience</p>
-        </div>
-
-        <div class="info-tab" onclick="showInfo('reference', this)">
-            <i class="fa-solid fa-user-group"></i>
-            <p>Reference</p>
-        </div>
-
-    </div>
-
-    <div id="education" class="info-content active">
-        Elementary: {{ employee.elementary|default:"No Data" }}<br>
-        High School: {{ employee.high_school|default:"No Data" }}<br>
-        College: {{ employee.college|default:"No Data" }}
-    </div>
-
-    <div id="experience" class="info-content">
-        Company: {{ employee.company_1|default:"No Data" }}<br>
-        Address: {{ employee.company_address_1|default:"No Data" }}<br>
-        Occupation: {{ employee.occupation_1|default:"No Data" }}<br>
-        Years: {{ employee.years_1|default:"No Data" }}
-    </div>
-
-    <div id="reference" class="info-content">
-        Name: {{ employee.reference_name_1|default:"No Data" }}<br>
-        Occupation: {{ employee.reference_occupation_1|default:"No Data" }}<br>
-        Contact: {{ employee.reference_contact_1|default:"No Data" }}
-    </div>
-
-</section>
-
-<!-- GOVERNMENT -->
-
-<section class="card government-card">
-
-    <div class="card-title">
-        <div class="card-icon">
-            <i class="fa-solid fa-shield"></i>
-        </div>
-
-        <h3>Government Documents</h3>
-    </div>
-
-    <div class="doc-row">
-
-        <div class="doc-left">
-
-            <div class="doc-icon">
-                <i class="fa-solid fa-users"></i>
-            </div>
-
-            <div class="doc-name">
-                SSS
-            </div>
-
-        </div>
-
-        <div class="doc-number">
-            {{ employee.sss_number|default:"No Data" }}
-        </div>
-
-        {% if employee.sss_file %}
-            <a href="{{ employee.sss_file.url }}" target="_blank" class="doc-view">
-                View
-            </a>
-        {% else %}
-            <span>No File</span>
-        {% endif %}
-
-    </div>
-
-    <div class="doc-row">
-
-        <div class="doc-left">
-
-            <div class="doc-icon">
-                <i class="fa-solid fa-heart-pulse"></i>
-            </div>
-
-            <div class="doc-name">
-                PhilHealth
-            </div>
-
-        </div>
-
-        <div class="doc-number">
-            {{ employee.philhealth_number|default:"No Data" }}
-        </div>
-
-        {% if employee.philhealth_file %}
-            <a href="{{ employee.philhealth_file.url }}" target="_blank" class="doc-view">
-                View
-            </a>
-        {% else %}
-            <span>No File</span>
-        {% endif %}
-
-    </div>
-
-    <div class="doc-row">
-
-        <div class="doc-left">
-
-            <div class="doc-icon">
-                <i class="fa-solid fa-id-card"></i>
-            </div>
-
-            <div class="doc-name">
-                Pag-IBIG
-            </div>
-
-        </div>
-
-        <div class="doc-number">
-            {{ employee.pagibig_number|default:"No Data" }}
-        </div>
-
-        {% if employee.pagibig_file %}
-            <a href="{{ employee.pagibig_file.url }}" target="_blank" class="doc-view">
-                View
-            </a>
-        {% else %}
-            <span>No File</span>
-        {% endif %}
-
-    </div>
-
-    <div class="doc-row">
-
-        <div class="doc-left">
-
-            <div class="doc-icon">
-                <i class="fa-solid fa-receipt"></i>
-            </div>
-
-            <div class="doc-name">
-                TIN
-            </div>
-
-        </div>
-
-        <div class="doc-number">
-            {{ employee.tin_number|default:"No Data" }}
-        </div>
-
-        {% if employee.tin_file %}
-            <a href="{{ employee.tin_file.url }}" target="_blank" class="doc-view">
-                View
-            </a>
-        {% else %}
-            <span>No File</span>
-        {% endif %}
-
-    </div>
-
-    <div class="doc-row">
-
-        <div class="doc-left">
-
-            <div class="doc-icon">
-                <i class="fa-solid fa-shield-halved"></i>
-            </div>
-
-            <div class="doc-name">
-                NBI
-            </div>
-
-        </div>
-
-        <div class="doc-number">
-            {{ employee.nbi_clearance_number|default:"No Data" }}
-        </div>
-
-        {% if employee.nbi_clearance_file %}
-            <a href="{{ employee.nbi_clearance_file.url }}" target="_blank" class="doc-view">
-                View
-            </a>
-        {% else %}
-            <span>No File</span>
-        {% endif %}
-
-    </div>
-
-</section>
-
-<!-- ATTENDANCE -->
-
-<section class="card full-width">
-
-    <div class="card-title">
-        <div class="card-icon">
-            <i class="fa-solid fa-calendar-check"></i>
-        </div>
-
-        <h3>Past Attendances</h3>
-    </div>
-
-    <div class="table-wrapper">
-
-        <table>
-
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Time In</th>
-                    <th>Time Out</th>
-                    <th>Payable Hours</th>
-                    <th>Late</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                {% for attendance in attendances %}
-                <tr>
-                    <td>{{ attendance.date|date:"M d, Y" }}</td>
-                    <td>{{ attendance.get_status_display }}</td>
-                    <td>{{ attendance.time_in_display }}</td>
-                    <td>{{ attendance.time_out_display }}</td>
-                    <td>{{ attendance.payable_hours|default:"0.00" }}</td>
-                    <td>{{ attendance.late_minutes }} mins</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6">
-                        No attendance records found.
-                    </td>
-                </tr>
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</section>
-
-<!-- SUMMARY -->
-
-<section class="card full-width">
-
-    <div class="card-title">
-        <div class="card-icon">
-            <i class="fa-solid fa-chart-simple"></i>
-        </div>
-
-        <h3>Employee Record Summary</h3>
-    </div>
-
-    <div class="summary-grid">
-
-        <div class="summary-box">
-            <p>Total Attendances</p>
-            <h2>{{ attendance_count|default:"0" }}</h2>
-        </div>
-
-        <div class="summary-box">
-            <p>Total Payrolls</p>
-            <h2>{{ payroll_count|default:"0" }}</h2>
-        </div>
-
-        <div class="summary-box">
-            <p>Total Charges</p>
-            <h2>₱{{ total_charges|floatformat:0|default:"0" }}</h2>
-        </div>
-
-    </div>
-
-</section>
-
-</div>
-
-</main>
-
-</div>
-
-<script>
-
-function showInfo(id, tab){
-
-    document.querySelectorAll('.info-content').forEach(function(box){
-        box.classList.remove('active');
-    });
-
-    document.querySelectorAll('.info-tab').forEach(function(btn){
-        btn.classList.remove('active');
-    });
-
-    document.getElementById(id).classList.add('active');
-    tab.classList.add('active');
-
-}
-
-</script>
 
 </body>
 </html>
-
